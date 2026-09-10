@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Pong - El Niño</title>
+<style>
+body{font-family:Arial,sans-serif;background:#0a0a0f;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0}
+h1{color:#00f0ff}
+canvas{background:#151921;border:2px solid #00f0ff}
+#info{text-align:center;margin:15px}
+#score{font-size:1.5em;color:#ff00ff}
+button{background:#00f0ff;border:none;padding:10px 20px;border-radius:5px;cursor:pointer;font-size:1em;color:#000;margin-top:10px}
+button:hover{background:#ff00ff;color:#fff}
+</style>
+</head>
+<body>
+<h1>🏓 Pong</h1>
+<div id="info"><p>Puntuación: <span id="score">0</span></p><button onclick="newGame()">Nuevo juego</button></div>
+<canvas id="board" width="600" height="400"></canvas>
+<script>
+const canvas=document.getElementById('board');
+const ctx=canvas.getContext('2d');
+let player, ball, score, gameOver, speed;
+function newGame(){
+    player={y:150,h:80,score:0};
+    ball={x:300,y:200,vx:4,vy:3};
+    gameOver=false;
+    speed=1;
+    draw();
+    if(!interval) interval=setInterval(tick,16);
+}
+function draw(){
+    ctx.fillStyle='#151921';
+    ctx.fillRect(0,0,600,400);
+    ctx.fillStyle='#00f0ff';
+    ctx.fillRect(10,player.y,10,player.h);
+    ctx.beginPath();
+    ctx.arc(ball.x,ball.y,8,0,Math.PI*2);
+    ctx.fill();
+}
+function tick(){
+    if(gameOver) return;
+    ball.x += ball.vx*speed;
+    ball.y += ball.vy*speed;
+    if(ball.y<0||ball.y>400) ball.vy*=-1;
+    if(ball.x>590){score++;document.getElementById('score').textContent=score;ball.x=300;ball.y=200;ball.vx=-(ball.vx+0.2);}
+    if(ball.x<20&&ball.x>10&&ball.y>player.y&&ball.y<player.y+player.h){ball.vx*=-1;ball.vy+=0.3;}
+    if(ball.x<10){gameOver=true;alert('Game Over!');}
+    draw();
+}
+document.addEventListener('mousemove',e=>{
+    let rect=canvas.getBoundingClientRect();
+    player.y=e.clientY-rect.top-player.h/2;
+});
+let interval;
+newGame();
+</script>
+</body>
+</html>
