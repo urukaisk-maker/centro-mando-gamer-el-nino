@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>🎁 Sorpresa para Mario</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#000;
+  color:#fff;
+  font-family:'Segoe UI',sans-serif;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  position:relative;
+}
+
+/* ==== FONDO CON ORBES DE COLORES ANIMADOS ==== */
+.orbe{
+  position:fixed;
+  border-radius:50%;
+  filter:blur(80px);
+  opacity:0.7;
+  z-index:0;
+  pointer-events:none;
+}
+.orbe1{
+  width:500px;height:500px;
+  background:#00f0ff;
+  top:-100px;left:-100px;
+  animation:orbe1 12s ease-in-out infinite;
+}
+.orbe2{
+  width:450px;height:450px;
+  background:#ff00ff;
+  bottom:-100px;right:-100px;
+  animation:orbe2 14s ease-in-out infinite;
+}
+.orbe3{
+  width:400px;height:400px;
+  background:#7a00ff;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  animation:orbe3 10s ease-in-out infinite;
+}
+.orbe4{
+  width:350px;height:350px;
+  background:#00ff88;
+  top:20%;right:10%;
+  animation:orbe4 16s ease-in-out infinite;
+}
+
+@keyframes orbe1{
+  0%,100%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(200px,150px) scale(1.3)}
+}
+@keyframes orbe2{
+  0%,100%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(-250px,-100px) scale(1.2)}
+}
+@keyframes orbe3{
+  0%,100%{transform:translate(-50%,-50%) scale(1);opacity:0.4}
+  50%{transform:translate(-30%,-70%) scale(1.5);opacity:0.8}
+}
+@keyframes orbe4{
+  0%,100%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(-150px,200px) scale(1.4)}
+}
+
+/* Malla cuadriculada cyberpunk */
+.malla{
+  position:fixed;
+  inset:0;
+  z-index:1;
+  background-image:
+    linear-gradient(rgba(0,240,255,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,240,255,0.08) 1px, transparent 1px);
+  background-size:50px 50px;
+  animation:mallaMover 20s linear infinite;
+  pointer-events:none;
+}
+@keyframes mallaMover{
+  from{background-position:0 0}
+  to{background-position:50px 50px}
+}
+
+/* Lluvia de bits (0 y 1) */
+.bit{
+  position:fixed;
+  color:#00f0ff;
+  font-family:monospace;
+  font-size:14px;
+  opacity:0.5;
+  z-index:1;
+  pointer-events:none;
+  animation:caerBits linear infinite;
+  text-shadow:0 0 8px #00f0ff;
+}
+@keyframes caerBits{
+  from{transform:translateY(-50px);opacity:0.8}
+  to{transform:translateY(110vh);opacity:0}
+}
+
+/* Canvas partículas */
+#particulas{
+  position:fixed;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+}
+
+/* ==== CONTENIDO ==== */
+.splash{
+  position:relative;
+  z-index:10;
+  text-align:center;
+  padding:2rem;
+  max-width:700px;
+  animation:aparecer 1.2s ease-out;
+}
+@keyframes aparecer{
+  from{opacity:0;transform:translateY(30px) scale(0.95)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.emoji{
+  font-size:6rem;
+  display:inline-block;
+  animation:latir 1.5s ease-in-out infinite;
+  filter:drop-shadow(0 0 30px #ff00ff) drop-shadow(0 0 60px #00f0ff);
+}
+@keyframes latir{
+  0%,100%{transform:scale(1) rotate(-5deg)}
+  50%{transform:scale(1.15) rotate(5deg)}
+}
+h1{
+  font-size:2.5rem;
+  margin:1.5rem 0 1rem;
+  background:linear-gradient(90deg,#00f0ff,#ff00ff,#00f0ff);
+  background-size:200% auto;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:brillo 3s linear infinite;
+  letter-spacing:3px;
+  font-weight:900;
+  filter:drop-shadow(0 0 20px rgba(0,240,255,0.5));
+}
+@keyframes brillo{
+  to{background-position:200% center}
+}
+h2{
+  font-size:1.3rem;
+  color:#00f0ff;
+  margin-bottom:1.5rem;
+  font-weight:400;
+  letter-spacing:2px;
+  text-shadow:0 0 20px rgba(0,240,255,0.8);
+}
+p{
+  font-size:1.1rem;
+  line-height:1.7;
+  color:#d0d0e0;
+  margin:1rem 0;
+  text-shadow:0 0 10px rgba(255,255,255,0.2);
+}
+.firma{
+  font-style:italic;
+  color:#ff00ff;
+  margin-top:2rem;
+  font-size:1rem;
+  text-shadow:0 0 15px rgba(255,0,255,0.8);
+}
+.barra{
+  width:300px;
+  height:4px;
+  background:rgba(255,255,255,0.1);
+  border-radius:2px;
+  margin:2.5rem auto 1rem;
+  overflow:hidden;
+  position:relative;
+}
+.barra::after{
+  content:"";
+  position:absolute;
+  top:0;left:0;
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,#00f0ff,#ff00ff);
+  border-radius:2px;
+  animation:cargar 4s ease-in-out forwards;
+  box-shadow:0 0 15px #00f0ff;
+}
+@keyframes cargar{
+  to{width:100%}
+}
+.cargando{
+  font-size:0.9rem;
+  color:#8899aa;
+  letter-spacing:2px;
+  margin-bottom:2rem;
+}
+.btn-entrar{
+  display:inline-block;
+  margin-top:1rem;
+  padding:1rem 3rem;
+  background:linear-gradient(45deg,#00f0ff,#ff00ff);
+  color:#000;
+  font-weight:900;
+  font-size:1.1rem;
+  letter-spacing:2px;
+  border:none;
+  border-radius:40px;
+  cursor:pointer;
+  text-decoration:none;
+  transition:all 0.3s;
+  box-shadow:0 0 25px rgba(0,240,255,0.7);
+  opacity:0;
+  animation:aparecerBoton 0.8s ease-out 4s forwards;
+}
+@keyframes aparecerBoton{
+  to{opacity:1}
+}
+.btn-entrar:hover{
+  transform:scale(1.08);
+  box-shadow:0 0 45px rgba(255,0,255,1);
+}
+
+/* Estrellas flotantes */
+.estrella{
+  position:fixed;
+  font-size:1.5rem;
+  z-index:3;
+  animation:flotar 6s linear infinite;
+  opacity:0.7;
+  pointer-events:none;
+}
+@keyframes flotar{
+  0%{transform:translateY(100vh) rotate(0);opacity:0}
+  10%{opacity:1}
+  90%{opacity:1}
+  100%{transform:translateY(-100px) rotate(360deg);opacity:0}
+}
+</style>
+</head>
+<body>
+
+<!-- Fondo con orbes de colores -->
+<div class="orbe orbe1"></div>
+<div class="orbe orbe2"></div>
+<div class="orbe orbe3"></div>
+<div class="orbe orbe4"></div>
+
+<!-- Malla cyberpunk -->
+<div class="malla"></div>
+
+<!-- Canvas de partículas -->
+<canvas id="particulas"></canvas>
+
+<div class="splash">
+  <div class="emoji">🎁</div>
+  <h1>SORPRESA PARA MARIO</h1>
+  <h2>◆ Un regalo hecho con cariño ◆</h2>
+
+  <p>Alguien ha estado trabajando en algo especial para ti.</p>
+  <p>Prepárate...</p>
+
+  <div class="barra"></div>
+  <div class="cargando">CARGANDO EXPERIENCIA...</div>
+
+  <a href="https://plataforma-el-ni-o.vercel.app/index.html" class="btn-entrar" target="_blank" rel="noopener noreferrer">🎮 ENTRAR A LA SORPRESA</a>
+
+  <p class="firma">— De parte de alguien que te quiere mucho —</p>
+</div>
+
+<script>
+// ==== PARTÍCULAS ====
+const canvas = document.getElementById('particulas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const particulas = [];
+const colores = ['#00f0ff', '#ff00ff', '#7a00ff', '#00ff88'];
+
+for (let i = 0; i < 80; i++) {
+  particulas.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 2 + 1,
+    dx: (Math.random() - 0.5) * 0.6,
+    dy: (Math.random() - 0.5) * 0.6,
+    color: colores[Math.floor(Math.random() * colores.length)]
+  });
+}
+
+function animar() {
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  particulas.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = p.color;
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = p.color;
+    ctx.fill();
+
+    p.x += p.dx;
+    p.y += p.dy;
+
+    if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+    if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+  });
+
+  requestAnimationFrame(animar);
+}
+animar();
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+// ==== ESTRELLAS FLOTANTES ====
+const emojis = ['⭐', '✨', '💫', '🌟', '🎮', '🎁'];
+for (let i = 0; i < 10; i++) {
+  const estrella = document.createElement('div');
+  estrella.className = 'estrella';
+  estrella.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+  estrella.style.left = Math.random() * 100 + '%';
+  estrella.style.animationDelay = Math.random() * 6 + 's';
+  estrella.style.animationDuration = (Math.random() * 4 + 5) + 's';
+  document.body.appendChild(estrella);
+}
+
+// ==== LLUVIA DE BITS (0 y 1) ====
+function crearBit() {
+  const bit = document.createElement('div');
+  bit.className = 'bit';
+  bit.textContent = Math.random() > 0.5 ? '1' : '0';
+  bit.style.left = Math.random() * 100 + '%';
+  bit.style.animationDuration = (Math.random() * 3 + 4) + 's';
+  bit.style.color = Math.random() > 0.5 ? '#00f0ff' : '#ff00ff';
+  bit.style.textShadow = `0 0 8px ${bit.style.color}`;
+  document.body.appendChild(bit);
+  setTimeout(() => bit.remove(), 8000);
+}
+setInterval(crearBit, 300);
+</script>
+
+</body>
+</html>

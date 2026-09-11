@@ -1,4 +1,4 @@
-const CACHE = "el-nino-v1";
+const CACHE = "el-nino-v2";
 const ASSETS = [
   "/01_EL_NINO_LAUNCHER/index.html",
   "/01_EL_NINO_LAUNCHER/manifest.json",
