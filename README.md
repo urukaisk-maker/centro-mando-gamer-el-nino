@@ -1,5 +1,8 @@
 # 🎮 Centro de Mando Gamer – Plataforma "El Niño"
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-En%20vivo-success?logo=vercel&logoColor=white)](https://centro-mando-gamer-el-nino.vercel.app/)
+[![GitHub](https://img.shields.io/badge/GitHub-Repositorio-blue?logo=github)](https://github.com/urukaisk-maker/centro-mando-gamer-el-nino)
 
+> 🌐 **Demo online:** [https://centro-mando-gamer-el-nino.vercel.app/](https://centro-mando-gamer-el-nino.vercel.app/)
 ![Launcher de El Niño](captura-launcher.png)
 
 > Regalo para **Mario** · ...
