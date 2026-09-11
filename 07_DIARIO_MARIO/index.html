@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Diario de Mario</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#0a0a0f;color:#ffffff;min-height:100vh;padding:1rem}
+#bienvenida{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;text-align:center;padding:2rem;background-image:radial-gradient(circle at 20% 20%,rgba(0,240,255,0.3),transparent),radial-gradient(circle at 80% 80%,rgba(255,0,255,0.3),transparent);background-attachment:fixed}
+#bienvenida h1{color:#00f0ff;font-size:3rem;text-shadow:0 0 20px #00f0ff}
+#bienvenida p{color:#ffffff;font-size:1.2rem}
+#bienvenida button{background:#00f0ff;color:#000;border:none;padding:1rem 2.5rem;font-size:1.3rem;border-radius:30px;cursor:pointer;font-weight:bold}
+#principal{display:block}
+header{background:rgba(26,26,36,0.9);border-bottom:2px solid #00f0ff;padding:1rem 2rem;text-align:center}
+header h1{color:#00f0ff;margin:0}
+nav{background:rgba(26,26,36,0.9);border-bottom:1px solid #2a2a3a;padding:0.5rem 2rem;display:flex;gap:1rem;align-items:center;justify-content:flex-end}
+nav a{color:#00f0ff;text-decoration:none;font-weight:bold;padding:0.3rem 0.8rem;border-radius:15px;background:rgba(0,240,255,0.1);font-size:0.9rem}
+nav a:hover{background:rgba(255,0,255,0.1);color:#ff00ff}
+.layout{max-width:1300px;margin:2rem auto;display:grid;grid-template-columns:280px 1fr;gap:2rem;padding:0 1rem}
+.sidebar{background:#1a1a24;border-radius:12px;padding:1.5rem;height:fit-content}
+.sidebar h2{color:#00f0ff;margin-bottom:1rem;border-bottom:1px solid #2a2a3a;padding-bottom:0.5rem}
+.cat-list{list-style:none;margin-bottom:2rem}
+.cat-list li{background:#12121a;border:1px solid #2a2a3a;border-radius:8px;padding:0.6rem 0.8rem;margin-bottom:0.4rem;cursor:pointer;font-size:0.95rem;color:#ffffff}
+.cat-list li:hover{border-color:#00f0ff;background:#22222e}
+.cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.cal-header button{background:#12121a;border:1px solid #2a2a3a;color:#ffffff;border-radius:6px;padding:0.3rem 0.7rem;cursor:pointer}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0.2rem;text-align:center}
+.cal-weekday{font-weight:bold;color:#8899aa;font-size:0.75rem;padding:0.3rem 0}
+.cal-day{padding:0.4rem 0;border-radius:6px;cursor:pointer;font-size:0.85rem}
+.cal-day:hover{background:#00f0ff;color:#000}
+.cal-day.selected{background:#ff00ff;color:#fff}
+.cal-day.today{border:1px solid #00f0ff}
+.cal-day.empty{cursor:default}
+.main{background:#1a1a24;border-radius:12px;padding:2rem}
+.entrada{background:#12121a;border-left:4px solid #00f0ff;padding:1rem;margin-bottom:1rem;border-radius:8px;position:relative}
+.entrada h4{color:#00f0ff;margin-bottom:0.3rem}
+.entrada p{color:#aaa;font-size:0.95rem}
+.entrada .fecha{display:inline-block;margin-top:0.5rem;font-size:0.8rem;color:#00f0ff;background:rgba(0,240,255,0.1);padding:0.2rem 0.6rem;border-radius:4px}
+.entrada .categoria{display:inline-block;margin-left:0.5rem;font-size:0.8rem;color:#ff00ff;background:rgba(255,0,255,0.1);padding:0.2rem 0.6rem;border-radius:4px}
+.btn-eliminar{position:absolute;top:5px;right:5px;background:transparent;border:none;color:#ff00ff;cursor:pointer;font-size:1.2rem}
+.btn-eliminar:hover{color:#ff0000;transform:scale(1.3)}
+.botones{display:flex;gap:0.8rem;margin-top:1.5rem}
+.btn{background:#00f0ff;color:#000;border:none;padding:0.7rem 1.5rem;border-radius:20px;cursor:pointer;font-weight:bold}
+footer{text-align:center;padding:1.5rem;border-top:1px solid #2a2a3a;margin-top:2rem;color:#888;font-size:0.85rem;background:rgba(26,26,36,0.9)}
+footer a{color:#00f0ff;text-decoration:none;margin:0 6px}
+footer .legal{margin-top:0.5rem;font-size:0.8rem}
+</style>
+</head>
+<body>
+<div id="principal">
+<header>
+<h1>📖 DIARIO DE MARIO</h1>
+</header>
+<nav>
+<a href="http://localhost:8080/01_EL_NINO_LAUNCHER/index.html">🏠 Dashboard</a>
+<a href="http://localhost:8080/02_EMULADORES_Y_ROMS/">🎮 Emuladores</a>
+<a href="http://localhost:8080/03_STREAMING_Y_CLIPS/">📺 Streaming</a>
+<a href="http://localhost:8080/04_MODS_Y_SHADERS/">🛠️ Mods</a>
+<a href="http://localhost:8080/05_HERRAMIENTAS_GAMER/">⚙️ Herramientas</a>
+<a href="http://localhost:8080/06_MEDIA_Y_WALLPAPERS/">🎨 Media</a>
+</nav>
+<div class="layout">
+<aside class="sidebar">
+<h2>📂 Categorías</h2>
+<ul class="cat-list">
+<li onclick="filtrar('Todas')">📋 Todas</li>
+<li onclick="filtrar('Vida Diaria')">☀️ Vida Diaria</li>
+<li onclick="filtrar('Reflexiones')">💭 Reflexiones</li>
+<li onclick="filtrar('Metas y Sueños')">🎯 Metas y Sueños</li>
+<li onclick="filtrar('Relaciones')">❤️ Relaciones</li>
+<li onclick="filtrar('Salud y Bienestar')">🌱 Salud y Bienestar</li>
+<li onclick="filtrar('Trabajo y Estudios')">💼 Trabajo y Estudios</li>
+<li onclick="filtrar('Aficiones')">🎮 Aficiones</li>
+<li onclick="filtrar('Logros Gaming')">🏆 Logros Gaming</li>
+<li onclick="filtrar('Eventos Especiales')">🎉 Eventos Especiales</li>
+<li onclick="filtrar('Finanzas')">💰 Finanzas</li>
+<li onclick="filtrar('Espiritualidad')">✨ Espiritualidad</li>
+</ul>
+<h2>🗓️ Calendario</h2>
+<div class="cal-header">
+<button onclick="cambiarMes(-1)">‹</button>
+<strong id="tituloMes"></strong>
+<button onclick="cambiarMes(1)">›</button>
+</div>
+<div class="cal-grid" id="calGrid"></div>
+</aside>
+<main class="main">
+<h2 id="tituloSeccion" style="color:#ff00ff;margin-bottom:1rem">Todas las entradas</h2>
+<div id="contenedorEntradas"></div>
+<div class="botones">
+<button class="btn" onclick="mostrarFormulario()">✏️ Nueva entrada</button>
+<button class="btn" style="background:#ff00ff" onclick="exportarDiario()">📥 Exportar JSON</button>
+<button class="btn" style="background:#7a00ff" onclick="document.getElementById('inputImportar').click()">📤 Importar JSON</button>
+<input type="file" id="inputImportar" accept=".json" style="display:none" onchange="importarDiario(this)">
+</div>
+<div id="formulario" style="display:none;background:#22222e;border:1px solid #00f0ff;border-radius:12px;padding:1rem;margin-top:1rem">
+<h3 style="color:#00f0ff;margin-bottom:0.5rem">Nueva entrada</h3>
+<input type="text" id="tituloInput" placeholder="Título" style="width:100%;padding:0.5rem;margin-bottom:0.5rem;background:#0a0a0f;border:1px solid #2a2a3a;border-radius:6px;color:#ffffff">
+<textarea id="contenidoInput" rows="3" placeholder="¿Qué quieres recordar?" style="width:100%;padding:0.5rem;margin-bottom:0.5rem;background:#0a0a0f;border:1px solid #2a2a3a;border-radius:6px;color:#ffffff"></textarea>
+<label style="display:block;margin-bottom:0.3rem;color:#00f0ff;font-size:0.9rem">📷 Captura (opcional, máximo 2 MB)</label>
+<input type="file" id="imagenInput" accept="image/*" style="width:100%;padding:0.5rem;margin-bottom:0.5rem;background:#0a0a0f;border:1px solid #2a2a3a;border-radius:6px;color:#ffffff">
+<input type="date" id="fechaInput" style="width:100%;padding:0.5rem;margin-bottom:0.5rem;background:#0a0a0f;border:1px solid #2a2a3a;border-radius:6px;color:#ffffff">
+<button class="btn" onclick="guardarEntrada()">Guardar</button>
+<button class="btn" style="background:#555;color:#fff" onclick="ocultarFormulario()">Cancelar</button>
+</div>
+</main>
+</div>
+</div>
+<footer>
+<p>© 2026 <strong>Manuel Casimiro Carrasco</strong> | 📧 <a href="mailto:urukaisk@gmail.com">urukaisk@gmail.com</a> | 📍 Reus, Tarragona</p>
+<p>🌐 <a href="https://unique-biscochitos-31bcea.netlify.app/">Portfolio</a> | 💻 <a href="https://thriving-otter-cc1e25.netlify.app/">Urukais Klick</a> | ✨ <a href="https://rad-dolphin-182dfb.netlify.app/">Los Guardianes Silenciosos</a> | 🐙 <a href="https://github.com/urukaisk-maker">GitHub</a></p>
+<p class="legal"><a href="privacidad.html">Privacidad</a> | <a href="terminos.html">Términos</a> | <a href="aviso_legal.html">Aviso Legal</a></p>
+</footer>
+<script>
+var mesActual = new Date().getMonth();
+var anioActual = new Date().getFullYear();
+var diaSeleccionado = null;
+var catActual = 'Todas';
+
+function entrar(){
+document.getElementById('bienvenida').style.display='none';
+document.getElementById('principal').style.display='block';
+dibujarCalendario();
+cargarEntradas();
+}
+
+function filtrar(cat){
+catActual = cat;
+diaSeleccionado = null;
+dibujarCalendario();
+dibujarEntradas();
+}
+
+function dibujarCalendario(){
+var meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+document.getElementById('tituloMes').textContent = meses[mesActual]+' '+anioActual;
+var grid = document.getElementById('calGrid');
+grid.innerHTML = '';
+var diasSemana = ['L','M','X','J','V','S','D'];
+for(var i=0;i<7;i++){
+var div = document.createElement('div');
+div.className='cal-weekday';
+div.textContent = diasSemana[i];
+grid.appendChild(div);
+}
+var primerDia = new Date(anioActual, mesActual, 1).getDay();
+var totalDias = new Date(anioActual, mesActual+1, 0).getDate();
+var hoy = new Date().toISOString().split('T')[0];
+for(var i=0;i<primerDia;i++){
+var div = document.createElement('div');
+div.className='cal-day empty';
+grid.appendChild(div);
+}
+for(var d=1;d<=totalDias;d++){
+var div = document.createElement('div');
+div.className='cal-day';
+div.textContent = d;
+var fecha = anioActual+'-'+String(mesActual+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+if(fecha===hoy){div.classList.add('today');}
+if(fecha===diaSeleccionado){div.classList.add('selected');}
+div.onclick = function(){
+diaSeleccionado = fecha;
+dibujarCalendario();
+dibujarEntradas();
+};
+grid.appendChild(div);
+}
+}
+
+function cambiarMes(delta){
+mesActual += delta;
+if(mesActual<0){mesActual=11;anioActual--;}
+if(mesActual>11){mesActual=0;anioActual++;}
+dibujarCalendario();
+}
+
+function cargarEntradas(){
+var guardadas = localStorage.getItem('diarioMario');
+if(guardadas){
+var entradas = JSON.parse(guardadas);
+var cont = document.getElementById('contenedorEntradas');
+cont.innerHTML = '';
+for(var i=0;i<entradas.length;i++){
+var div = document.createElement('div');
+div.className='entrada';
+var imgHTML = entradas[i].imagen ? '<img src="'+entradas[i].imagen+'" style="max-width:100%;border-radius:8px;margin-top:0.5rem;border:1px solid #00f0ff;cursor:pointer" onclick="window.open(this.src)">' : '';
+div.innerHTML = '<button class="btn-eliminar" onclick="eliminarEntrada(this)">🗑️</button><h4>'+entradas[i].titulo+'</h4><p>'+entradas[i].contenido+'</p>'+imgHTML+'<span class="fecha">📅 '+entradas[i].fecha+'</span><span class="categoria">'+entradas[i].categoria+'</span>';
+cont.appendChild(div);
+}
+}
+}
+
+function dibujarEntradas(){
+var guardadas = localStorage.getItem('diarioMario');
+if(!guardadas){return;}
+var entradas = JSON.parse(guardadas);
+var cont = document.getElementById('contenedorEntradas');
+cont.innerHTML = '';
+for(var i=0;i<entradas.length;i++){
+if(diaSeleccionado && entradas[i].fecha !== diaSeleccionado){continue;}
+if(catActual !== 'Todas' && entradas[i].categoria !== catActual){continue;}
+var div = document.createElement('div');
+div.className='entrada';
+var imgHTML = entradas[i].imagen ? '<img src="'+entradas[i].imagen+'" style="max-width:100%;border-radius:8px;margin-top:0.5rem;border:1px solid #00f0ff;cursor:pointer" onclick="window.open(this.src)">' : '';
+div.innerHTML = '<button class="btn-eliminar" onclick="eliminarEntrada(this)">🗑️</button><h4>'+entradas[i].titulo+'</h4><p>'+entradas[i].contenido+'</p>'+imgHTML+'<span class="fecha">📅 '+entradas[i].fecha+'</span><span class="categoria">'+entradas[i].categoria+'</span>';
+cont.appendChild(div);
+}
+}
+
+function mostrarFormulario(){
+document.getElementById('formulario').style.display='block';
+document.getElementById('tituloInput').value='';
+document.getElementById('contenidoInput').value='';
+document.getElementById('fechaInput').value = diaSeleccionado || new Date().toISOString().split('T')[0];
+var imgInp = document.getElementById('imagenInput'); if(imgInp) imgInp.value = '';
+}
+
+function ocultarFormulario(){
+document.getElementById('formulario').style.display='none';
+}
+
+function procesarImagen(file, callback){
+if(!file){callback(null);return;}
+if(file.size > 2*1024*1024){alert('Imagen demasiado grande (máx 2 MB)');callback(null);return;}
+var reader = new FileReader();
+reader.onload = function(e){callback(e.target.result);};
+reader.readAsDataURL(file);
+}
+
+function guardarEntrada(){
+var titulo = document.getElementById('tituloInput').value.trim();
+var contenido = document.getElementById('contenidoInput').value.trim();
+var fecha = document.getElementById('fechaInput').value;
+if(!titulo||!contenido||!fecha){alert('Completa todos los campos.');return;}
+var imgInput = document.getElementById('imagenInput');
+var file = imgInput && imgInput.files[0];
+procesarImagen(file, function(imagen){
+var guardadas = localStorage.getItem('diarioMario');
+var entradas = guardadas ? JSON.parse(guardadas) : [];
+entradas.push({titulo: titulo, contenido: contenido, fecha: fecha, categoria: catActual === 'Todas' ? 'Vida Diaria' : catActual, imagen: imagen});
+try {
+localStorage.setItem('diarioMario', JSON.stringify(entradas));
+} catch(e){
+alert('No hay espacio para guardar la imagen. Prueba con una más pequeña.');
+return;
+}
+if(imgInput) imgInput.value = '';
+ocultarFormulario();
+cargarEntradas();
+});
+}
+
+function eliminarEntrada(boton){
+if(confirm('¿Seguro que quieres borrar esta entrada?')){
+var entrada = boton.parentNode;
+entrada.parentNode.removeChild(entrada);
+var guardadas = localStorage.getItem('diarioMario');
+var entradas = guardadas ? JSON.parse(guardadas) : [];
+var titulo = entrada.querySelector('h4').textContent;
+for(var i=0;i<entradas.length;i++){
+if(entradas[i].titulo === titulo){
+entradas.splice(i,1);
+break;
+}
+}
+localStorage.setItem('diarioMario', JSON.stringify(entradas));
+}
+}
+
+function exportarDiario(){
+var guardadas = localStorage.getItem('diarioMario');
+if(!guardadas){alert('No hay entradas que exportar.');return;}
+var entradas = JSON.parse(guardadas);
+var fecha = new Date().toISOString().split('T')[0];
+var nombre = 'diario_mario_' + fecha + '.json';
+var blob = new Blob([JSON.stringify(entradas, null, 2)], {type:'application/json'});
+var url = URL.createObjectURL(blob);
+var a = document.createElement('a');
+a.href = url;
+a.download = nombre;
+a.click();
+URL.revokeObjectURL(url);
+alert('Diario exportado como ' + nombre);
+}
+
+function importarDiario(input){
+var archivo = input.files[0];
+if(!archivo){return;}
+var reader = new FileReader();
+reader.onload = function(e){
+try {
+var entradas = JSON.parse(e.target.result);
+if(!Array.isArray(entradas)){alert('Formato incorrecto.');return;}
+var actuales = localStorage.getItem('diarioMario');
+var existentes = actuales ? JSON.parse(actuales) : [];
+var opcion = confirm('Aceptar = ANADIR a las existentes (' + existentes.length + ')\nCancelar = REEMPLAZAR todo');
+if(opcion){
+localStorage.setItem('diarioMario', JSON.stringify(existentes.concat(entradas)));
+} else {
+localStorage.setItem('diarioMario', JSON.stringify(entradas));
+}
+cargarEntradas();
+alert('Diario importado.');
+} catch(err){alert('Error: ' + err.message);}
+};
+reader.readAsText(archivo);
+input.value = '';
+}
+
+</script>
+</body>
+</html>
