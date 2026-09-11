@@ -393,6 +393,9 @@ nav ul{justify-content:flex-start}
 #actividad li span.juego{color:#00f0ff;font-weight:bold}
 #actividad li span.hora{color:#8899aa;font-size:0.85rem}
 #actividad .stat{display:inline-block;background:rgba(0,240,255,0.1);border:1px solid #00f0ff;border-radius:20px;padding:0.5rem 1rem;margin:0.3rem 0.3rem 0.8rem 0;color:#00f0ff;font-weight:bold}
+
+#btn-backup{background:rgba(122,0,255,0.2);border:1px solid #7a00ff;color:#c090ff;padding:0.45rem 1rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.85rem;transition:all 0.3s;white-space:nowrap}
+#btn-backup:hover{background:rgba(122,0,255,0.4);transform:translateY(-2px)}
 </style>
 </head>
 <body>
@@ -402,6 +405,7 @@ nav ul{justify-content:flex-start}
             <div class="logo">🎮 EL NIÑO</div>
 <button id="btn-tv" onclick="toggleTV()">📺 Modo TV</button>
             <button id="btn-mute" onclick="toggleAudio()">🔊</button>
+            <button id="btn-backup" onclick="hacerBackup()">💾 Backup</button>
             <button class="menu-toggle" id="menuToggle">☰</button>
             <nav>
                 <ul id="navMenu">
@@ -948,6 +952,22 @@ registrarJuego(nombre);
 renderActividad();
 setInterval(renderActividad, 5000);
 });
+
+// ===== BACKUP DE PARTIDAS =====
+function hacerBackup(){
+if(!confirm('¿Hacer copia de seguridad de todas las partidas guardadas?')){
+return;
+}
+// Lanzar el script de backup a través del servidor
+fetch('/backup')
+.then(function(r){return r.text();})
+.then(function(txt){
+alert('✅ Backup completado\n\n' + txt);
+})
+.catch(function(){
+alert('❌ Error al hacer backup. Comprueba que el servidor está corriendo.');
+});
+}
 </script>
 </body>
 </html>
