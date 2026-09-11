@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Estadisticas - El Nino</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:2rem 1rem;background-image:radial-gradient(circle at 20% 30%,rgba(0,240,255,0.05) 0%,transparent 50%),radial-gradient(circle at 80% 70%,rgba(255,0,255,0.05) 0%,transparent 50%);background-attachment:fixed}
+.container{max-width:1200px;margin:0 auto}
+a.volver{color:#ff00ff;text-decoration:none;font-weight:bold;display:inline-block;margin-bottom:1.5rem;font-size:1.05rem}
+a.volver:hover{text-decoration:underline}
+h1{color:#00f0ff;text-align:center;font-size:2.5rem;text-shadow:0 0 20px #00f0ff;margin-bottom:0.5rem;background:linear-gradient(90deg,#00f0ff,#ff00ff,#00f0ff);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:brillo 3s linear infinite}
+@keyframes brillo{to{background-position:200% center}}
+.sub{text-align:center;color:#8899aa;margin-bottom:2.5rem;font-style:italic}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem;margin-bottom:2.5rem}
+.stat-card{background:linear-gradient(145deg,#12121a,#1a1a24);border:2px solid rgba(0,240,255,0.3);border-radius:16px;padding:1.5rem;text-align:center;transition:all 0.3s;position:relative;overflow:hidden}
+.stat-card:hover{transform:translateY(-5px);border-color:#00f0ff;box-shadow:0 10px 30px rgba(0,240,255,0.3)}
+.stat-card::before{content:"";position:absolute;top:0;left:-100%;width:100%;height:3px;background:linear-gradient(90deg,transparent,#00f0ff,#ff00ff,transparent);transition:left 0.5s}
+.stat-card:hover::before{left:100%}
+.stat-icon{font-size:2.5rem;display:block;margin-bottom:0.5rem}
+.stat-value{font-size:2.2rem;font-weight:900;color:#00f0ff;text-shadow:0 0 15px rgba(0,240,255,0.5);display:block;margin-bottom:0.3rem}
+.stat-label{font-size:0.9rem;color:#8899aa;text-transform:uppercase;letter-spacing:1px}
+.chart-box{background:#12121a;border:1px solid rgba(0,240,255,0.2);border-radius:16px;padding:1.8rem;margin-bottom:2rem}
+.chart-box h2{color:#ff00ff;margin-bottom:1.5rem;font-size:1.3rem;border-bottom:1px solid rgba(255,0,255,0.2);padding-bottom:0.7rem}
+.bar-chart{display:flex;flex-direction:column;gap:0.8rem}
+.bar-item{display:flex;align-items:center;gap:1rem}
+.bar-label{min-width:180px;color:#e0e0e0;font-size:0.95rem;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
+.bar-track{flex:1;background:#0a0a0f;border-radius:10px;height:26px;position:relative;overflow:hidden;border:1px solid rgba(0,240,255,0.15)}
+.bar-fill{height:100%;background:linear-gradient(90deg,#00f0ff,#ff00ff);border-radius:10px;display:flex;align-items:center;justify-content:flex-end;padding-right:0.8rem;font-weight:bold;color:#000;font-size:0.85rem;min-width:40px;transition:width 1s ease-out;box-shadow:0 0 15px rgba(0,240,255,0.5)}
+.donut-wrap{display:flex;align-items:center;justify-content:center;gap:3rem;flex-wrap:wrap}
+.donut{position:relative;width:200px;height:200px}
+.donut svg{transform:rotate(-90deg)}
+.donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.donut-center .num{font-size:1.8rem;font-weight:900;color:#00f0ff;display:block}
+.donut-center .lbl{font-size:0.75rem;color:#8899aa;text-transform:uppercase;letter-spacing:1px}
+.legend{display:flex;flex-direction:column;gap:0.8rem}
+.legend-item{display:flex;align-items:center;gap:0.8rem;font-size:0.95rem}
+.legend-dot{width:16px;height:16px;border-radius:4px;box-shadow:0 0 10px currentColor}
+.legend-num{color:#00f0ff;font-weight:bold;margin-left:auto;padding-left:1rem}
+.area-chart{width:100%;height:220px;position:relative}
+.area-chart svg{width:100%;height:100%}
+.area-chart .eje-x{display:flex;justify-content:space-between;margin-top:0.5rem;color:#8899aa;font-size:0.8rem;padding:0 10px}
+.vacio{text-align:center;padding:3rem 1rem;color:#8899aa;font-style:italic;font-size:1.05rem}
+.vacio a{color:#00f0ff;text-decoration:none;font-weight:bold}
+.vacio a:hover{text-decoration:underline}
+@media (max-width:768px){
+h1{font-size:1.8rem}
+.bar-label{min-width:100px;font-size:0.85rem}
+.donut-wrap{gap:1.5rem}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="volver" href="/01_EL_NINO_LAUNCHER/index.html">← Volver al Dashboard</a>
+<h1>📊 Estadisticas</h1>
+<p class="sub">Tu actividad en el Centro de Mando</p>
+
+<div class="stats-grid" id="stats-grid"></div>
+
+<div class="chart-box">
+<h2>🏆 Juegos mas lanzados</h2>
+<div id="bar-chart" class="bar-chart"></div>
+</div>
+
+<div class="chart-box">
+<h2>📈 Actividad (ultimos 7 dias)</h2>
+<div class="area-chart" id="area-chart"></div>
+<div class="eje-x" id="eje-x"></div>
+</div>
+
+<div class="chart-box">
+<h2>🎮 Reparto por tipo</h2>
+<div class="donut-wrap">
+<div class="donut">
+<svg viewBox="0 0 200 200" id="donut-svg">
+<circle cx="100" cy="100" r="80" fill="none" stroke="#0a0a0f" stroke-width="30"/>
+<circle cx="100" cy="100" r="80" fill="none" stroke="#00f0ff" stroke-width="30" stroke-dasharray="0 502" id="donut-seg"/>
+</svg>
+<div class="donut-center">
+<span class="num" id="donut-total">0</span>
+<span class="lbl">Lanzamientos</span>
+</div>
+</div>
+<div class="legend" id="legend"></div>
+</div>
+</div>
+
+</div>
+
+<script>
+function formatearTiempo(seg){
+var h = Math.floor(seg / 3600);
+var m = Math.floor((seg % 3600) / 60);
+var s = seg % 60;
+if(h > 0) return h + 'h ' + m + 'm';
+if(m > 0) return m + 'm ' + s + 's';
+return s + 's';
+}
+
+function escapar(s){
+var d = document.createElement('div');
+d.textContent = s;
+return d.innerHTML;
+}
+
+function cargarStats(){
+var hist = JSON.parse(localStorage.getItem('actividadElNino') || '[]');
+var totalSeg = parseInt(localStorage.getItem('tiempoTotalElNino') || '0');
+var sesionSeg = Math.floor((Date.now() - (window._inicio || Date.now())) / 1000);
+totalSeg += sesionSeg;
+
+// === TARJETAS GRANDES ===
+var juegosUnicos = new Set(hist.map(function(h){return h.juego;}));
+var juegoTop = '';
+var juegosPorNombre = {};
+hist.forEach(function(h){
+juegosPorNombre[h.juego] = (juegosPorNombre[h.juego] || 0) + 1;
+});
+var max = 0;
+for(var k in juegosPorNombre){ if(juegosPorNombre[k] > max){ max = juegosPorNombre[k]; juegoTop = k; } }
+
+var statsHTML = '';
+statsHTML += '<div class="stat-card"><span class="stat-icon">⏱</span><span class="stat-value">' + formatearTiempo(totalSeg) + '</span><span class="stat-label">Tiempo total</span></div>';
+statsHTML += '<div class="stat-card"><span class="stat-icon">🎮</span><span class="stat-value">' + hist.length + '</span><span class="stat-label">Lanzamientos</span></div>';
+statsHTML += '<div class="stat-card"><span class="stat-icon">🕹</span><span class="stat-value">' + juegosUnicos.size + '</span><span class="stat-label">Juegos distintos</span></div>';
+statsHTML += '<div class="stat-card"><span class="stat-icon">🏆</span><span class="stat-value" style="font-size:1.1rem;line-height:1.3">' + (juegoTop || '—') + '</span><span class="stat-label">Favorito</span></div>';
+document.getElementById('stats-grid').innerHTML = statsHTML;
+
+// === BARRAS - TOP JUEGOS ===
+var top5 = Object.keys(juegosPorNombre).map(function(k){return {n:k, c:juegosPorNombre[k]};});
+top5.sort(function(a,b){return b.c - a.c;});
+top5 = top5.slice(0, 5);
+
+var barsHTML = '';
+if(top5.length === 0){
+barsHTML = '<div class="vacio">Todavia no has lanzado ningun juego.<br>Ve al <a href="/01_EL_NINO_LAUNCHER/index.html">launcher</a> y empieza a jugar.</div>';
+} else {
+var maxC = top5[0].c;
+top5.forEach(function(j){
+var pct = Math.max(10, (j.c / maxC) * 100);
+barsHTML += '<div class="bar-item">';
+barsHTML += '<div class="bar-label">' + escapar(j.n) + '</div>';
+barsHTML += '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%">' + j.c + '</div></div>';
+barsHTML += '</div>';
+});
+}
+document.getElementById('bar-chart').innerHTML = barsHTML;
+
+// === GRAFICO DE AREA - ULTIMOS 7 DIAS ===
+var dias = [];
+var ahora = new Date();
+for(var i = 6; i >= 0; i--){
+var d = new Date(ahora);
+d.setDate(d.getDate() - i);
+d.setHours(0,0,0,0);
+dias.push({fecha: d, etiqueta: d.getDate() + '/' + (d.getMonth()+1), cuenta: 0});
+}
+hist.forEach(function(h){
+var fecha = new Date(h.hora);
+fecha.setHours(0,0,0,0);
+for(var i = 0; i < dias.length; i++){
+if(dias[i].fecha.getTime() === fecha.getTime()){ dias[i].cuenta++; break; }
+}
+});
+
+var maxDia = Math.max(1, Math.max.apply(null, dias.map(function(d){return d.cuenta;})));
+var ancho = 800;
+var alto = 180;
+var padding = 20;
+var pasoX = (ancho - padding*2) / (dias.length - 1);
+var puntos = dias.map(function(d, i){
+var x = padding + i * pasoX;
+var y = alto - padding - (d.cuenta / maxDia) * (alto - padding*2);
+return {x:x, y:y, c:d.cuenta};
+});
+var pathLinea = puntos.map(function(p, i){return (i===0?'M':'L') + p.x + ' ' + p.y;}).join(' ');
+var pathArea = pathLinea + ' L' + puntos[puntos.length-1].x + ' ' + (alto-padding) + ' L' + puntos[0].x + ' ' + (alto-padding) + ' Z';
+
+var svg = '<svg viewBox="0 0 ' + ancho + ' ' + alto + '" preserveAspectRatio="none">';
+svg += '<defs><linearGradient id="grad1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00f0ff" stop-opacity="0.5"/><stop offset="100%" stop-color="#ff00ff" stop-opacity="0.05"/></linearGradient></defs>';
+svg += '<path d="' + pathArea + '" fill="url(#grad1)"/>';
+svg += '<path d="' + pathLinea + '" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-linejoin="round"/>';
+puntos.forEach(function(p){
+svg += '<circle cx="' + p.x + '" cy="' + p.y + '" r="5" fill="#0a0a0f" stroke="#ff00ff" stroke-width="2.5"/>';
+svg += '<text x="' + p.x + '" y="' + (p.y - 12) + '" fill="#00f0ff" font-size="13" font-weight="bold" text-anchor="middle">' + p.c + '</text>';
+});
+svg += '</svg>';
+document.getElementById('area-chart').innerHTML = svg;
+
+var ejeHTML = dias.map(function(d){return '<span>' + d.etiqueta + '</span>';}).join('');
+document.getElementById('eje-x').innerHTML = ejeHTML;
+
+// === DONUT - EMULADORES VS JUEGOS ===
+var emuladores = ['PCSX2', 'PPSSPP', 'Dolphin', 'RetroArch'];
+var cuentaEmu = 0;
+var cuentaJuegos = 0;
+hist.forEach(function(h){
+var esEmu = emuladores.some(function(e){return h.juego.indexOf(e) !== -1;});
+if(esEmu) cuentaEmu++;
+else cuentaJuegos++;
+});
+var total = cuentaEmu + cuentaJuegos;
+if(total > 0){
+var pctEmu = cuentaEmu / total;
+var perim = 2 * Math.PI * 80;
+var seg1 = perim * pctEmu;
+var seg2 = perim - seg1;
+var svgDonut = '<circle cx="100" cy="100" r="80" fill="none" stroke="#00f0ff" stroke-width="30" stroke-dasharray="' + seg1 + ' ' + seg2 + '" stroke-dashoffset="0"/>';
+svgDonut += '<circle cx="100" cy="100" r="80" fill="none" stroke="#ff00ff" stroke-width="30" stroke-dasharray="' + seg2 + ' ' + seg1 + '" stroke-dashoffset="-' + seg1 + '"/>';
+document.getElementById('donut-svg').innerHTML = svgDonut;
+document.getElementById('donut-total').textContent = total;
+var legHTML = '';
+legHTML += '<div class="legend-item"><div class="legend-dot" style="background:#00f0ff;color:#00f0ff"></div>Emuladores<span class="legend-num">' + cuentaEmu + '</span></div>';
+legHTML += '<div class="legend-item"><div class="legend-dot" style="background:#ff00ff;color:#ff00ff"></div>Juegos<span class="legend-num">' + cuentaJuegos + '</span></div>';
+document.getElementById('legend').innerHTML = legHTML;
+} else {
+document.getElementById('donut-total').textContent = '0';
+document.getElementById('legend').innerHTML = '<div class="legend-item" style="color:#8899aa">Sin datos todavia</div>';
+}
+}
+
+window._inicio = Date.now();
+cargarStats();
+setInterval(cargarStats, 10000);
+</script>
+</body>
+</html>
