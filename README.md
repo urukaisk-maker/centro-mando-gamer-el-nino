@@ -1,7 +1,8 @@
 # 🎮 Centro de Mando Gamer – Plataforma "El Niño"
 
-> Regalo para **Mario** · Diseñado y construido por **Manuel Casimiro Carrasco**  
-> Desde Reus, Tarragona · 2026
+![Launcher de El Niño](launcher.png)
+
+> Regalo para **Mario** · ...
 
 ---
 
