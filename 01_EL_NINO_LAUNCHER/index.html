@@ -329,13 +329,79 @@
                 font-size: 1.5rem;
             }
         }
-    </style>
+    
+        /* ===== MANDO / GAMEPAD ===== */
+        .tarjeta.focused {
+            border-color: #ff00ff !important;
+            box-shadow: 0 0 30px rgba(255,0,255,0.8), 0 0 60px rgba(0,240,255,0.5) !important;
+            transform: translateY(-5px) scale(1.03) !important;
+            transition: all 0.15s;
+        }
+        #gamepad-hint {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(26,26,36,0.95);
+            border: 2px solid #00f0ff;
+            border-radius: 12px;
+            padding: 0.8rem 1.2rem;
+            color: #00f0ff;
+            font-size: 0.85rem;
+            z-index: 999;
+            box-shadow: 0 0 20px rgba(0,240,255,0.5);
+            display: none;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        #gamepad-hint strong { color: #ff00ff; }
+
+
+#btn-tv{background:rgba(0,240,255,0.1);border:1px solid #00f0ff;color:#00f0ff;padding:0.4rem 0.9rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.9rem;transition:all 0.3s}
+#btn-tv:hover{background:rgba(255,0,255,0.2);border-color:#ff00ff;color:#ff00ff}
+body.tv-mode .hero h1{font-size:4rem}
+body.tv-mode .hero p{font-size:1.5rem}
+body.tv-mode .buscador{max-width:700px}
+body.tv-mode .buscador input{font-size:1.4rem;padding:1.2rem 1.8rem}
+body.tv-mode .grid-tarjetas{grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:2rem}
+body.tv-mode .tarjeta{padding:2.5rem;border-radius:24px}
+body.tv-mode .tarjeta h3{font-size:2rem;margin-bottom:1rem}
+body.tv-mode .tarjeta p{font-size:1.15rem;line-height:1.6;margin-bottom:1.5rem}
+body.tv-mode .tarjeta .btn{font-size:1.2rem;padding:0.9rem 2rem;border-radius:40px}
+#btn-salir-tv{position:fixed;top:20px;right:20px;z-index:9999;background:linear-gradient(45deg,#00f0ff,#ff00ff);color:#000;border:none;padding:0.8rem 1.5rem;border-radius:30px;font-weight:bold;font-size:1rem;cursor:pointer;box-shadow:0 0 30px rgba(0,240,255,0.7);display:none}
+body.tv-mode #btn-salir-tv{display:block}
+
+#btn-mute{background:rgba(0,240,255,0.1);border:1px solid #00f0ff;color:#00f0ff;padding:0.4rem 0.9rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.9rem;transition:all 0.3s}
+#btn-mute:hover{background:rgba(255,0,255,0.2);border-color:#ff00ff;color:#ff00ff}
+#btn-mute.muted{opacity:0.4}
+
+.nav-container{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;padding:1rem 1.5rem}
+.header-actions{display:flex;align-items:center;gap:0.6rem}
+#btn-tv,#btn-mute{background:rgba(0,240,255,0.1);border:1px solid #00f0ff;color:#00f0ff;padding:0.45rem 1rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.85rem;transition:all 0.3s;white-space:nowrap}
+#btn-tv:hover,#btn-mute:hover{background:rgba(255,0,255,0.2);border-color:#ff00ff;color:#ff00ff;transform:translateY(-2px)}
+nav{width:100%;border-top:1px solid rgba(0,240,255,0.15);margin-top:0.5rem;padding-top:0.8rem}
+nav ul{display:flex;flex-wrap:wrap;justify-content:center;gap:0.4rem 1.2rem;list-style:none;margin:0;padding:0}
+nav ul li a{display:inline-block;padding:0.4rem 0.8rem;border-radius:20px;transition:all 0.3s}
+nav ul li a:hover{background:rgba(0,240,255,0.1);color:#00f0ff}
+@media (max-width:768px){
+.nav-container{padding:0.8rem 1rem}
+.header-actions{gap:0.4rem}
+#btn-tv,#btn-mute{padding:0.35rem 0.7rem;font-size:0.75rem}
+nav ul{justify-content:flex-start}
+}
+
+#actividad ul{list-style:none;padding:0;margin:1rem 0}
+#actividad li{background:#12121a;border-left:3px solid #00f0ff;padding:0.7rem 1rem;margin-bottom:0.5rem;border-radius:6px;display:flex;justify-content:space-between;align-items:center}
+#actividad li span.juego{color:#00f0ff;font-weight:bold}
+#actividad li span.hora{color:#8899aa;font-size:0.85rem}
+#actividad .stat{display:inline-block;background:rgba(0,240,255,0.1);border:1px solid #00f0ff;border-radius:20px;padding:0.5rem 1rem;margin:0.3rem 0.3rem 0.8rem 0;color:#00f0ff;font-weight:bold}
+</style>
 </head>
 <body>
     <!-- MENÚ SUPERIOR -->
     <header>
         <div class="nav-container">
             <div class="logo">🎮 EL NIÑO</div>
+<button id="btn-tv" onclick="toggleTV()">📺 Modo TV</button>
+            <button id="btn-mute" onclick="toggleAudio()">🔊</button>
             <button class="menu-toggle" id="menuToggle">☰</button>
             <nav>
                 <ul id="navMenu">
@@ -521,7 +587,15 @@
         </section>
     </main>
 
-    <!-- FOOTER -->
+    
+<!-- PANEL DE ACTIVIDAD -->
+<section class="seccion" id="actividad" style="display:none">
+<h2>📊 Actividad reciente</h2>
+<div id="actividad-contenido"></div>
+<button class="btn" style="background:#555;color:#fff;margin-top:1rem" onclick="resetActividad()">🗑 Borrar historial</button>
+</section>
+
+<!-- FOOTER -->
     <footer>
         <div class="footer-content">
             <div class="footer-links">
@@ -567,6 +641,313 @@
                 navMenu.classList.remove('active');
             });
         });
-    </script>
+    
+// ===== NAVEGACION CON MANDO =====
+let gamepadActive = false;
+let selectedIndex = 0;
+let lastMoveTime = 0;
+const MOVE_DELAY = 200;
+
+function getCards() {
+    return Array.from(document.querySelectorAll('.grid-tarjetas .tarjeta'))
+        .filter(c => c.style.display !== 'none');
+}
+
+function updateFocus() {
+    const cards = getCards();
+    if (!cards.length) return;
+    if (selectedIndex >= cards.length) selectedIndex = 0;
+    if (selectedIndex < 0) selectedIndex = 0;
+    cards.forEach((c, i) => c.classList.toggle('focused', i === selectedIndex));
+    if (cards[selectedIndex]) {
+        cards[selectedIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+function getColumns() {
+    const cards = getCards();
+    if (cards.length < 2) return 1;
+    const firstTop = cards[0].getBoundingClientRect().top;
+    let cols = 0;
+    for (const card of cards) {
+        if (Math.abs(card.getBoundingClientRect().top - firstTop) < 5) cols++;
+        else break;
+    }
+    return cols || 1;
+}
+
+function handleGamepad() {
+    const gamepads = navigator.getGamepads();
+    let gp = null;
+    for (const g of gamepads) { if (g) { gp = g; break; } }
+    if (!gp) { requestAnimationFrame(handleGamepad); return; }
+
+    const cards = getCards();
+    if (!cards.length) { requestAnimationFrame(handleGamepad); return; }
+
+    const now = Date.now();
+    const axes = gp.axes;
+    const buttons = gp.buttons;
+    const DEADZONE = 0.5;
+
+    let dir = null;
+    if (buttons[12]?.pressed || axes[1] < -DEADZONE) dir = 'up';
+    else if (buttons[13]?.pressed || axes[1] > DEADZONE) dir = 'down';
+    else if (buttons[14]?.pressed || axes[0] < -DEADZONE) dir = 'left';
+    else if (buttons[15]?.pressed || axes[0] > DEADZONE) dir = 'right';
+
+    if (dir && now - lastMoveTime > MOVE_DELAY) {
+        lastMoveTime = now;
+        const cols = getColumns();
+        if (dir === 'right' && selectedIndex < cards.length - 1) selectedIndex++;
+        else if (dir === 'left' && selectedIndex > 0) selectedIndex--;
+        else if (dir === 'down' && selectedIndex + cols < cards.length) selectedIndex += cols;
+        else if (dir === 'up' && selectedIndex - cols >= 0) selectedIndex -= cols;
+        updateFocus();
+    }
+
+    // Boton A (indice 0) para activar
+    if (buttons[0]?.pressed && !buttons[0]._wasPressed) {
+        buttons[0]._wasPressed = true;
+        const link = cards[selectedIndex]?.querySelector('a.btn');
+        if (link) link.click();
+    } else if (buttons[0] && !buttons[0].pressed) {
+        buttons[0]._wasPressed = false;
+    }
+
+    requestAnimationFrame(handleGamepad);
+}
+
+window.addEventListener('gamepadconnected', (e) => {
+    console.log('Mando conectado:', e.gamepad.id);
+    document.getElementById('gamepad-hint').style.display = 'block';
+    selectedIndex = 0;
+    updateFocus();
+    if (!gamepadActive) {
+        gamepadActive = true;
+        requestAnimationFrame(handleGamepad);
+    }
+});
+
+window.addEventListener('gamepaddisconnected', () => {
+    document.getElementById('gamepad-hint').style.display = 'none';
+    document.querySelectorAll('.tarjeta.focused').forEach(c => c.classList.remove('focused'));
+});
+
+// Detectar mando ya conectado al cargar
+if (navigator.getGamepads) {
+    for (const gp of navigator.getGamepads()) {
+        if (gp) {
+            document.getElementById('gamepad-hint').style.display = 'block';
+            if (!gamepadActive) {
+                gamepadActive = true;
+                requestAnimationFrame(handleGamepad);
+            }
+            break;
+        }
+    }
+}
+
+
+function toggleTV(){
+document.body.classList.toggle('tv-mode');
+var activo = document.body.classList.contains('tv-mode');
+localStorage.setItem('modoTV', activo ? 'on' : 'off');
+window.scrollTo({top:0,behavior:'smooth'});
+}
+window.addEventListener('DOMContentLoaded',function(){
+if(localStorage.getItem('modoTV')==='on'){document.body.classList.add('tv-mode');}
+});
+document.addEventListener('keydown',function(e){
+if((e.key==='t'||e.key==='T') && e.target.tagName!=='INPUT' && e.target.tagName!=='TEXTAREA'){toggleTV();}
+});
+
+// ===== AUDIO CYBERPUNK =====
+var audioCtx = null;
+var audioActivo = true;
+var musicaActiva = false;
+var musicaNodo = null;
+
+function initAudio(){
+if(!audioCtx){
+audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
+if(audioCtx.state === 'suspended'){audioCtx.resume();}
+}
+
+function beep(freq, dur, tipo, vol){
+if(!audioActivo) return;
+initAudio();
+var osc = audioCtx.createOscillator();
+var gain = audioCtx.createGain();
+osc.type = tipo || 'square';
+osc.frequency.value = freq;
+gain.gain.setValueAtTime(vol || 0.05, audioCtx.currentTime);
+gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+osc.connect(gain);
+gain.connect(audioCtx.destination);
+osc.start();
+osc.stop(audioCtx.currentTime + dur);
+}
+
+function sonidoHover(){ beep(880, 0.06, 'square', 0.03); }
+function sonidoClick(){ beep(440, 0.15, 'sawtooth', 0.06); setTimeout(function(){beep(220,0.12,'sine',0.05);},60); }
+function sonidoSeleccion(){ beep(660, 0.1, 'triangle', 0.05); }
+
+function iniciarMusica(){
+if(!audioActivo || musicaActiva) return;
+initAudio();
+musicaActiva = true;
+var notas = [220, 277, 330, 415, 440, 415, 330, 277];
+var bassNotas = [110, 110, 138, 138, 165, 165, 138, 138];
+var idx = 0;
+function loop(){
+if(!musicaActiva) return;
+var t = audioCtx.currentTime;
+// Arpegio agudo
+var osc1 = audioCtx.createOscillator();
+var g1 = audioCtx.createGain();
+osc1.type = 'square';
+osc1.frequency.value = notas[idx % notas.length];
+g1.gain.setValueAtTime(0.025, t);
+g1.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+osc1.connect(g1); g1.connect(audioCtx.destination);
+osc1.start(t); osc1.stop(t + 0.3);
+// Bajo
+var osc2 = audioCtx.createOscillator();
+var g2 = audioCtx.createGain();
+osc2.type = 'triangle';
+osc2.frequency.value = bassNotas[idx % bassNotas.length];
+g2.gain.setValueAtTime(0.04, t);
+g2.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+osc2.connect(g2); g2.connect(audioCtx.destination);
+osc2.start(t); osc2.stop(t + 0.5);
+idx++;
+}
+musicaNodo = setInterval(loop, 280);
+}
+
+function detenerMusica(){
+musicaActiva = false;
+if(musicaNodo){clearInterval(musicaNodo); musicaNodo = null;}
+}
+
+function toggleAudio(){
+audioActivo = !audioActivo;
+var btn = document.getElementById('btn-mute');
+if(audioActivo){
+btn.textContent = '🔊';
+btn.classList.remove('muted');
+iniciarMusica();
+localStorage.setItem('audioElNino', 'on');
+}else{
+btn.textContent = '🔇';
+btn.classList.add('muted');
+detenerMusica();
+localStorage.setItem('audioElNino', 'off');
+}
+}
+
+// Activar sonidos al pasar por las tarjetas
+document.addEventListener('DOMContentLoaded', function(){
+document.querySelectorAll('.tarjeta').forEach(function(t){
+t.addEventListener('mouseenter', sonidoHover);
+t.addEventListener('click', sonidoClick);
+});
+document.querySelectorAll('.btn').forEach(function(b){
+b.addEventListener('click', sonidoClick);
+});
+// Restaurar estado
+if(localStorage.getItem('audioElNino') === 'off'){
+audioActivo = false;
+var btn = document.getElementById('btn-mute');
+if(btn){btn.textContent = '🔇'; btn.classList.add('muted');}
+}
+// Iniciar musica al primer click del usuario (los navegadores exigen interaccion)
+document.body.addEventListener('click', function once(){
+if(audioActivo){iniciarMusica();}
+document.body.removeEventListener('click', once);
+}, {once:true});
+});
+
+// ===== REGISTRO DE ACTIVIDAD =====
+var inicioSesion = Date.now();
+var TIEMPO_MINIMO = 2000; // 2 segundos
+
+function registrarJuego(nombre){
+var hist = JSON.parse(localStorage.getItem('actividadElNino') || '[]');
+hist.unshift({juego: nombre, hora: new Date().toISOString()});
+if(hist.length > 20) hist = hist.slice(0, 20);
+localStorage.setItem('actividadElNino', JSON.stringify(hist));
+}
+
+function renderActividad(){
+var hist = JSON.parse(localStorage.getItem('actividadElNino') || '[]');
+var total = parseInt(localStorage.getItem('tiempoTotalElNino') || '0');
+var panel = document.getElementById('actividad');
+var cont = document.getElementById('actividad-contenido');
+if(!panel || !cont) return;
+
+// Tiempo total acumulado
+var sesion = Math.floor((Date.now() - inicioSesion) / 1000);
+var totalSeg = total + sesion;
+var horas = Math.floor(totalSeg / 3600);
+var minutos = Math.floor((totalSeg % 3600) / 60);
+var segundos = totalSeg % 60;
+var tiempoStr = horas + 'h ' + minutos + 'm ' + segundos + 's';
+
+var html = '<div class="stat">⏱ Tiempo total: ' + tiempoStr + '</div>';
+html += '<div class="stat">🎮 Juegos lanzados: ' + hist.length + '</div>';
+
+if(hist.length === 0){
+html += '<p style="color:#8899aa;margin-top:1rem">Todavía no has jugado a nada. ¡Pulsa una tarjeta para empezar!</p>';
+} else {
+html += '<h3 style="color:#ff00ff;margin-top:1.5rem;margin-bottom:0.5rem">Últimos juegos</h3><ul>';
+for(var i = 0; i < hist.length; i++){
+var fecha = new Date(hist[i].hora);
+var hora = fecha.toLocaleDateString('es-ES') + ' ' + fecha.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
+html += '<li><span class="juego">🎮 ' + hist[i].juego + '</span><span class="hora">' + hora + '</span></li>';
+}
+html += '</ul>';
+}
+cont.innerHTML = html;
+panel.style.display = 'block';
+}
+
+function resetActividad(){
+if(confirm('¿Borrar todo el historial de actividad?')){
+localStorage.removeItem('actividadElNino');
+localStorage.removeItem('tiempoTotalElNino');
+inicioSesion = Date.now();
+renderActividad();
+}
+}
+
+// Guardar tiempo al cerrar
+window.addEventListener('beforeunload', function(){
+var total = parseInt(localStorage.getItem('tiempoTotalElNino') || '0');
+var sesion = Math.floor((Date.now() - inicioSesion) / 1000);
+localStorage.setItem('tiempoTotalElNino', total + sesion);
+});
+
+// Detectar click en tarjetas de juego para registrar
+document.addEventListener('DOMContentLoaded', function(){
+// Capturar clicks en botones "Jugar" y "Lanzar"
+document.querySelectorAll('.tarjeta a.btn').forEach(function(link){
+link.addEventListener('click', function(){
+var tarjeta = link.closest('.tarjeta');
+if(!tarjeta) return;
+var titulo = tarjeta.querySelector('h3');
+if(titulo){
+var nombre = titulo.textContent.trim();
+registrarJuego(nombre);
+}
+});
+});
+// Actualizar cada 5 segundos
+renderActividad();
+setInterval(renderActividad, 5000);
+});
+</script>
 </body>
 </html>

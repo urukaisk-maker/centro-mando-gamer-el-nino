@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Centro de Mando Gamer - El Niño</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Segoe UI,sans-serif;background:#0a0a0f;color:#fff;min-height:100vh}
+header{background:#151921;border-bottom:2px solid #00f0ff;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.logo{font-size:1.5rem;color:#00f0ff;font-weight:bold}
+nav{display:flex;gap:0.5rem;flex-wrap:wrap}
+nav a{color:#fff;text-decoration:none;padding:0.5rem 1rem;border-radius:5px;background:#232a3b;transition:0.3s}
+nav a:hover{background:#00f0ff;color:#0a0a0f}
+.container{max-width:1200px;margin:0 auto;padding:2rem}
+.banner{text-align:center;padding:2rem;background:linear-gradient(135deg,#0a0a0f,#1a1a2e);border:1px solid #00f0ff;border-radius:15px;margin-bottom:2rem}
+.banner h2{color:#ff00ff;font-size:1.8rem}
+.banner p{color:#aaa;margin-top:0.5rem}
+h2.section{color:#00f0ff;text-align:center;margin:2rem 0 1rem;font-size:1.6rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem}
+.card{background:#151921;border:1px solid #2a3241;border-radius:12px;padding:1.5rem;text-align:center;transition:0.3s}
+.card:hover{transform:translateY(-5px);border-color:#00f0ff}
+.card a{display:block;color:#fff;text-decoration:none}
+.card .badge{background:#232a3b;color:#00f0ff;padding:0.3rem 0.8rem;border-radius:20px;display:inline-block;margin-bottom:0.5rem}
+.card h3{font-size:1.2rem;margin:0.5rem 0}
+.card p{color:#aaa;font-size:0.9rem}
+details{background:#151921;border:1px solid #2a3241;border-radius:12px;padding:1rem;margin:1rem auto;max-width:900px}
+summary{cursor:pointer;font-size:1.2rem;font-weight:bold;color:#00f0ff;text-align:center;padding:0.5rem}
+summary:hover{color:#ff00ff}
+details[open] summary{color:#ff00ff;margin-bottom:1rem}
+footer{background:#151921;border-top:2px solid #00f0ff;padding:2rem;margin-top:2rem}
+.footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;max-width:1000px;margin:0 auto}
+.footer-col h3{color:#00f0ff;margin-bottom:1rem}
+.footer-col p{color:#aaa;line-height:1.6;font-size:0.9rem}
+.footer-col a{color:#00f0ff;text-decoration:none}
+.copyright{text-align:center;color:#888;font-size:0.8rem;margin-top:2rem;border-top:1px solid #2a3241;padding-top:1rem}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">🎮 El Niño</div>
+<nav>
+<a href="#emuladores">Emuladores</a>
+<a href="#juegos">Juegos</a>
+<a href="#secciones">Secciones</a>
+<a href="#acerca">Acerca</a>
+<a href="#recursos">Recursos</a>
+</nav>
+</header>
+<div class="container">
+<div class="banner">
+<h2>🎁 Con cariño desde Reus</h2>
+<p>Que disfrutes de tu centro de mando, crack.</p>
+</div>
+<h2 class="section" id="emuladores">🎮 Emuladores</h2>
+<details>
+<summary>🕹️ Desplegar lista de emuladores</summary>
+<div class="cards">
+<div class="card"><span class="badge">PS2</span><h3>PCSX2</h3><p>PlayStation 2</p><a href="http://localhost:8080/launch/pcsx2">▶ Lanzar</a></div>
+<div class="card"><span class="badge">PSP</span><h3>PPSSPP</h3><p>PlayStation Portable</p><a href="http://localhost:8080/launch/ppsspp">▶ Lanzar</a></div>
+<div class="card"><span class="badge">GC/Wii</span><h3>Dolphin</h3><p>GameCube y Wii</p><a href="http://localhost:8080/launch/dolphin">▶ Lanzar</a></div>
+<div class="card"><span class="badge">GBA/SNES</span><h3>mGBA</h3><p>Game Boy Advance y SNES</p><a href="http://localhost:8080/launch/mgba">▶ Lanzar</a></div>
+<div class="card"><span class="badge">Multi</span><h3>RetroArch</h3><p>Multi-emulador</p><a href="http://localhost:8080/launch/retroarch">▶ Lanzar</a></div>
+</div>
+</details>
+<h2 class="section" id="juegos">🎮 Juegos HTML</h2>
+<div class="cards">
+<div class="card"><span class="badge">Juego</span><h3>2048</h3><p>Puzzle</p><a href="http://localhost:8080/01_EL_NINO_LAUNCHER/juego2048.html">▶ Jugar</a></div>
+<div class="card"><span class="badge">Juego</span><h3>Snake</h3><p>Clásico</p><a href="http://localhost:8080/01_EL_NINO_LAUNCHER/snake.html">▶ Jugar</a></div>
+<div class="card"><span class="badge">Juego</span><h3>Pong</h3><p>Arcade</p><a href="http://localhost:8080/01_EL_NINO_LAUNCHER/pong.html">▶ Jugar</a></div>
+</div>
+<h2 class="section" id="secciones">📂 Secciones</h2>
+<div class="cards">
+<div class="card"><span class="badge">Streaming</span><h3>OBS & Clips</h3><p>Herramientas de streaming</p><a href="http://localhost:8080/03_STREAMING_Y_CLIPS/">Abrir</a></div>
+<div class="card"><span class="badge">Mods</span><h3>Mods & Shaders</h3><p>Modificaciones</p><a href="http://localhost:8080/04_MODS_Y_SHADERS/">Abrir</a></div>
+<div class="card"><span class="badge">Tools</span><h3>Gamer Tools</h3><p>Utilidades</p><a href="http://localhost:8080/05_HERRAMIENTAS_GAMER/">Abrir</a></div>
+<div class="card"><span class="badge">Media</span><h3>Wallpapers</h3><p>Fondos 4K</p><a href="http://localhost:8080/06_MEDIA_Y_WALLPAPERS/">Abrir</a></div>
+<div class="card"><span class="badge">Diario</span><h3>Diario de Mario</h3><p>Registros</p><a href="http://localhost:8080/07_DIARIO_MARIO/index.html">Abrir</a></div>
+</div>
+</div>
+<footer id="acerca">
+<div class="footer-grid">
+<div class="footer-col">
+<h3>👨‍💻 Acerca de</h3>
+<p><strong>Manuel Casimiro Carrasco</strong> - Diseñador y creador.</p>
+<p>Proyecto dedicado a <strong>Mario</strong>, con cariño desde Reus.</p>
+<p style="color:#00f0ff;font-style:italic">"Que disfrutes de tu centro de mando, crack."</p>
+<p><a href="https://github.com/urukaisk-maker">GitHub</a> | <a href="https://unique-biscochitos-31bcea.netlify.app/">Portfolio</a> | <a href="https://thriving-otter-cc1e25.netlify.app/">Urukais Klick</a></p>
+</div>
+<div class="footer-col" id="recursos">
+<h3>📚 Recursos</h3>
+<p><a href="https://pdroms.de/">PD ROMs</a> | <a href="https://itch.io/games/tag-homebrew">itch.io</a> | <a href="https://www.ps2-home.com/">PS2 Homebrew</a></p>
+</div>
+</div>
+<div class="copyright">
+<p>© 2026 Manuel Casimiro Carrasco | 📧 <a href="mailto:urukaisk@gmail.com">urukaisk@gmail.com</a> | 📍 Reus, Tarragona</p>
+<p><a href="https://unique-biscochitos-31bcea.netlify.app/">Portfolio</a> | <a href="https://thriving-otter-cc1e25.netlify.app/">Urukais Klick</a> | <a href="https://rad-dolphin-182dfb.netlify.app/">Los Guardianes Silenciosos</a> | <a href="https://github.com/urukaisk-maker">GitHub</a></p>
+<p><a href="privacidad.html">Privacidad</a> | <a href="terminos.html">Términos</a> | <a href="aviso_legal.html">Aviso Legal</a></p>
+</div>
+</footer>
+</body>
+</html>
