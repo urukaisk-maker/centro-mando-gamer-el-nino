@@ -432,25 +432,6 @@ nav ul{justify-content:flex-start}
 .resultado-item:hover{background:rgba(0,240,255,0.1);color:#00f0ff;padding-left:1.5rem}
 .resultado-item .icono{margin-right:0.5rem}
 .resultado-vacio{padding:1.5rem;text-align:center;color:#8899aa;font-style:italic}
-
-/* ===== HERO MEJORADO ===== */
-.hero{position:relative;padding:1.8rem 1.5rem 1.5rem;margin-bottom:1.5rem}
-.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(0,240,255,0.12),transparent 70%);animation:pulseHero 4s ease-in-out infinite;pointer-events:none;border-radius:20px}
-@keyframes pulseHero{0%,100%{opacity:0.5;transform:scale(1)}50%{opacity:1;transform:scale(1.03)}}
-.hero h1{position:relative;font-size:2rem;font-weight:900;letter-spacing:3px;margin-bottom:0.3rem;background:linear-gradient(90deg,#00f0ff,#ff00ff,#00f0ff,#ff00ff,#00f0ff);background-size:300% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:brilloHero 5s linear infinite;filter:drop-shadow(0 0 15px rgba(0,240,255,0.6));text-transform:uppercase}
-@keyframes brilloHero{to{background-position:300% center}}
-.hero h1::after{content:"";display:block;height:2px;width:60%;margin:0.5rem auto 0;background:linear-gradient(90deg,transparent,#00f0ff,#ff00ff,#00f0ff,transparent);border-radius:2px;box-shadow:0 0 15px #00f0ff;animation:lineaHero 3s ease-in-out infinite}
-@keyframes lineaHero{0%,100%{width:30%;opacity:0.6}50%{width:70%;opacity:1}}
-.hero p{position:relative;font-size:0.95rem;letter-spacing:1px;color:#e0e0e0;margin-top:0.5rem;text-shadow:0 0 12px rgba(0,240,255,0.4)}
-/* Buscador mas grande */
-.buscador-wrap{position:relative;margin:1.2rem auto 0;max-width:750px;z-index:100}
-#buscador{width:100%;padding:1.1rem 1.8rem;font-size:1.15rem;background:#1a1a24;border:2px solid #00f0ff;border-radius:40px;color:#fff;outline:none;transition:all 0.3s;box-shadow:0 0 20px rgba(0,240,255,0.3)}
-#buscador:focus{border-color:#ff00ff;box-shadow:0 0 35px rgba(255,0,255,0.6),0 0 60px rgba(0,240,255,0.3);transform:scale(1.02)}
-@media (max-width:768px){
-.hero h1{font-size:1.5rem;letter-spacing:2px}
-.hero p{font-size:0.85rem}
-#buscador{padding:0.9rem 1.4rem;font-size:1rem}
-}
 </style>
 </head>
 <body>
@@ -693,7 +674,7 @@ https://github.com/urukaisk-maker                <a href="https://pdroms.de/" ta
             navMenu.classList.toggle('active');
         });
 
-// (buscador viejo eliminado - sustituido por el buscador global)
+// (buscador viejo eliminado - sustituido por el buscador global)\n\n
         // Cerrar menú al hacer clic en un enlace (móvil)
         document.querySelectorAll('nav a').forEach(enlace => {
             enlace.addEventListener('click', () => {
@@ -1301,3 +1282,4 @@ document.addEventListener('click', function(e){
 
 </body>
 </html>
+
