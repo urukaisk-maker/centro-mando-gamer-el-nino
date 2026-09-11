@@ -1,6 +1,6 @@
 # 🎮 Centro de Mando Gamer – Plataforma "El Niño"
 
-![Launcher de El Niño](launcher.png)
+![Launcher de El Niño](captura-launcher.png)
 
 > Regalo para **Mario** · ...
 
