@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RetroAchievements - El Nino</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:2rem 1rem;background-image:radial-gradient(circle at 20% 30%,rgba(0,240,255,0.05),transparent 50%),radial-gradient(circle at 80% 70%,rgba(255,0,255,0.05),transparent 50%);background-attachment:fixed}
+.container{max-width:1100px;margin:0 auto}
+a.volver{color:#ff00ff;text-decoration:none;font-weight:bold;display:inline-block;margin-bottom:1.5rem;font-size:1.05rem}
+a.volver:hover{text-decoration:underline}
+h1{color:#00f0ff;text-align:center;font-size:2.5rem;text-shadow:0 0 20px #00f0ff;margin-bottom:0.5rem}
+.sub{text-align:center;color:#8899aa;margin-bottom:2.5rem;font-style:italic}
+.config-box{background:linear-gradient(145deg,#12121a,#1a1a24);border:2px solid rgba(0,240,255,0.3);border-radius:20px;padding:2rem;margin-bottom:2rem;max-width:600px;margin-left:auto;margin-right:auto}
+.config-box h2{color:#00f0ff;font-size:1.3rem;margin-bottom:1.5rem;text-align:center}
+.campo{margin-bottom:1rem}
+.campo label{display:block;color:#8899aa;font-size:0.85rem;margin-bottom:0.4rem;font-weight:bold;text-transform:uppercase;letter-spacing:1px}
+.campo input{width:100%;padding:0.8rem 1rem;background:#0a0a0f;border:2px solid #00f0ff;border-radius:10px;color:#fff;font-size:1rem;outline:none;font-family:inherit;transition:all 0.3s}
+.campo input:focus{border-color:#ff00ff;box-shadow:0 0 15px rgba(255,0,255,0.4)}
+.campo small{color:#666;font-size:0.75rem;margin-top:0.3rem;display:block}
+.btn{display:inline-block;padding:0.8rem 2rem;background:linear-gradient(45deg,#00f0ff,#ff00ff);color:#000;border:none;border-radius:30px;font-weight:bold;font-size:1rem;cursor:pointer;font-family:inherit;transition:all 0.3s;letter-spacing:1px}
+.btn:hover{transform:scale(1.05);box-shadow:0 0 25px rgba(255,0,255,0.7)}
+.btn-container{text-align:center;margin-top:1.5rem}
+.btn-rojo{background:linear-gradient(45deg,#ff0044,#ff8800)}
+.registro{text-align:center;color:#8899aa;font-size:0.9rem;margin-top:1.5rem;line-height:1.7}
+.registro a{color:#00f0ff;text-decoration:none;font-weight:bold}
+.registro a:hover{text-decoration:underline}
+.loading{text-align:center;padding:3rem;color:#8899aa;font-style:italic}
+.loading .spinner{display:inline-block;width:40px;height:40px;border:4px solid rgba(0,240,255,0.2);border-top-color:#00f0ff;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.perfil-header{background:linear-gradient(145deg,#12121a,#1a1a24);border:3px solid #00f0ff;border-radius:20px;padding:2rem;margin-bottom:2rem;display:flex;align-items:center;gap:2rem;flex-wrap:wrap;box-shadow:0 0 30px rgba(0,240,255,0.3)}
+.perfil-avatar{width:100px;height:100px;border-radius:50%;border:3px solid #ff00ff;box-shadow:0 0 25px rgba(255,0,255,0.5);background:#1a1a24;display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0}
+.perfil-info{flex:1;min-width:200px}
+.perfil-info h2{color:#00f0ff;font-size:1.8rem;margin-bottom:0.5rem;text-shadow:0 0 15px rgba(0,240,255,0.5)}
+.perfil-info .miembro{color:#8899aa;font-size:0.9rem;margin-bottom:1rem}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;width:100%}
+.stat-card{background:#0a0a0f;border:2px solid rgba(255,0,255,0.3);border-radius:14px;padding:1rem;text-align:center}
+.stat-icon{font-size:1.8rem;display:block;margin-bottom:0.3rem}
+.stat-value{color:#00f0ff;font-size:1.8rem;font-weight:900;text-shadow:0 0 15px rgba(0,240,255,0.5);display:block;margin-bottom:0.2rem}
+.stat-label{color:#8899aa;font-size:0.75rem;text-transform:uppercase;letter-spacing:1px}
+.seccion-titulo{color:#ff00ff;font-size:1.5rem;margin-bottom:1.5rem;text-shadow:0 0 15px rgba(255,0,255,0.4);text-align:center}
+.juegos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;margin-bottom:2.5rem}
+.juego-card{background:linear-gradient(145deg,#12121a,#1a1a24);border:2px solid rgba(0,240,255,0.3);border-radius:14px;padding:1.2rem;transition:all 0.3s;position:relative;overflow:hidden}
+.juego-card:hover{transform:translateY(-5px);border-color:#00f0ff;box-shadow:0 10px 30px rgba(0,240,255,0.3)}
+.juego-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#00f0ff,#ff00ff)}
+.juego-titulo{color:#00f0ff;font-size:1.05rem;font-weight:bold;margin-bottom:0.3rem}
+.juego-consola{color:#8899aa;font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:0.8rem}
+.juego-stats{display:flex;justify-content:space-between;font-size:0.9rem}
+.juego-stats .logros{color:#ff00ff;font-weight:bold}
+.juego-stats .puntos{color:#00ff88;font-weight:bold}
+.vacio{text-align:center;padding:3rem;color:#8899aa;font-style:italic}
+.error{background:rgba(255,0,68,0.1);border:2px solid #ff0044;color:#ff0044;padding:1rem;border-radius:10px;text-align:center;margin-bottom:1rem;font-weight:bold}
+@media(max-width:600px){h1{font-size:1.8rem}.perfil-header{padding:1.5rem;gap:1rem}.perfil-avatar{width:70px;height:70px;font-size:2rem}}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="volver" href="/01_EL_NINO_LAUNCHER/index.html">← Volver al Dashboard</a>
+<h1>🏆 RetroAchievements</h1>
+<p class="sub">Consulta tus logros desbloqueados en juegos retro</p>
+
+<div id="contenido">
+<div class="config-box" id="config-box">
+<h2>🔑 Conectar tu cuenta</h2>
+<div class="campo">
+<label>Usuario de RetroAchievements</label>
+<input type="text" id="ra-usuario" placeholder="Tu nombre de usuario" autocomplete="off">
+</div>
+<div class="campo">
+<label>API Key</label>
+<input type="password" id="ra-apikey" placeholder="Tu API key secreta" autocomplete="off">
+<small>La encuentras en tu perfil de retroachievements.org &gt; Settings &gt; Keys</small>
+</div>
+<div class="btn-container">
+<button class="btn" onclick="conectar()">🔌 Conectar</button>
+</div>
+<div class="registro">
+No tienes cuenta? Creala gratis en<br>
+<a href="https://retroachievements.org/" target="_blank">retroachievements.org</a>
+<br><br>
+Despues, copia tu API Key desde:<br>
+<a href="https://retroachievements.org/controlpanel.php" target="_blank">retroachievements.org/controlpanel.php</a>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+var USUARIO_KEY = "raElNinoUsuario";
+var APIKEY_KEY = "raElNinoApiKey";
+
+function cargarPerfil(usuario, apikey){
+    var cont = document.getElementById("contenido");
+    cont.innerHTML = '<div class="loading"><div class="spinner"></div><br>Cargando perfil de ' + usuario + '...</div>';
+    var url = "https://retroachievements.org/API/API_GetUserSummary.php?z=" + encodeURIComponent(usuario) + "&y=" + encodeURIComponent(apikey) + "&g=5";
+    fetch(url)
+        .then(function(r){
+            if(!r.ok) throw new Error("Error HTTP " + r.status);
+            return r.json();
+        })
+        .then(function(data){
+            if(!data || !data.User){
+                throw new Error("Usuario no encontrado o API key incorrecta");
+            }
+            mostrarPerfil(data);
+        })
+        .catch(function(e){
+            cont.innerHTML = '<div class="error">❌ ' + e.message + '</div><div class="btn-container"><button class="btn btn-rojo" onclick="desconectar()">Cambiar datos</button></div>';
+        });
+}
+
+function mostrarPerfil(data){
+    var cont = document.getElementById("contenido");
+    var user = data.User;
+    var html = "";
+
+    // Cabecera del perfil
+    html += '<div class="perfil-header">';
+    html += '<div class="perfil-avatar">🎮</div>';
+    html += '<div class="perfil-info">';
+    html += '<h2>' + (user.User || user.UserName) + '</h2>';
+    html += '<div class="miembro">Miembro desde ' + (user.MemberSince || "?") + '</div>';
+    html += '</div>';
+    html += '</div>';
+
+    // Estadisticas
+    html += '<div class="stats-grid" style="margin-bottom:2.5rem">';
+    html += '<div class="stat-card"><span class="stat-icon">🏆</span><span class="stat-value">' + (user.TotalPoints || 0) + '</span><span class="stat-label">Puntos</span></div>';
+    html += '<div class="stat-card"><span class="stat-icon">💎</span><span class="stat-value">' + (user.TotalTruePoints || 0) + '</span><span class="stat-label">Puntos reales</span></div>';
+    html += '<div class="stat-card"><span class="stat-icon">🎖</span><span class="stat-value">' + (user.TotalAchievements || 0) + '</span><span class="stat-label">Logros</span></div>';
+    html += '<div class="stat-card"><span class="stat-icon">⭐</span><span class="stat-value">' + (user.ContribCount || 0) + '</span><span class="stat-label">Contribuciones</span></div>';
+    html += '</div>';
+
+    // Juegos recientes
+    var juegos = data.RecentAchievements || [];
+    if(juegos.length > 0){
+        html += '<h2 class="seccion-titulo">🎮 Logros recientes</h2>';
+        html += '<div class="juegos-grid">';
+        juegos.forEach(function(j){
+            html += '<div class="juego-card">';
+            html += '<div class="juego-titulo">' + (j.Title || "Logro") + '</div>';
+            html += '<div class="juego-consola">' + (j.GameTitle || "") + ' · ' + (j.ConsoleName || "") + '</div>';
+            html += '<div class="juego-stats">';
+            html += '<span class="logros">' + (j.Points || 0) + ' pts</span>';
+            html += '<span class="puntos">' + (j.Date || "") + '</span>';
+            html += '</div></div>';
+        });
+        html += '</div>';
+    } else {
+        html += '<div class="vacio">No hay logros recientes que mostrar.</div>';
+    }
+
+    html += '<div class="btn-container" style="margin-top:2rem">';
+    html += '<button class="btn" onclick="recargar()">🔄 Actualizar</button> ';
+    html += '<button class="btn btn-rojo" onclick="desconectar()">🚪 Desconectar</button>';
+    html += '</div>';
+
+    cont.innerHTML = html;
+}
+
+function conectar(){
+    var usuario = document.getElementById("ra-usuario").value.trim();
+    var apikey = document.getElementById("ra-apikey").value.trim();
+    if(!usuario || !apikey){
+        alert("Rellena usuario y API key");
+        return;
+    }
+    localStorage.setItem(USUARIO_KEY, usuario);
+    localStorage.setItem(APIKEY_KEY, apikey);
+    cargarPerfil(usuario, apikey);
+}
+
+function desconectar(){
+    localStorage.removeItem(USUARIO_KEY);
+    localStorage.removeItem(APIKEY_KEY);
+    location.reload();
+}
+
+function recargar(){
+    var usuario = localStorage.getItem(USUARIO_KEY);
+    var apikey = localStorage.getItem(APIKEY_KEY);
+    if(usuario && apikey) cargarPerfil(usuario, apikey);
+}
+
+// Al cargar
+window.addEventListener("DOMContentLoaded", function(){
+    var usuario = localStorage.getItem(USUARIO_KEY);
+    var apikey = localStorage.getItem(APIKEY_KEY);
+    if(usuario && apikey){
+        cargarPerfil(usuario, apikey);
+    }
+});
+</script>
+</body>
+</html>
