@@ -1,0 +1,40 @@
+{
+  "servidor": {
+    "puerto": 8080,
+    "host": "0.0.0.0",
+    "modo_debug": false,
+    "timeout_backup": 60,
+    "timeout_escaner": 120,
+    "timeout_mandos": 60
+  },
+  "rutas": {
+    "launcher": "01_EL_NINO_LAUNCHER",
+    "emuladores": "02_EMULADORES_Y_ROMS",
+    "emuladores_portables": "02_EMULADORES_Y_ROMS/EJECUTABLES_PORTABLES",
+    "juegos_extra": "08_JUEGOS_EXTRA",
+    "roms": "02_EMULADORES_Y_ROMS",
+    "backups": "02_EMULADORES_Y_ROMS/SAVES_GUARDADOS",
+    "catalogo_roms": "01_EL_NINO_LAUNCHER/juegos.json"
+  },
+  "scripts": {
+    "backup": "Backup_Partidas.sh",
+    "restaurar": "Restaurar_Partidas.sh",
+    "limpiar": "limpiar_cache.sh",
+    "escanear": "escanear_roms.py",
+    "instalar_mandos": "05_HERRAMIENTAS_GAMER/instalar_mandos.sh"
+  },
+  "interfaz": {
+    "titulo": "Centro de Mando Gamer \"El Niño\"",
+    "tema_por_defecto": "cyan",
+    "musica_activa": true,
+    "sonidos_activos": true
+  },
+  "proyecto": {
+    "nombre": "El Niño",
+    "version": "3.0",
+    "autor": "Manuel Casimiro Carrasco",
+    "github": "https://github.com/urukaisk-maker/centro-mando-gamer-el-nino",
+    "demo_vercel": "https://centro-mando-gamer-el-nino.vercel.app/",
+    "demo_pages": "https://urukaisk-maker.github.io/centro-mando-gamer-el-nino/"
+  }
+}

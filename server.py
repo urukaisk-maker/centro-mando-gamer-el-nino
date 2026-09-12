@@ -1,8 +1,55 @@
 #!/usr/bin/env python3
 import http.server, socketserver, subprocess, os, glob, json, socket, time, threading, urllib.parse
 
-PORT = 8080
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+
+# ===== CARGAR CONFIGURACION =====
+CONFIG_PATH = os.path.join(DIRECTORY, "config.json")
+CONFIG = {
+    "servidor": {"puerto": 8080, "host": "0.0.0.0", "modo_debug": False,
+                 "timeout_backup": 60, "timeout_escaner": 120, "timeout_mandos": 60},
+    "rutas": {
+        "launcher": "01_EL_NINO_LAUNCHER",
+        "emuladores_portables": "02_EMULADORES_Y_ROMS/EJECUTABLES_PORTABLES",
+        "juegos_extra": "08_JUEGOS_EXTRA",
+        "catalogo_roms": "01_EL_NINO_LAUNCHER/juegos.json"
+    },
+    "scripts": {
+        "backup": "Backup_Partidas.sh",
+        "limpiar": "limpiar_cache.sh",
+        "escanear": "escanear_roms.py",
+        "instalar_mandos": "05_HERRAMIENTAS_GAMER/instalar_mandos.sh"
+    }
+}
+if os.path.exists(CONFIG_PATH):
+    try:
+        with open(CONFIG_PATH, encoding="utf-8") as f:
+            cargado = json.load(f)
+            # Fusionar (sin sobreescribir claves no presentes)
+            for seccion, valores in cargado.items():
+                if seccion in CONFIG and isinstance(valores, dict):
+                    CONFIG[seccion].update(valores)
+                else:
+                    CONFIG[seccion] = valores
+    except Exception as e:
+        print("AVISO: no se pudo leer config.json: " + str(e))
+
+PORT = CONFIG["servidor"]["puerto"]
+HOST = CONFIG["servidor"]["host"]
+DEBUG = CONFIG["servidor"]["modo_debug"]
+TIMEOUT_BACKUP = CONFIG["servidor"]["timeout_backup"]
+TIMEOUT_ESCANER = CONFIG["servidor"]["timeout_escaner"]
+TIMEOUT_MANDOS = CONFIG["servidor"]["timeout_mandos"]
+
+RUTA_LAUNCHER = CONFIG["rutas"]["launcher"]
+RUTA_EMU_PORTABLES = CONFIG["rutas"]["emuladores_portables"]
+RUTA_JUEGOS_EXTRA = CONFIG["rutas"]["juegos_extra"]
+RUTA_CATALOGO = CONFIG["rutas"]["catalogo_roms"]
+
+SCRIPT_BACKUP = CONFIG["scripts"]["backup"]
+SCRIPT_LIMPIAR = CONFIG["scripts"]["limpiar"]
+SCRIPT_ESCANEAR = CONFIG["scripts"]["escanear"]
+SCRIPT_MANDOS = CONFIG["scripts"]["instalar_mandos"]
 
 # ===== REGISTRO DE PROCESOS ACTIVOS =====
 procesos_activos = {}
@@ -148,7 +195,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(html.encode())
                 return
-            base = os.path.join(DIRECTORY, "02_EMULADORES_Y_ROMS", "EJECUTABLES_PORTABLES")
+            base = os.path.join(DIRECTORY, RUTA_EMU_PORTABLES)
             sh = os.path.join(base, emulador + ".sh")
             bat = os.path.join(base, emulador + ".bat")
             if os.path.exists(sh):
@@ -162,7 +209,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
         elif self.path.startswith("/juego/"):
             juego = self.path.split("/juego/")[1].strip("/")
-            base = os.path.join(DIRECTORY, "08_JUEGOS_EXTRA")
+            base = os.path.join(DIRECTORY, RUTA_JUEGOS_EXTRA)
             sh = os.path.join(base, juego + ".sh")
             if os.path.exists(sh):
                 lanzar_proceso(juego, sh, "juego")
@@ -203,7 +250,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             sistema = urllib.parse.unquote(partes[0])
             archivo = urllib.parse.unquote(partes[1])
             # Buscar la ROM en el JSON
-            json_path = os.path.join(DIRECTORY, "01_EL_NINO_LAUNCHER", "juegos.json")
+            json_path = os.path.join(DIRECTORY, RUTA_CATALOGO)
             if not os.path.exists(json_path):
                 self.not_found("No hay catalogo de ROMs")
                 return
@@ -240,10 +287,10 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 self.not_found("Este sistema necesita configuracion manual")
 
         elif self.path.startswith("/escanear-roms"):
-            script = os.path.join(DIRECTORY, "escanear_roms.py")
+            script = os.path.join(DIRECTORY, SCRIPT_ESCANEAR)
             if os.path.exists(script):
                 try:
-                    resultado = subprocess.run(["python3", script], capture_output=True, text=True, timeout=60)
+                    resultado = subprocess.run(["python3", script], capture_output=True, text=True, timeout=TIMEOUT_MANDOS)
                     salida = resultado.stdout or "Escaneo completado"
                     self.send_response(200)
                     self.send_header("Content-Type", "text/plain; charset=utf-8")
@@ -256,7 +303,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             else:
                 self.not_found("Script de escaneo no encontrado")
         elif self.path.startswith("/instalar-mandos"):
-            script = os.path.join(DIRECTORY, "05_HERRAMIENTAS_GAMER", "instalar_mandos.sh")
+            script = os.path.join(DIRECTORY, SCRIPT_MANDOS)
             if os.path.exists(script):
                 try:
                     resultado = subprocess.run(["bash", script], capture_output=True, text=True, timeout=60, input="")
@@ -272,10 +319,10 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             else:
                 self.not_found("Script de instalacion no encontrado")
         elif self.path.startswith("/limpiar"):
-            script = os.path.join(DIRECTORY, "limpiar_cache.sh")
+            script = os.path.join(DIRECTORY, SCRIPT_LIMPIAR)
             if os.path.exists(script):
                 try:
-                    resultado = subprocess.run(["bash", script], capture_output=True, text=True, timeout=120, input="")
+                    resultado = subprocess.run(["bash", script], capture_output=True, text=True, timeout=TIMEOUT_ESCANER, input="")
                     salida = resultado.stdout or "Limpieza completada"
                     self.send_response(200)
                     self.send_header("Content-Type", "text/plain; charset=utf-8")
@@ -288,10 +335,10 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             else:
                 self.not_found("Script de limpieza no encontrado")
         elif self.path.startswith("/backup"):
-            script = os.path.join(DIRECTORY, "Backup_Partidas.sh")
+            script = os.path.join(DIRECTORY, SCRIPT_BACKUP)
             if os.path.exists(script):
                 try:
-                    resultado = subprocess.run(["bash", script], capture_output=True, text=True, timeout=60, input="\n")
+                    resultado = subprocess.run(["bash", script], capture_output=True, text=True, timeout=TIMEOUT_BACKUP, input="\n")
                     salida = resultado.stdout or "Backup completado"
                     lineas = [l for l in salida.split("\n") if "Pulsa Enter" not in l]
                     self.send_response(200)
@@ -328,7 +375,7 @@ class ServidorConcurrente(socketserver.ThreadingTCPServer):
 if __name__ == "__main__":
     os.chdir(DIRECTORY)
     ip = get_ip_local()
-    with ServidorConcurrente(("", PORT), Handler) as httpd:
+    with ServidorConcurrente((HOST, PORT), Handler) as httpd:
         print("=" * 50)
         print("  Servidor El Nino iniciado")
         print("=" * 50)
