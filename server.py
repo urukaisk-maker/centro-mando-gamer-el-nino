@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
-import http.server, socketserver, subprocess, os, glob
+import http.server, socketserver, subprocess, os, glob, json, socket, time, threading
 
 PORT = 8080
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+
+# ===== REGISTRO DE PROCESOS ACTIVOS =====
+procesos_activos = {}
+lock = threading.Lock()
 
 REQUISITOS = {
     "pcsx2": {
@@ -76,6 +80,52 @@ Cuando lo tengas, vuelve al launcher y prueba de nuevo.
 </div>
 </body></html>"""
 
+def get_ip_local():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return "127.0.0.1"
+
+def limpiar_procesos():
+    with lock:
+        terminados = []
+        for n, d in list(procesos_activos.items()):
+            if d["proceso"].poll() is not None:
+                terminados.append(n)
+        for n in terminados:
+            del procesos_activos[n]
+
+def lanzar_proceso(nombre, script_path, tipo):
+    proc = subprocess.Popen(["bash", script_path])
+    with lock:
+        procesos_activos[nombre] = {
+            "pid": proc.pid,
+            "proceso": proc,
+            "hora": time.time(),
+            "tipo": tipo
+        }
+    return proc
+
+def matar_proceso(nombre):
+    with lock:
+        if nombre not in procesos_activos:
+            return False, "No esta corriendo"
+        info = procesos_activos[nombre]
+        try:
+            info["proceso"].terminate()
+            try:
+                info["proceso"].wait(timeout=3)
+            except subprocess.TimeoutExpired:
+                info["proceso"].kill()
+            del procesos_activos[nombre]
+            return True, "Cerrado correctamente"
+        except Exception as e:
+            return False, str(e)
+
 class Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith("/launch/"):
@@ -93,14 +143,65 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             sh = os.path.join(base, emulador + ".sh")
             bat = os.path.join(base, emulador + ".bat")
             if os.path.exists(sh):
-                subprocess.Popen(["bash", sh])
+                lanzar_proceso(emulador, sh, "emulador")
                 self.redirect(emulador)
             elif os.path.exists(bat):
-                subprocess.Popen(["cmd", "/c", bat])
+                lanzar_proceso(emulador, bat, "emulador")
                 self.redirect(emulador)
             else:
                 self.not_found("Emulador no encontrado")
 
+        elif self.path.startswith("/juego/"):
+            juego = self.path.split("/juego/")[1].strip("/")
+            base = os.path.join(DIRECTORY, "08_JUEGOS_EXTRA")
+            sh = os.path.join(base, juego + ".sh")
+            if os.path.exists(sh):
+                lanzar_proceso(juego, sh, "juego")
+                self.redirect(juego)
+            else:
+                self.not_found("Juego no encontrado")
+
+        elif self.path.startswith("/kill/"):
+            nombre = self.path.split("/kill/")[1].strip("/")
+            ok, msg = matar_proceso(nombre)
+            self.send_response(200 if ok else 404)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps({"ok": ok, "mensaje": msg}).encode())
+
+        elif self.path.startswith("/estado"):
+            limpiar_procesos()
+            with lock:
+                activos = []
+                ahora = time.time()
+                for n, d in procesos_activos.items():
+                    activos.append({
+                        "nombre": n,
+                        "pid": d["pid"],
+                        "tipo": d["tipo"],
+                        "segundos": int(ahora - d["hora"])
+                    })
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps({"activos": activos}).encode())
+
+        elif self.path.startswith("/limpiar"):
+            script = os.path.join(DIRECTORY, "limpiar_cache.sh")
+            if os.path.exists(script):
+                try:
+                    resultado = subprocess.run(["bash", script], capture_output=True, text=True, timeout=120, input="")
+                    salida = resultado.stdout or "Limpieza completada"
+                    self.send_response(200)
+                    self.send_header("Content-Type", "text/plain; charset=utf-8")
+                    self.end_headers()
+                    self.wfile.write(salida.encode())
+                except Exception as e:
+                    self.send_response(500)
+                    self.end_headers()
+                    self.wfile.write(str(e).encode())
+            else:
+                self.not_found("Script de limpieza no encontrado")
         elif self.path.startswith("/backup"):
             script = os.path.join(DIRECTORY, "Backup_Partidas.sh")
             if os.path.exists(script):
@@ -119,15 +220,6 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             else:
                 self.not_found("Script de backup no encontrado")
 
-        elif self.path.startswith("/juego/"):
-            juego = self.path.split("/juego/")[1].strip("/")
-            base = os.path.join(DIRECTORY, "08_JUEGOS_EXTRA")
-            sh = os.path.join(base, juego + ".sh")
-            if os.path.exists(sh):
-                subprocess.Popen(["bash", sh])
-                self.redirect(juego)
-            else:
-                self.not_found("Juego no encontrado")
         else:
             super().do_GET()
 
@@ -150,6 +242,13 @@ class ServidorConcurrente(socketserver.ThreadingTCPServer):
 
 if __name__ == "__main__":
     os.chdir(DIRECTORY)
+    ip = get_ip_local()
     with ServidorConcurrente(("", PORT), Handler) as httpd:
-        print("Servidor en http://localhost:" + str(PORT))
+        print("=" * 50)
+        print("  Servidor El Nino iniciado")
+        print("=" * 50)
+        print("  Local:   http://localhost:" + str(PORT))
+        print("  Red:     http://" + ip + ":" + str(PORT))
+        print("           (para movil/tablet en la misma WiFi)")
+        print("=" * 50)
         httpd.serve_forever()

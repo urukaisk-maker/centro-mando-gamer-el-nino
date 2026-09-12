@@ -556,6 +556,25 @@ html{scroll-behavior:smooth}
 #cookie-banner .btn-mas{background:transparent;color:#00f0ff;border:1px solid #00f0ff}
 #cookie-banner .btn-mas:hover{background:rgba(0,240,255,0.1)}
 @media(max-width:600px){#cookie-banner{padding:1rem;flex-direction:column;text-align:center}}
+
+/* ===== PANEL DE PROCESOS ACTIVOS ===== */
+#panel-procesos{position:fixed;bottom:25px;left:25px;background:linear-gradient(145deg,#12121a,#1a1a24);border:2px solid #00f0ff;border-radius:14px;padding:1rem;min-width:280px;max-width:360px;box-shadow:0 0 25px rgba(0,240,255,0.5);z-index:14000;display:none;animation:panelIn 0.3s ease-out}
+#panel-procesos.visible{display:block}
+@keyframes panelIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+#panel-procesos h4{color:#00f0ff;font-size:0.85rem;margin:0 0 0.7rem 0;display:flex;justify-content:space-between;align-items:center;letter-spacing:1px;text-transform:uppercase}
+#panel-procesos h4 .contador{background:linear-gradient(45deg,#00f0ff,#ff00ff);color:#000;font-size:0.7rem;padding:0.15rem 0.5rem;border-radius:10px;font-weight:bold}
+.proceso-item{display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid rgba(0,240,255,0.1);font-size:0.85rem}
+.proceso-item:last-child{border-bottom:none}
+.proceso-item .icono-proc{font-size:1.2rem}
+.proceso-item .info{flex:1;color:#e0e0e0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.proceso-item .info .nombre{font-weight:bold;color:#00f0ff;display:block;font-size:0.85rem}
+.proceso-item .info .tiempo{color:#8899aa;font-size:0.75rem}
+.proceso-item .btn-kill{background:rgba(255,0,68,0.2);border:1px solid #ff0044;color:#ff0044;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:0.85rem;font-weight:bold;transition:all 0.2s;display:flex;align-items:center;justify-content:center;padding:0}
+.proceso-item .btn-kill:hover{background:#ff0044;color:#fff;transform:scale(1.15)}
+@media(max-width:600px){#panel-procesos{left:15px;bottom:90px;min-width:240px;max-width:calc(100vw - 30px)}}
+
+#btn-limpiar{background:rgba(0,255,136,0.15);border:1px solid #00ff88;color:#00ff88;padding:0.45rem 1rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.85rem;transition:all 0.3s;white-space:nowrap}
+#btn-limpiar:hover{background:rgba(0,255,136,0.3);transform:translateY(-2px)}
 </style>
 </head>
 <body>
@@ -567,6 +586,7 @@ html{scroll-behavior:smooth}
 <button id="btn-tv" onclick="toggleTV()">📺 Modo TV</button>
             <button id="btn-mute" onclick="toggleAudio()">🔊</button>
             <button id="btn-backup" onclick="hacerBackup()">💾 Backup</button>
+            <button id="btn-limpiar" onclick="hacerLimpieza()">🧹 Limpiar</button>
             <button id="btn-settings" onclick="toggleSettings()">⚙️</button>
             <button class="menu-toggle" id="menuToggle">☰</button>
             <nav>
@@ -1765,6 +1785,102 @@ window.addEventListener('DOMContentLoaded', function(){
         }, 2000);
     }
 });
+
+// ===== PANEL DE PROCESOS ACTIVOS =====
+function actualizarProcesos(){
+    fetch('/estado')
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            var panel = document.getElementById('panel-procesos');
+            var lista = document.getElementById('panel-lista');
+            var cont = document.getElementById('panel-contador');
+            if(!panel || !lista) return;
+
+            var activos = data.activos || [];
+            if(activos.length === 0){
+                panel.classList.remove('visible');
+                return;
+            }
+
+            panel.classList.add('visible');
+            if(cont) cont.textContent = activos.length;
+
+            lista.innerHTML = '';
+            activos.forEach(function(p){
+                var tiempo = formatearTiempoProc(p.segundos);
+                var icono = p.tipo === 'emulador' ? '🕹' : '🎮';
+                var div = document.createElement('div');
+                div.className = 'proceso-item';
+                div.innerHTML = '<span class="icono-proc">' + icono + '</span>' +
+                    '<div class="info"><span class="nombre">' + p.nombre + '</span>' +
+                    '<span class="tiempo">PID ' + p.pid + ' · ' + tiempo + '</span></div>' +
+                    '<button class="btn-kill" onclick="matarProceso(\'' + p.nombre + '\')" title="Cerrar">⛔</button>';
+                lista.appendChild(div);
+            });
+        })
+        .catch(function(){ /* silencioso si el servidor no responde */ });
+}
+
+function formatearTiempoProc(seg){
+    if(seg < 60) return seg + 's';
+    if(seg < 3600) return Math.floor(seg/60) + 'm ' + (seg%60) + 's';
+    return Math.floor(seg/3600) + 'h ' + Math.floor((seg%3600)/60) + 'm';
+}
+
+async function matarProceso(nombre){
+    var ok = await mostrarModal({
+        icono: '⛔',
+        titulo: 'Cerrar ' + nombre,
+        texto: 'Se cerrara el proceso "' + nombre + '" y se perdera el progreso no guardado.\n\n¿Seguro?',
+        btnOk: 'Cerrar',
+        btnCancel: 'Cancelar',
+        tipoBoton: 'danger'
+    });
+    if(!ok) return;
+    fetch('/kill/' + nombre)
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if(data.ok){
+                mostrarToast(nombre + ' cerrado correctamente', 'success');
+                actualizarProcesos();
+            } else {
+                mostrarToast('Error al cerrar: ' + data.mensaje, 'error');
+            }
+        })
+        .catch(function(){
+            mostrarToast('No se pudo conectar con el servidor', 'error');
+        });
+}
+
+// Actualizar cada 5 segundos
+setInterval(actualizarProcesos, 5000);
+window.addEventListener('DOMContentLoaded', function(){
+    setTimeout(actualizarProcesos, 500);
+});
+
+// ===== LIMPIEZA =====
+async function hacerLimpieza(){
+    var ok = await mostrarModal({
+        icono: '🧹',
+        titulo: 'Limpiar disco',
+        texto: 'Se borraran:\n\n• Backups antiguos (dejando solo 5)\n• Cache de Python\n• Archivos temporales y locks\n• Logs del servidor\n\n¿Continuar?',
+        btnOk: 'Limpiar',
+        btnCancel: 'Cancelar'
+    });
+    if(!ok) return;
+    mostrarToast('Limpiando disco...', 'info');
+    fetch('/limpiar')
+        .then(function(r){ return r.text(); })
+        .then(function(txt){
+            // Extraer solo el espacio liberado
+            var match = txt.match(/Espacio liberado: (\d+) MB/);
+            var liberado = match ? match[1] + ' MB' : 'completado';
+            mostrarToast('Limpieza completada. Espacio liberado: ' + liberado, 'success');
+        })
+        .catch(function(){
+            mostrarToast('Error al limpiar el disco', 'error');
+        });
+}
 </script>
 
 <!-- PANEL DE CONFIGURACION -->
@@ -1834,6 +1950,13 @@ window.addEventListener('DOMContentLoaded', function(){
 <button class="btn-mas" onclick="window.open('privacidad.html','_blank')">Saber mas</button>
 <button class="btn-aceptar" onclick="aceptarCookies()">✓ Aceptar</button>
 </div>
+</div>
+
+
+<!-- PANEL DE PROCESOS ACTIVOS -->
+<div id="panel-procesos">
+<h4>🎮 En ejecucion <span class="contador" id="panel-contador">0</span></h4>
+<div id="panel-lista"></div>
 </div>
 
 </body>
