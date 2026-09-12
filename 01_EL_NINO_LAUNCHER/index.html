@@ -514,6 +514,32 @@ html{scroll-behavior:smooth}
 .red-discord:hover{box-shadow:0 0 40px rgba(88,101,242,0.9)}
 .red-telegram{background:linear-gradient(45deg,#0088cc,#229ed9);box-shadow:0 0 25px rgba(34,158,217,0.5)}
 .red-telegram:hover{box-shadow:0 0 40px rgba(34,158,217,0.9)}
+
+/* ===== CHATBOT ASISTENTE ===== */
+#chatbot-toggle{position:fixed;bottom:25px;right:25px;width:60px;height:60px;border-radius:50%;background:linear-gradient(45deg,#00f0ff,#ff00ff);border:none;cursor:pointer;font-size:1.8rem;color:#000;box-shadow:0 0 25px rgba(0,240,255,0.7),0 0 50px rgba(255,0,255,0.4);z-index:15000;transition:all 0.3s;animation:pulseBot 3s ease-in-out infinite}
+#chatbot-toggle:hover{transform:scale(1.1);box-shadow:0 0 40px rgba(0,240,255,1),0 0 70px rgba(255,0,255,0.7)}
+@keyframes pulseBot{0%,100%{box-shadow:0 0 25px rgba(0,240,255,0.7),0 0 50px rgba(255,0,255,0.4)}50%{box-shadow:0 0 35px rgba(0,240,255,1),0 0 70px rgba(255,0,255,0.6)}}
+#chatbot{position:fixed;bottom:100px;right:25px;width:380px;max-width:calc(100vw - 50px);height:520px;max-height:calc(100vh - 130px);background:linear-gradient(180deg,#12121a,#1a1a24);border:2px solid #00f0ff;border-radius:20px;box-shadow:0 0 40px rgba(0,240,255,0.5),0 10px 40px rgba(0,0,0,0.6);z-index:15000;display:none;flex-direction:column;overflow:hidden;animation:chatIn 0.3s ease-out}
+#chatbot.open{display:flex}
+@keyframes chatIn{from{opacity:0;transform:translateY(20px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+#chatbot-header{background:linear-gradient(90deg,#00f0ff,#ff00ff);padding:0.9rem 1.2rem;display:flex;justify-content:space-between;align-items:center;color:#000;font-weight:bold}
+#chatbot-header .titulo{font-size:1rem;display:flex;align-items:center;gap:0.5rem}
+#chatbot-header button{background:transparent;border:none;color:#000;font-size:1.3rem;cursor:pointer;font-weight:bold;padding:0.2rem 0.5rem}
+#chatbot-header button:hover{transform:scale(1.2)}
+#chatbot-mensajes{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:0.7rem}
+.msg{max-width:85%;padding:0.7rem 1rem;border-radius:14px;font-size:0.9rem;line-height:1.4;word-wrap:break-word;animation:msgIn 0.3s ease-out}
+@keyframes msgIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.msg.bot{background:#252535;color:#e0e0e0;border-bottom-left-radius:4px;align-self:flex-start;border-left:3px solid #00f0ff}
+.msg.user{background:linear-gradient(135deg,#00f0ff,#ff00ff);color:#000;border-bottom-right-radius:4px;align-self:flex-end;font-weight:600}
+.msg.bot a{color:#00f0ff}
+#chatbot-sugerencias{display:flex;flex-wrap:wrap;gap:0.4rem;padding:0.5rem 1rem 0;border-top:1px solid rgba(0,240,255,0.15)}
+.sugerencia{background:rgba(0,240,255,0.1);border:1px solid rgba(0,240,255,0.3);color:#00f0ff;padding:0.3rem 0.7rem;border-radius:12px;font-size:0.75rem;cursor:pointer;transition:all 0.2s;font-weight:500}
+.sugerencia:hover{background:rgba(255,0,255,0.15);border-color:#ff00ff;color:#ff00ff}
+#chatbot-input-wrap{display:flex;padding:0.7rem;gap:0.5rem;border-top:1px solid rgba(0,240,255,0.2);background:#12121a}
+#chatbot-input{flex:1;background:#0a0a0f;border:1px solid #00f0ff;border-radius:20px;padding:0.6rem 1rem;color:#fff;font-size:0.9rem;outline:none;font-family:inherit}
+#chatbot-input:focus{border-color:#ff00ff;box-shadow:0 0 15px rgba(255,0,255,0.4)}
+#chatbot-enviar{background:linear-gradient(45deg,#00f0ff,#ff00ff);border:none;color:#000;font-weight:bold;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1.1rem;transition:transform 0.2s}
+#chatbot-enviar:hover{transform:scale(1.1)}
 </style>
 </head>
 <body>
@@ -1601,6 +1627,109 @@ function aplicarRedes(){
 window.addEventListener('DOMContentLoaded', function(){
     setTimeout(aplicarRedes, 200);
 });
+
+// ===== CHATBOT ASISTENTE =====
+var RESPUESTAS = [
+    { claves: ['hola','buenas','hey','saludos','que tal'], resp: 'Hola! Soy el asistente de El Nino. Preguntame lo que quieras sobre el Centro de Mando. Puedes escribir: <b>juegos</b>, <b>backup</b>, <b>diario</b>, <b>anadir juegos</b>, <b>manual</b>...' },
+    { claves: ['juego','jugar','juegos','que puedo jugar','lista'], resp: 'Tienes <b>13 juegos completos</b>: Cave Story, Freedoom, Quake, OpenRA, 0 A.D., Xonotic, Luanti, Battle for Wesnoth, OpenTTD, Endless Sky, SuperTux, Widelands y Shattered Pixel Dungeon. Pulsa la tarjeta de cada uno para jugar.' },
+    { claves: ['emulador','emuladores','ps2','psp','gamecube','wii','retroarch','consola'], resp: 'Hay 4 emuladores: <b>PCSX2</b> (PS2), <b>PPSSPP</b> (PSP), <b>Dolphin</b> (GameCube/Wii) y <b>RetroArch</b> (multi-sistema). Necesitan BIOS y ROMs propias. Si falta algo, el launcher te avisa.' },
+    { claves: ['backup','copia','seguridad','guardar partida','partidas'], resp: 'Pulsa el boton <b>💾 Backup</b> arriba. Copia todas las partidas de los emuladores a SAVES_GUARDADOS. Ademas, cada <b>domingo a las 20:00</b> se hace uno automatico.' },
+    { claves: ['diario','escribir','entrada','diario mario','apuntes'], resp: 'El <b>Diario de Mario</b> es tu espacio personal. Puedes escribir entradas, ponerles categoria y adjuntar capturas. Tambien puedes <b>exportar a JSON</b> como copia de seguridad.' },
+    { claves: ['exportar','importar','json','copia diario'], resp: 'En el Diario hay dos botones: <b>📥 Exportar JSON</b> (descarga un archivo con todas tus entradas) y <b>📤 Importar JSON</b> (recupera desde un archivo). Haz un export cada cierto tiempo.' },
+    { claves: ['anadir','añadir','meter','roms','isos','juegos propios'], resp: 'Copia las ROMs o ISOs en las carpetas: <b>02_EMULADORES_Y_ROMS/01_PS2/</b>, <b>02_PSP/</b>, <b>03_GAMECUBE_WII/</b> o <b>04_GBA_SNES/</b>. Para PS2 y GC/Wii tambien hay que poner las BIOS en sus subcarpetas.' },
+    { claves: ['manual','ayuda','instrucciones','como usar'], resp: 'Tienes el <b>📖 Manual</b> completo en el menu de arriba. Explica todo: juegos, backup, diario, anadir ROMs, si algo falla...' },
+    { claves: ['configuracion','configurar','ajustes','tema','colores','volumen'], resp: 'Pulsa el boton <b>⚙️</b> arriba. Puedes cambiar el <b>tema de colores</b> (5 opciones), <b>volumen</b> de musica y efectos, y activar/desactivar sonidos.' },
+    { claves: ['modo tv','pantalla grande','sofa','big picture'], resp: 'Pulsa <b>📺 TV</b> arriba para activar el modo pantalla grande. Las tarjetas se hacen gigantes para jugar desde el sofa. Tecla <b>T</b> para activar/desactivar.' },
+    { claves: ['mando','gamepad','joystick','control','xbox','playstation'], resp: 'Conecta un mando por USB o Bluetooth. El launcher lo detecta solo. <b>Stick/cruceta</b> para moverte, <b>boton A/X</b> para seleccionar. La tarjeta se ilumina con borde rosa.' },
+    { claves: ['wallpaper','fondo','fondos','pantalla'], resp: 'En la seccion <b>Media</b> hay 12 wallpapers 4K gratis. Pulsa "Descargar" en el que te guste.' },
+    { claves: ['estadisticas','stats','tiempo','actividad'], resp: 'En el menu hay un enlace a <b>📊 Estadisticas</b>. Muestra tiempo total, juegos lanzados, favorito, graficos de actividad y reparto emuladores vs juegos.' },
+    { claves: ['sorpresa','regalo','premio'], resp: 'El boton <b>🎁 Sorpresa</b> del menu te lleva a una pagina con efectos especiales. Pulsalo cuando quieras.' },
+    { claves: ['no funciona','error','falla','roto'], resp: 'Prueba: 1) Cierra el navegador y vuelve a abrirlo. 2) Si sigue, ejecuta <b>Detener.sh</b> y luego <b>ABRIR EL NIÑO</b>. 3) Si nada funciona, preguntale a Manuel.' },
+    { claves: ['gracias','genial','guay','perfecto'], resp: 'De nada! Estoy aqui para lo que necesites. 🎮' },
+    { claves: ['quien eres','que eres','como te llamas'], resp: 'Soy el asistente de El Nino, un chatbot por reglas. No soy IA real, pero conozco el proyecto al detalle.' },
+    { claves: ['creador','quien lo hizo','manuel','padre'], resp: 'Este proyecto lo hizo <b>Manuel Casimiro Carrasco</b> (urukaisk-maker) desde Reus, Tarragona, como regalo para ti, Mario. 💚' }
+];
+
+var SUGERENCIAS = ['¿Que juegos hay?','¿Como hago backup?','¿Como exporto el diario?','¿Como anado juegos?','¿Que es El Nino?'];
+
+function toggleChatbot(){
+    var bot = document.getElementById('chatbot');
+    if(!bot) return;
+    bot.classList.toggle('open');
+    if(bot.classList.contains('open')){
+        var msgs = document.getElementById('chatbot-mensajes');
+        if(msgs && msgs.children.length === 0){
+            setTimeout(function(){
+                agregarMensaje('bot', 'Hola Mario! 👋 Soy tu asistente de El Nino. Preguntame lo que quieras sobre el Centro de Mando. Si no sabes que escribir, prueba con los botones de abajo.');
+                renderSugerencias();
+            }, 300);
+        }
+        setTimeout(function(){
+            var inp = document.getElementById('chatbot-input');
+            if(inp) inp.focus();
+        }, 400);
+    }
+}
+
+function renderSugerencias(){
+    var cont = document.getElementById('chatbot-sugerencias');
+    if(!cont) return;
+    cont.innerHTML = '';
+    SUGERENCIAS.forEach(function(s){
+        var btn = document.createElement('button');
+        btn.className = 'sugerencia';
+        btn.textContent = s;
+        btn.onclick = function(){
+            document.getElementById('chatbot-input').value = s;
+            enviarChat();
+        };
+        cont.appendChild(btn);
+    });
+}
+
+function agregarMensaje(tipo, texto){
+    var cont = document.getElementById('chatbot-mensajes');
+    if(!cont) return;
+    var div = document.createElement('div');
+    div.className = 'msg ' + tipo;
+    div.innerHTML = texto;
+    cont.appendChild(div);
+    cont.scrollTop = cont.scrollHeight;
+}
+
+function buscarRespuesta(texto){
+    texto = texto.toLowerCase();
+    var mejor = null;
+    var mejorPuntos = 0;
+    for(var i = 0; i < RESPUESTAS.length; i++){
+        var r = RESPUESTAS[i];
+        var puntos = 0;
+        r.claves.forEach(function(k){
+            if(texto.indexOf(k) !== -1) puntos++;
+        });
+        if(puntos > mejorPuntos){
+            mejorPuntos = puntos;
+            mejor = r;
+        }
+    }
+    if(mejorPuntos > 0){
+        return mejor.resp;
+    }
+    return 'No estoy seguro de eso. Prueba con: <b>juegos</b>, <b>backup</b>, <b>diario</b>, <b>configuracion</b>, <b>mando</b>... O mira el <a href="manual.html">📖 Manual</a>.';
+}
+
+function enviarChat(){
+    var input = document.getElementById('chatbot-input');
+    if(!input) return;
+    var texto = input.value.trim();
+    if(!texto) return;
+    agregarMensaje('user', texto);
+    input.value = '';
+    setTimeout(function(){
+        var resp = buscarRespuesta(texto);
+        agregarMensaje('bot', resp);
+    }, 500);
+}
 </script>
 
 <!-- PANEL DE CONFIGURACION -->
@@ -1642,6 +1771,21 @@ window.addEventListener('DOMContentLoaded', function(){
 </div>
 
 <button class="btn-reset" onclick="resetSettings()">🔄 Restaurar valores por defecto</button>
+</div>
+
+<!-- CHATBOT ASISTENTE -->
+<button id="chatbot-toggle" onclick="toggleChatbot()" title="Asistente El Nino">🤖</button>
+<div id="chatbot">
+<div id="chatbot-header">
+<div class="titulo">🤖 <span>Asistente El Nino</span></div>
+<button onclick="toggleChatbot()">✕</button>
+</div>
+<div id="chatbot-mensajes"></div>
+<div id="chatbot-sugerencias"></div>
+<div id="chatbot-input-wrap">
+<input type="text" id="chatbot-input" placeholder="Escribe tu pregunta..." onkeypress="if(event.key==='Enter')enviarChat()">
+<button id="chatbot-enviar" onclick="enviarChat()">➤</button>
+</div>
 </div>
 
 </body>
