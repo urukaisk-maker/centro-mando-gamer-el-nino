@@ -623,6 +623,11 @@ html{scroll-behavior:smooth}
 .radio-volume{flex:1;-webkit-appearance:none;height:6px;border-radius:3px;background:linear-gradient(90deg,#ff8800,#ff00ff);outline:none;cursor:pointer}
 .radio-volume::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;cursor:pointer;box-shadow:0 0 8px #ff8800}
 @media(max-width:768px){#radio-panel{top:70px;right:15px;width:calc(100vw - 30px)}}
+
+#btn-guardar-configs{background:rgba(255,0,255,0.15);border:1px solid #ff00ff;color:#ff00ff;padding:0.45rem 1rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.85rem;transition:all 0.3s;white-space:nowrap}
+#btn-guardar-configs:hover{background:rgba(255,0,255,0.3);transform:translateY(-2px)}
+#btn-restaurar-configs{background:rgba(255,255,255,0.08);border:1px solid #8899aa;color:#8899aa;padding:0.45rem 1rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.85rem;transition:all 0.3s;white-space:nowrap}
+#btn-restaurar-configs:hover{background:rgba(255,255,255,0.15);color:#fff}
 </style>
 </head>
 <body>
@@ -635,6 +640,8 @@ html{scroll-behavior:smooth}
             <button id="btn-mute" onclick="toggleAudio()">🔊</button>
             <button id="btn-backup" onclick="hacerBackup()">💾 Backup</button>
             <button id="btn-limpiar" onclick="hacerLimpieza()">🧹 Limpiar</button>
+            <button id="btn-guardar-configs" onclick="guardarConfigs()">📸 Guardar configs</button>
+            <button id="btn-restaurar-configs" onclick="restaurarConfigs()">🔧 Restaurar configs</button>
             <button id="btn-mandos" onclick="instalarMandos()">🎮 Mandos</button>
             <button id="btn-radio" onclick="toggleRadio()">📻 Radio</button>
             <button id="btn-settings" onclick="toggleSettings()">⚙️</button>
@@ -2097,6 +2104,48 @@ function cambiarEmisora(id){
 function cambiarVolumenRadio(valor){
     radioVolumen = parseInt(valor);
     if(radioAudio) radioAudio.volume = radioVolumen / 100;
+}
+
+// ===== GUARDAR / RESTAURAR CONFIGS =====
+async function guardarConfigs(){
+    var ok = await mostrarModal({
+        icono: '📸',
+        titulo: 'Guardar configuraciones',
+        texto: 'Se guardara una "foto" del estado actual de las configuraciones de:\n\n• PCSX2\n• Dolphin\n• PPSSPP\n• RetroArch\n\nAsi podras restaurarlas si algo se rompe. Se guardan las 5 ultimas.',
+        btnOk: 'Guardar ahora',
+        btnCancel: 'Cancelar'
+    });
+    if(!ok) return;
+    mostrarToast('Guardando configuraciones...', 'info');
+    try {
+        var r = await fetch('/guardar-configs');
+        var txt = await r.text();
+        var match = txt.match(/Tamano: (.+)/);
+        var tamano = match ? match[1] : 'completado';
+        mostrarToast('Configuraciones guardadas (' + tamano + ')', 'success');
+    } catch(e) {
+        mostrarToast('Error al guardar las configuraciones', 'error');
+    }
+}
+
+async function restaurarConfigs(){
+    var ok = await mostrarModal({
+        icono: '🔧',
+        titulo: 'Restaurar configuraciones',
+        texto: 'Se restauraran las configuraciones de la ULTIMA copia guardada.\n\nSe sobreescribiran las configuraciones actuales de:\n\n• PCSX2\n• Dolphin\n• PPSSPP\n• RetroArch\n\nUtil si has desconfigurado algo por error.',
+        btnOk: 'Restaurar',
+        btnCancel: 'Cancelar',
+        tipoBoton: 'danger'
+    });
+    if(!ok) return;
+    mostrarToast('Restaurando configuraciones...', 'info');
+    try {
+        var r = await fetch('/restaurar-configs');
+        var txt = await r.text();
+        mostrarToast('Configuraciones restauradas correctamente', 'success');
+    } catch(e) {
+        mostrarToast('Error al restaurar las configuraciones', 'error');
+    }
 }
 </script>
 

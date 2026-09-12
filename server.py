@@ -286,6 +286,40 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 # Para emuladores pesados, sin core especifico (por ahora)
                 self.not_found("Este sistema necesita configuracion manual")
 
+        elif self.path.startswith("/guardar-configs"):
+            script = os.path.join(DIRECTORY, "guardar_configs.sh")
+            if os.path.exists(script):
+                try:
+                    resultado = subprocess.run(["bash", script], capture_output=True, text=True, timeout=60, input="")
+                    salida = resultado.stdout or "Configs guardadas"
+                    self.send_response(200)
+                    self.send_header("Content-Type", "text/plain; charset=utf-8")
+                    self.end_headers()
+                    self.wfile.write(salida.encode())
+                except Exception as e:
+                    self.send_response(500)
+                    self.end_headers()
+                    self.wfile.write(str(e).encode())
+            else:
+                self.not_found("Script no encontrado")
+
+        elif self.path.startswith("/restaurar-configs"):
+            script = os.path.join(DIRECTORY, "restaurar_configs.sh")
+            if os.path.exists(script):
+                try:
+                    resultado = subprocess.run(["bash", script], capture_output=True, text=True, timeout=60, input="")
+                    salida = resultado.stdout or "Configs restauradas"
+                    self.send_response(200)
+                    self.send_header("Content-Type", "text/plain; charset=utf-8")
+                    self.end_headers()
+                    self.wfile.write(salida.encode())
+                except Exception as e:
+                    self.send_response(500)
+                    self.end_headers()
+                    self.wfile.write(str(e).encode())
+            else:
+                self.not_found("Script no encontrado")
+
         elif self.path.startswith("/escanear-roms"):
             script = os.path.join(DIRECTORY, SCRIPT_ESCANEAR)
             if os.path.exists(script):
