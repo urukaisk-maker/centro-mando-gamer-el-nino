@@ -540,6 +540,22 @@ html{scroll-behavior:smooth}
 #chatbot-input:focus{border-color:#ff00ff;box-shadow:0 0 15px rgba(255,0,255,0.4)}
 #chatbot-enviar{background:linear-gradient(45deg,#00f0ff,#ff00ff);border:none;color:#000;font-weight:bold;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1.1rem;transition:transform 0.2s}
 #chatbot-enviar:hover{transform:scale(1.1)}
+
+/* ===== AVISO DE COOKIES ===== */
+#cookie-banner{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(90deg,rgba(10,10,15,0.98),rgba(26,26,36,0.98));border-top:2px solid #00f0ff;box-shadow:0 -5px 30px rgba(0,240,255,0.4);padding:1.2rem 2rem;z-index:25000;display:none;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;animation:slideUp 0.5s ease-out}
+#cookie-banner.visible{display:flex}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+#cookie-banner .texto{color:#e0e0e0;font-size:0.95rem;flex:1;min-width:250px}
+#cookie-banner .texto strong{color:#00f0ff}
+#cookie-banner .texto a{color:#ff00ff;text-decoration:none;font-weight:bold}
+#cookie-banner .texto a:hover{text-decoration:underline}
+#cookie-banner .acciones{display:flex;gap:0.8rem;flex-wrap:wrap}
+#cookie-banner button{padding:0.7rem 1.5rem;border-radius:30px;font-weight:bold;font-size:0.9rem;cursor:pointer;transition:all 0.3s;font-family:inherit;letter-spacing:0.5px}
+#cookie-banner .btn-aceptar{background:linear-gradient(45deg,#00f0ff,#ff00ff);color:#000;border:none;box-shadow:0 0 20px rgba(0,240,255,0.5)}
+#cookie-banner .btn-aceptar:hover{transform:scale(1.05);box-shadow:0 0 30px rgba(255,0,255,0.8)}
+#cookie-banner .btn-mas{background:transparent;color:#00f0ff;border:1px solid #00f0ff}
+#cookie-banner .btn-mas:hover{background:rgba(0,240,255,0.1)}
+@media(max-width:600px){#cookie-banner{padding:1rem;flex-direction:column;text-align:center}}
 </style>
 </head>
 <body>
@@ -791,21 +807,24 @@ https://github.com/urukaisk-maker                <a href="https://pdroms.de/" ta
 </section>
 
 <!-- FOOTER -->
-    <footer>
-        <div class="footer-content">
-            <div class="footer-links">
-                <a href="#inicio">Inicio</a>
-                <a href="#emuladores">Emuladores</a>
-                <a href="#acerca">Acerca de</a>
-                <a href="https://github.com/urukaisk-maker" target="_blank">GitHub</a>
-                <a href="https://unique-biscochitos-31bcea.netlify.app/" target="_blank">Portfolio</a>
-            </div>
-            <div class="footer-mensaje">
-                <p>✨ Hecho con ❤️ para Mario – Centro de Mando Gamer "El Niño" ✨</p>
-                <p>© 2026 Manuel Casimiro Carrasco</p>
-            </div>
-        </div>
-    </footer>
+    <!-- FOOTER GLOBAL -->
+<footer style="background:linear-gradient(180deg,rgba(10,10,15,0.95),rgba(26,26,36,0.98));border-top:2px solid rgba(0,240,255,0.4);padding:2rem 1.5rem;margin-top:3rem;text-align:center;color:#e0e0e0;font-family:'Segoe UI',sans-serif;box-shadow:0 -5px 30px rgba(0,240,255,0.15)">
+<div style="max-width:1200px;margin:0 auto">
+<div style="display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.2rem">
+<a href="https://github.com/urukaisk-maker/centro-mando-gamer-el-nino" target="_blank" style="color:#00f0ff;text-decoration:none;font-weight:bold;transition:all 0.3s;font-size:0.95rem">🐙 GitHub</a>
+<a href="https://github.com/urukaisk-maker" target="_blank" style="color:#00f0ff;text-decoration:none;font-weight:bold;font-size:0.95rem">👤 Perfil</a>
+<a href="https://centro-mando-gamer-el-nino.vercel.app/" target="_blank" style="color:#00f0ff;text-decoration:none;font-weight:bold;font-size:0.95rem">🌐 Demo online</a>
+<a href="https://unique-biscochitos-31bcea.netlify.app/" target="_blank" style="color:#ff00ff;text-decoration:none;font-weight:bold;font-size:0.95rem">💼 Portfolio</a>
+</div>
+<div style="display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.5rem;padding-bottom:1.2rem;border-bottom:1px solid rgba(0,240,255,0.15)">
+<a href="/01_EL_NINO_LAUNCHER/privacidad.html" style="color:#8899aa;text-decoration:none;font-size:0.85rem">🔒 Privacidad</a>
+<a href="/01_EL_NINO_LAUNCHER/terminos.html" style="color:#8899aa;text-decoration:none;font-size:0.85rem">📋 Terminos</a>
+<a href="/01_EL_NINO_LAUNCHER/aviso_legal.html" style="color:#8899aa;text-decoration:none;font-size:0.85rem">⚖ Aviso legal</a>
+</div>
+<p style="color:#8899aa;font-style:italic;font-size:0.9rem;margin:0.3rem 0">✨ Hecho con ❤ para Mario — Centro de Mando Gamer "El Nino" ✨</p>
+<p style="color:#666;font-size:0.8rem;margin-top:0.8rem">© 2026 Manuel Casimiro Carrasco · Reus, Tarragona</p>
+</div>
+</footer>
 
     <script>
         // Menú móvil
@@ -1730,6 +1749,22 @@ function enviarChat(){
         agregarMensaje('bot', resp);
     }, 500);
 }
+
+// ===== AVISO DE COOKIES =====
+function aceptarCookies(){
+    localStorage.setItem('cookiesElNino', 'aceptadas');
+    var banner = document.getElementById('cookie-banner');
+    if(banner) banner.classList.remove('visible');
+}
+
+window.addEventListener('DOMContentLoaded', function(){
+    if(!localStorage.getItem('cookiesElNino')){
+        setTimeout(function(){
+            var banner = document.getElementById('cookie-banner');
+            if(banner) banner.classList.add('visible');
+        }, 2000);
+    }
+});
 </script>
 
 <!-- PANEL DE CONFIGURACION -->
@@ -1785,6 +1820,19 @@ function enviarChat(){
 <div id="chatbot-input-wrap">
 <input type="text" id="chatbot-input" placeholder="Escribe tu pregunta..." onkeypress="if(event.key==='Enter')enviarChat()">
 <button id="chatbot-enviar" onclick="enviarChat()">➤</button>
+</div>
+</div>
+
+
+<!-- AVISO DE COOKIES -->
+<div id="cookie-banner">
+<div class="texto">
+🍪 <strong>Aviso:</strong> Este proyecto usa <code>localStorage</code> para guardar tus preferencias del diario, configuracion y actividad. No usa cookies externas ni envia datos a ningun servidor.
+<a href="privacidad.html" target="_blank">Mas informacion</a>
+</div>
+<div class="acciones">
+<button class="btn-mas" onclick="window.open('privacidad.html','_blank')">Saber mas</button>
+<button class="btn-aceptar" onclick="aceptarCookies()">✓ Aceptar</button>
 </div>
 </div>
 
