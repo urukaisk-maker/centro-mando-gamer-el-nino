@@ -451,6 +451,16 @@ nav ul{justify-content:flex-start}
 .hero p{font-size:0.85rem}
 #buscador{padding:0.9rem 1.4rem;font-size:1rem}
 }
+
+/* ===== EFECTOS VISUALES ===== */
+#neon-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+.tarjeta{transition:transform 0.3s, box-shadow 0.3s, border-color 0.3s}
+.tarjeta .glow-point{position:absolute;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(0,240,255,0.35),transparent 70%);pointer-events:none;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.3s;filter:blur(20px)}
+.tarjeta:hover .glow-point{opacity:1}
+.seccion{scroll-margin-top:100px;transition:opacity 0.6s ease, transform 0.6s ease}
+.seccion.aparece{opacity:0;transform:translateY(30px)}
+.seccion.visible{opacity:1;transform:translateY(0)}
+html{scroll-behavior:smooth}
 </style>
 </head>
 <body>
@@ -1256,6 +1266,105 @@ document.addEventListener('click', function(e){
     input.addEventListener('input', function(){
         buscarGlobal(this.value.trim());
     });
+})();
+
+// ===== EFECTOS VISUALES =====
+
+// --- Particulas de neon flotando ---
+(function(){
+var canvas = document.getElementById('neon-canvas');
+if(!canvas) return;
+var ctx = canvas.getContext('2d');
+function resize(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+
+var colores = ['#00f0ff', '#ff00ff', '#00ff88', '#7a00ff'];
+var particulas = [];
+var NUM = 40;
+for(var i = 0; i < NUM; i++){
+    particulas.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 2 + 0.5,
+        dx: (Math.random() - 0.5) * 0.3,
+        dy: (Math.random() - 0.5) * 0.3,
+        color: colores[Math.floor(Math.random() * colores.length)],
+        alpha: Math.random() * 0.4 + 0.2
+    });
+}
+
+function animar(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particulas.forEach(function(p){
+        // Dibujar
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.alpha;
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = p.color;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        // Mover
+        p.x += p.dx;
+        p.y += p.dy;
+        if(p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if(p.y < 0 || p.y > canvas.height) p.dy *= -1;
+    });
+    // Lineas conectando particulas cercanas
+    for(var i = 0; i < particulas.length; i++){
+        for(var j = i + 1; j < particulas.length; j++){
+            var dx = particulas[i].x - particulas[j].x;
+            var dy = particulas[i].y - particulas[j].y;
+            var dist = Math.sqrt(dx*dx + dy*dy);
+            if(dist < 130){
+                ctx.beginPath();
+                ctx.moveTo(particulas[i].x, particulas[i].y);
+                ctx.lineTo(particulas[j].x, particulas[j].y);
+                ctx.strokeStyle = particulas[i].color;
+                ctx.globalAlpha = (1 - dist/130) * 0.15;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                ctx.globalAlpha = 1;
+            }
+        }
+    }
+    requestAnimationFrame(animar);
+}
+animar();
+})();
+
+// --- Glow dinamico en tarjetas ---
+(function(){
+document.querySelectorAll('.tarjeta').forEach(function(t){
+    var glow = document.createElement('div');
+    glow.className = 'glow-point';
+    t.appendChild(glow);
+    t.addEventListener('mousemove', function(e){
+        var rect = t.getBoundingClientRect();
+        var x = e.clientX - rect.left;
+        var y = e.clientY - rect.top;
+        glow.style.left = x + 'px';
+        glow.style.top = y + 'px';
+    });
+});
+})();
+
+// --- Transiciones suaves al hacer scroll ---
+(function(){
+if(!('IntersectionObserver' in window)) return;
+var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+        if(entry.isIntersecting){
+            entry.target.classList.add('visible');
+        }
+    });
+}, { threshold: 0.1 });
+document.querySelectorAll('.seccion').forEach(function(s){
+    s.classList.add('aparece');
+    observer.observe(s);
+});
 })();
 </script>
 
