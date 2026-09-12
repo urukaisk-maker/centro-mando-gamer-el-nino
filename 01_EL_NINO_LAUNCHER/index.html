@@ -659,6 +659,8 @@ html{scroll-behavior:smooth}
 /* Header con ocultacion inteligente al hacer scroll */
 header{transition:transform 0.35s ease-in-out !important}
 header.header-oculto{transform:translateY(-100%)}
+#btn-comprimir{background:rgba(0,255,136,0.15);border:1px solid #00ff88;color:#00ff88;padding:0.45rem 1rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.85rem;transition:all 0.3s;white-space:nowrap}
+#btn-comprimir:hover{background:rgba(0,255,136,0.3);transform:translateY(-2px)}
 </style>
 </head>
 <body>
@@ -676,6 +678,7 @@ header.header-oculto{transform:translateY(-100%)}
             <button id="btn-mandos" onclick="instalarMandos()">🎮 Mandos</button>
             <button id="btn-radio" onclick="toggleRadio()">📻 Radio</button>
 <button id="btn-benchmark" onclick="window.open('benchmark.html', '_blank')">⚡ Benchmark</button>
+<button id="btn-comprimir" onclick="comprimirRoms()">📦 Comprimir</button>
             <button id="btn-settings" onclick="toggleSettings()">⚙️</button>
             <button class="menu-toggle" id="menuToggle">☰</button>
             <nav>
@@ -2332,6 +2335,30 @@ if ('serviceWorker' in navigator) {
         ultimoScroll = actual;
     }, {passive:true});
 })();
+
+// ===== COMPRIMIR ROMS =====
+async function comprimirRoms(){
+    var ok = await mostrarModal({
+        icono: '📦',
+        titulo: 'Comprimir ROMs a CHD',
+        texto: 'Se comprimiran las ISOs de PS2 y GameCube/Wii a formato .chd. Ocupa 40-60% menos sin perder calidad. Puede tardar 5-15 min por juego. Continuar?',
+        btnOk: 'Comprimir',
+        btnCancel: 'Cancelar'
+    });
+    if(!ok) return;
+    mostrarToast('Comprimiendo ROMs... Esto puede tardar.', 'info');
+    try {
+        var r = await fetch('/comprimir-roms');
+        var txt = await r.text();
+        if(txt.indexOf('No hay ISOs') !== -1){
+            mostrarToast('No hay ISOs para comprimir todavia', 'info');
+        } else {
+            mostrarToast('Compresion completada. Revisa la salida.', 'success');
+        }
+    } catch(e) {
+        mostrarToast('Error al comprimir', 'error');
+    }
+}
 </script>
 
 <!-- PANEL DE CONFIGURACION -->

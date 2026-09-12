@@ -326,6 +326,23 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(str(e).encode())
 
+        elif self.path.startswith("/comprimir-roms"):
+            script = os.path.join(DIRECTORY, "comprimir_roms.sh")
+            if os.path.exists(script):
+                try:
+                    resultado = subprocess.run(["bash", script], capture_output=True, text=True, timeout=600, input="")
+                    salida = resultado.stdout or "Compresion completada"
+                    self.send_response(200)
+                    self.send_header("Content-Type", "text/plain; charset=utf-8")
+                    self.end_headers()
+                    self.wfile.write(salida.encode())
+                except Exception as e:
+                    self.send_response(500)
+                    self.end_headers()
+                    self.wfile.write(str(e).encode())
+            else:
+                self.not_found("Script no encontrado")
+
         elif self.path.startswith("/benchmark"):
             script = os.path.join(DIRECTORY, "benchmark.py")
             if os.path.exists(script):
