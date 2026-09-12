@@ -575,6 +575,30 @@ html{scroll-behavior:smooth}
 
 #btn-limpiar{background:rgba(0,255,136,0.15);border:1px solid #00ff88;color:#00ff88;padding:0.45rem 1rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.85rem;transition:all 0.3s;white-space:nowrap}
 #btn-limpiar:hover{background:rgba(0,255,136,0.3);transform:translateY(-2px)}
+
+#btn-mandos{background:rgba(0,240,255,0.15);border:1px solid #00f0ff;color:#00f0ff;padding:0.45rem 1rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.85rem;transition:all 0.3s;white-space:nowrap}
+#btn-mandos:hover{background:rgba(0,240,255,0.3);transform:translateY(-2px)}
+
+/* ===== SECCION DE ROMS DINAMICAS ===== */
+#seccion-roms{display:none}
+#seccion-roms.visible{display:block}
+.rom-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem}
+.rom-info{color:#8899aa;font-size:0.9rem;font-style:italic}
+.rom-info strong{color:#00f0ff}
+.btn-rescan{background:linear-gradient(45deg,#00f0ff,#ff00ff);color:#000;border:none;padding:0.6rem 1.2rem;border-radius:20px;font-weight:bold;cursor:pointer;transition:all 0.3s;font-size:0.85rem}
+.btn-rescan:hover{transform:scale(1.05);box-shadow:0 0 20px rgba(0,240,255,0.6)}
+.rom-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem;margin-top:1.5rem}
+.rom-card{background:linear-gradient(145deg,#12121a,#1a1a24);border:2px solid rgba(0,240,255,0.3);border-radius:14px;padding:1.2rem;transition:all 0.3s;position:relative;overflow:hidden}
+.rom-card:hover{transform:translateY(-5px);border-color:#00f0ff;box-shadow:0 10px 30px rgba(0,240,255,0.3)}
+.rom-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--rom-color,#00f0ff);box-shadow:0 0 15px var(--rom-color,#00f0ff)}
+.rom-card h3{color:var(--rom-color,#00f0ff);font-size:1.1rem;margin-bottom:0.4rem;text-shadow:0 0 10px var(--rom-color,#00f0ff)}
+.rom-card h3 span{font-size:1.3rem;margin-right:0.4rem;vertical-align:middle}
+.rom-card .sistema{color:#8899aa;font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:0.8rem}
+.rom-card .info{color:#d0d0e0;font-size:0.8rem;margin-bottom:1rem}
+.rom-card .btn-jugar{display:inline-block;background:linear-gradient(45deg,#00f0ff,#ff00ff);color:#000;padding:0.5rem 1rem;border-radius:20px;text-decoration:none;font-weight:bold;font-size:0.85rem;transition:transform 0.2s}
+.rom-card .btn-jugar:hover{transform:scale(1.05)}
+.rom-vacio{text-align:center;padding:3rem 1rem;color:#8899aa;font-style:italic;background:rgba(26,26,36,0.5);border:1px dashed rgba(0,240,255,0.3);border-radius:14px;margin-top:1.5rem}
+.rom-vacio strong{color:#00f0ff}
 </style>
 </head>
 <body>
@@ -587,6 +611,7 @@ html{scroll-behavior:smooth}
             <button id="btn-mute" onclick="toggleAudio()">🔊</button>
             <button id="btn-backup" onclick="hacerBackup()">💾 Backup</button>
             <button id="btn-limpiar" onclick="hacerLimpieza()">🧹 Limpiar</button>
+            <button id="btn-mandos" onclick="instalarMandos()">🎮 Mandos</button>
             <button id="btn-settings" onclick="toggleSettings()">⚙️</button>
             <button class="menu-toggle" id="menuToggle">☰</button>
             <nav>
@@ -594,6 +619,7 @@ html{scroll-behavior:smooth}
                     <li><a href="#inicio">Inicio</a></li>
                     <li><a href="sorpresa.html" target="_blank">🎁 Sorpresa</a></li>
                     <li><a href="#emuladores">Emuladores</a></li>
+<li><a href="#seccion-roms">📀 Mis Juegos</a></li>
                     <li><a href="#streaming">Streaming</a></li>
                     <li><a href="#mods">Mods</a></li>
                     <li><a href="#herramientas">Herramientas</a></li>
@@ -717,7 +743,20 @@ html{scroll-behavior:smooth}
         </section>
 
         <!-- OTRAS SECCIONES -->
-        <section id="streaming" class="seccion">
+        
+<!-- SECCION DE ROMS DINAMICAS -->
+<section id="seccion-roms">
+<div class="rom-header">
+<div>
+<h2 style="color:#00f0ff;margin-bottom:0.3rem">📀 Mi coleccion de juegos</h2>
+<div class="rom-info" id="rom-info">Cargando catalogo...</div>
+</div>
+<button class="btn-rescan" onclick="reescanearRoms()">🔄 Reescanear</button>
+</div>
+<div class="rom-grid" id="rom-grid"></div>
+</section>
+
+<section id="streaming" class="seccion">
 <h2>📡 Streaming y Clips</h2>
 <p>Recursos para grabar y emitir tus partidas.</p>
 <p>
@@ -1881,6 +1920,83 @@ async function hacerLimpieza(){
             mostrarToast('Error al limpiar el disco', 'error');
         });
 }
+
+// ===== INSTALAR MANDOS =====
+async function instalarMandos(){
+    var ok = await mostrarModal({
+        icono: '🎮',
+        titulo: 'Instalar perfiles de mando',
+        texto: 'Se instalaran los perfiles preconfigurados para:\n\n• Xbox One/Series\n• Sony DualShock 4\n• 8BitDo Pro 2\n\nSe copiaran a RetroArch, PCSX2, PPSSPP y Dolphin.',
+        btnOk: 'Instalar',
+        btnCancel: 'Cancelar'
+    });
+    if(!ok) return;
+    mostrarToast('Instalando perfiles de mando...', 'info');
+    fetch('/instalar-mandos')
+        .then(function(r){ return r.text(); })
+        .then(function(txt){
+            var ok_count = (txt.match(/OK -/g) || []).length;
+            mostrarToast('Perfiles instalados: ' + ok_count + ' emuladores configurados', 'success');
+        })
+        .catch(function(){
+            mostrarToast('Error al instalar los perfiles', 'error');
+        });
+}
+
+// ===== CARGAR ROMS DINAMICAS =====
+async function cargarRoms(){
+    try {
+        var r = await fetch('/01_EL_NINO_LAUNCHER/juegos.json?_=' + Date.now());
+        var data = await r.json();
+        var seccion = document.getElementById('seccion-roms');
+        var grid = document.getElementById('rom-grid');
+        var info = document.getElementById('rom-info');
+        if(!seccion || !grid) return;
+
+        if(data.total === 0){
+            info.innerHTML = 'Todavia no hay juegos en las carpetas de emuladores';
+            grid.innerHTML = '<div class="rom-vacio">No hay juegos todavia.<br><br>Anade ROMs o ISOs a las carpetas de <strong>02_EMULADORES_Y_ROMS/</strong> y pulsa "🔄 Reescanear".</div>';
+            seccion.classList.add('visible');
+            return;
+        }
+
+        info.innerHTML = '<strong>' + data.total + '</strong> juegos · Actualizado: ' + data.actualizado;
+        grid.innerHTML = '';
+        data.juegos.forEach(function(j){
+            var card = document.createElement('div');
+            card.className = 'rom-card';
+            card.style.setProperty('--rom-color', j.color);
+            var url = '/rom/' + j.sistema + '/' + encodeURIComponent(j.archivo);
+            card.innerHTML = '<h3><span>' + j.icono + '</span>' + j.nombre + '</h3>' +
+                '<div class="sistema">' + j.sistema_nombre + '</div>' +
+                '<div class="info">' + (j.tamano_mb > 0 ? j.tamano_mb + ' MB' : 'Tamano desconocido') + '</div>' +
+                '<a href="' + url + '" class="btn-jugar">▶ Jugar</a>';
+            grid.appendChild(card);
+        });
+        seccion.classList.add('visible');
+    } catch(e) {
+        console.error('Error cargando ROMs:', e);
+    }
+}
+
+async function reescanearRoms(){
+    mostrarToast('Escaneando carpetas...', 'info');
+    try {
+        var r = await fetch('/escanear-roms');
+        var txt = await r.text();
+        var match = txt.match(/ROMs encontradas: (\d+)/);
+        var total = match ? match[1] : '?';
+        mostrarToast('Escaneo completado: ' + total + ' juegos encontrados', 'success');
+        cargarRoms();
+    } catch(e) {
+        mostrarToast('Error al escanear', 'error');
+    }
+}
+
+// Cargar al inicio
+window.addEventListener('DOMContentLoaded', function(){
+    setTimeout(cargarRoms, 300);
+});
 </script>
 
 <!-- PANEL DE CONFIGURACION -->

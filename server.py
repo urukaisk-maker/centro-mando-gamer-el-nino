@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import http.server, socketserver, subprocess, os, glob, json, socket, time, threading
+import http.server, socketserver, subprocess, os, glob, json, socket, time, threading, urllib.parse
 
 PORT = 8080
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
@@ -7,6 +7,15 @@ DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 # ===== REGISTRO DE PROCESOS ACTIVOS =====
 procesos_activos = {}
 lock = threading.Lock()
+
+
+MAPEO_EMULADOR = {
+    "ps2": {"core": None, "emu": "pcsx2"},
+    "psp": {"core": None, "emu": "ppsspp"},
+    "gamecube_wii": {"core": None, "emu": "dolphin"},
+    "gba_snes": {"core": "mgba", "emu": "retroarch"},
+    "arcade": {"core": "fceumm", "emu": "retroarch"}
+}
 
 REQUISITOS = {
     "pcsx2": {
@@ -186,6 +195,82 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps({"activos": activos}).encode())
 
+        elif self.path.startswith("/rom/"):
+            partes = self.path.split("/rom/")[1].strip("/").split("/", 1)
+            if len(partes) < 2:
+                self.not_found("Falta el archivo")
+                return
+            sistema = urllib.parse.unquote(partes[0])
+            archivo = urllib.parse.unquote(partes[1])
+            # Buscar la ROM en el JSON
+            json_path = os.path.join(DIRECTORY, "01_EL_NINO_LAUNCHER", "juegos.json")
+            if not os.path.exists(json_path):
+                self.not_found("No hay catalogo de ROMs")
+                return
+            with open(json_path, encoding="utf-8") as f:
+                data = json.load(f)
+            rom = None
+            for j in data["juegos"]:
+                if j["sistema"] == sistema and j["archivo"] == archivo:
+                    rom = j
+                    break
+            if not rom:
+                self.not_found("ROM no encontrada")
+                return
+            # Lanzar con RetroArch y el core adecuado
+            if rom["emulador"] == "retroarch":
+                core_nombre = MAPEO_EMULADOR.get(sistema, {}).get("core", "mgba")
+                core_path = os.path.expanduser("~/.config/retroarch/cores/" + core_nombre + "_libretro.so")
+                if not os.path.exists(core_path):
+                    self.send_response(200)
+                    self.send_header("Content-Type", "text/html; charset=utf-8")
+                    self.end_headers()
+                    html = "<html><body style='background:#0a0a0f;color:#ff00ff;font-family:sans-serif;padding:3rem;text-align:center'><h1>Falta el core</h1><p>Necesitas el core <code>" + core_nombre + "_libretro.so</code></p><p>Descargalo con:</p><pre style='background:#1a1a24;padding:1rem;border-radius:8px;color:#00f0ff'>cd ~/.config/retroarch/cores/<br>wget https://buildbot.libretro.com/nightly/linux/x86_64/latest/" + core_nombre + "_libretro.so.zip<br>unzip " + core_nombre + "_libretro.so.zip</pre><a href='/01_EL_NINO_LAUNCHER/index.html' style='color:#00f0ff'>Volver</a></body></html>"
+                    self.wfile.write(html.encode())
+                    return
+                proc = subprocess.Popen(["retroarch", "-L", core_path, rom["ruta"]])
+                with lock:
+                    procesos_activos["rom_" + rom["nombre"]] = {
+                        "pid": proc.pid, "proceso": proc,
+                        "hora": time.time(), "tipo": "juego"
+                    }
+                self.redirect("rom_" + rom["nombre"])
+            else:
+                # Para emuladores pesados, sin core especifico (por ahora)
+                self.not_found("Este sistema necesita configuracion manual")
+
+        elif self.path.startswith("/escanear-roms"):
+            script = os.path.join(DIRECTORY, "escanear_roms.py")
+            if os.path.exists(script):
+                try:
+                    resultado = subprocess.run(["python3", script], capture_output=True, text=True, timeout=60)
+                    salida = resultado.stdout or "Escaneo completado"
+                    self.send_response(200)
+                    self.send_header("Content-Type", "text/plain; charset=utf-8")
+                    self.end_headers()
+                    self.wfile.write(salida.encode())
+                except Exception as e:
+                    self.send_response(500)
+                    self.end_headers()
+                    self.wfile.write(str(e).encode())
+            else:
+                self.not_found("Script de escaneo no encontrado")
+        elif self.path.startswith("/instalar-mandos"):
+            script = os.path.join(DIRECTORY, "05_HERRAMIENTAS_GAMER", "instalar_mandos.sh")
+            if os.path.exists(script):
+                try:
+                    resultado = subprocess.run(["bash", script], capture_output=True, text=True, timeout=60, input="")
+                    salida = resultado.stdout or "Mandos instalados"
+                    self.send_response(200)
+                    self.send_header("Content-Type", "text/plain; charset=utf-8")
+                    self.end_headers()
+                    self.wfile.write(salida.encode())
+                except Exception as e:
+                    self.send_response(500)
+                    self.end_headers()
+                    self.wfile.write(str(e).encode())
+            else:
+                self.not_found("Script de instalacion no encontrado")
         elif self.path.startswith("/limpiar"):
             script = os.path.join(DIRECTORY, "limpiar_cache.sh")
             if os.path.exists(script):

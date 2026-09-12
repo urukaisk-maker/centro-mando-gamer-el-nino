@@ -1,0 +1,18 @@
+{
+  "actualizado": "2026-09-12 12:36:05",
+  "total": 1,
+  "juegos": [
+    {
+      "id": "0",
+      "nombre": "tobu",
+      "archivo": "tobu.gb",
+      "ruta": "/run/media/urukais/PROYECTOS/02_EMULADORES_Y_ROMS/04_GBA_SNES/tobu.gb",
+      "sistema": "gba_snes",
+      "sistema_nombre": "GBA / SNES / NES",
+      "icono": "🔹",
+      "color": "#00ff88",
+      "emulador": "retroarch",
+      "tamano_mb": 0.2
+    }
+  ]
+}
