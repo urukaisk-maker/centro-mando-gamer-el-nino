@@ -286,6 +286,63 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 # Para emuladores pesados, sin core especifico (por ahora)
                 self.not_found("Este sistema necesita configuracion manual")
 
+        elif self.path.startswith("/tecla/"):
+            # Enviar una tecla al PC (press + release)
+            tecla = urllib.parse.unquote(self.path.split("/tecla/")[1].strip("/"))
+            try:
+                subprocess.Popen(["xdotool", "key", tecla])
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(b'{"ok": true}')
+            except Exception as e:
+                self.send_response(500)
+                self.end_headers()
+                self.wfile.write(str(e).encode())
+
+        elif self.path.startswith("/tecla-down/"):
+            tecla = urllib.parse.unquote(self.path.split("/tecla-down/")[1].strip("/"))
+            try:
+                subprocess.Popen(["xdotool", "keydown", tecla])
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(b'{"ok": true}')
+            except Exception as e:
+                self.send_response(500)
+                self.end_headers()
+                self.wfile.write(str(e).encode())
+
+        elif self.path.startswith("/tecla-up/"):
+            tecla = urllib.parse.unquote(self.path.split("/tecla-up/")[1].strip("/"))
+            try:
+                subprocess.Popen(["xdotool", "keyup", tecla])
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(b'{"ok": true}')
+            except Exception as e:
+                self.send_response(500)
+                self.end_headers()
+                self.wfile.write(str(e).encode())
+
+        elif self.path.startswith("/benchmark"):
+            script = os.path.join(DIRECTORY, "benchmark.py")
+            if os.path.exists(script):
+                try:
+                    resultado = subprocess.run(["python3", script], capture_output=True, text=True, timeout=30)
+                    salida = resultado.stdout or "Benchmark completado"
+                    self.send_response(200)
+                    self.send_header("Content-Type", "text/plain; charset=utf-8")
+                    self.end_headers()
+                    self.wfile.write(salida.encode())
+                except Exception as e:
+                    self.send_response(500)
+                    self.end_headers()
+                    self.wfile.write(str(e).encode())
+            else:
+                self.not_found("Script de benchmark no encontrado")
+
         elif self.path.startswith("/guardar-configs"):
             script = os.path.join(DIRECTORY, "guardar_configs.sh")
             if os.path.exists(script):

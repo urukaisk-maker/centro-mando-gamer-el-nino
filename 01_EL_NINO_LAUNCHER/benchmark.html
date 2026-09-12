@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Benchmark - El Nino</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:2rem 1rem;background-image:radial-gradient(circle at 20% 30%,rgba(0,240,255,0.05),transparent 50%),radial-gradient(circle at 80% 70%,rgba(255,0,255,0.05),transparent 50%);background-attachment:fixed}
+.container{max-width:1100px;margin:0 auto}
+a.volver{color:#ff00ff;text-decoration:none;font-weight:bold;display:inline-block;margin-bottom:1.5rem;font-size:1.05rem}
+a.volver:hover{text-decoration:underline}
+h1{color:#00f0ff;text-align:center;font-size:2.5rem;text-shadow:0 0 20px #00f0ff;margin-bottom:0.5rem}
+.sub{text-align:center;color:#8899aa;margin-bottom:2.5rem;font-style:italic}
+.categoria-box{text-align:center;background:linear-gradient(145deg,#12121a,#1a1a24);border:3px solid;border-radius:20px;padding:2rem;margin-bottom:2.5rem;position:relative;overflow:hidden}
+.categoria-box::before{content:"";position:absolute;top:0;left:-100%;width:100%;height:4px;background:linear-gradient(90deg,transparent,currentColor,transparent);animation:lineaCat 3s linear infinite}
+@keyframes lineaCat{to{left:100%}}
+.categoria-nombre{font-size:2.5rem;font-weight:900;letter-spacing:3px;text-shadow:0 0 20px currentColor;display:block;margin-bottom:0.5rem}
+.categoria-puntos{color:#8899aa;font-size:1rem}
+.barra-puntos{width:100%;max-width:500px;height:14px;background:#0a0a0f;border-radius:7px;margin:1.5rem auto 0.5rem;overflow:hidden;border:1px solid rgba(255,255,255,0.1)}
+.barra-fill{height:100%;background:linear-gradient(90deg,#ff8800,#00f0ff,#00ff88);border-radius:7px;transition:width 1s ease-out;box-shadow:0 0 15px currentColor}
+.hardware-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.2rem;margin-bottom:2.5rem}
+.hw-card{background:linear-gradient(145deg,#12121a,#1a1a24);border:2px solid rgba(0,240,255,0.3);border-radius:16px;padding:1.5rem;transition:all 0.3s;position:relative;overflow:hidden}
+.hw-card:hover{transform:translateY(-5px);border-color:#00f0ff;box-shadow:0 10px 30px rgba(0,240,255,0.3)}
+.hw-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#00f0ff,#ff00ff)}
+.hw-icon{font-size:2.5rem;display:block;margin-bottom:0.5rem}
+.hw-label{color:#8899aa;font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:0.3rem}
+.hw-valor{color:#00f0ff;font-size:1.05rem;font-weight:bold;text-shadow:0 0 10px rgba(0,240,255,0.4);word-break:break-word}
+.hw-detalle{color:#8899aa;font-size:0.8rem;margin-top:0.3rem}
+.detalle-lista{background:#12121a;border:1px solid rgba(0,240,255,0.2);border-radius:16px;padding:1.5rem;margin-bottom:2.5rem}
+.detalle-lista h2{color:#ff00ff;font-size:1.3rem;margin-bottom:1rem}
+.detalle-lista ul{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:0.6rem}
+.detalle-lista li{background:rgba(0,240,255,0.05);border-left:3px solid #00f0ff;padding:0.6rem 1rem;border-radius:6px;color:#d0d0e0;font-size:0.95rem}
+.recs-titulo{color:#00f0ff;font-size:1.6rem;margin-bottom:1.5rem;text-align:center;text-shadow:0 0 15px rgba(0,240,255,0.4)}
+.recs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem;margin-bottom:2.5rem}
+.rec-card{background:linear-gradient(145deg,#12121a,#1a1a24);border:2px solid rgba(0,240,255,0.3);border-radius:16px;padding:1.5rem;position:relative;overflow:hidden}
+.rec-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#00f0ff,#ff00ff)}
+.rec-card h3{color:#ff00ff;font-size:1.2rem;margin-bottom:1rem;text-shadow:0 0 10px rgba(255,0,255,0.4)}
+.rec-item{display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid rgba(0,240,255,0.1);font-size:0.9rem}
+.rec-item:last-child{border-bottom:none}
+.rec-item .label{color:#8899aa}
+.rec-item .valor{color:#00f0ff;font-weight:bold;text-align:right;max-width:60%}
+.btn-repetir{display:block;margin:0 auto;padding:1rem 2.5rem;background:linear-gradient(45deg,#00f0ff,#ff00ff);color:#000;border:none;border-radius:30px;font-weight:bold;font-size:1rem;cursor:pointer;transition:all 0.3s;font-family:inherit;letter-spacing:1px}
+.btn-repetir:hover{transform:scale(1.05);box-shadow:0 0 30px rgba(255,0,255,0.7)}
+.vacio{text-align:center;padding:3rem;color:#8899aa;font-style:italic}
+.vacio a{color:#00f0ff;text-decoration:none;font-weight:bold}
+@media(max-width:600px){h1{font-size:1.8rem}.categoria-nombre{font-size:1.8rem}}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="volver" href="/01_EL_NINO_LAUNCHER/index.html">← Volver al Dashboard</a>
+<h1>⚡ Benchmark del PC</h1>
+<p class="sub">Analisis de rendimiento y recomendaciones personalizadas</p>
+<div id="contenido"><div class="vacio">Cargando analisis... <br><br>Si tarda mucho, pulsa <a href="#" onclick="cargarBenchmark();return false;">aqui</a> para reintentar.</div></div>
+</div>
+<script>
+function cargarBenchmark(){
+    fetch("/01_EL_NINO_LAUNCHER/benchmark.json?_=" + Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        var cont = document.getElementById("contenido");
+        var html = "";
+
+        // Categoria principal
+        html += '<div class="categoria-box" style="color:' + data.color + ';border-color:' + data.color + '">';
+        html += '<span class="categoria-nombre">' + data.categoria + '</span>';
+        html += '<div class="categoria-puntos">' + data.puntos + ' / 100 puntos</div>';
+        html += '<div class="barra-puntos"><div class="barra-fill" style="width:' + data.puntos + '%;color:' + data.color + '"></div></div>';
+        html += '</div>';
+
+        // Hardware
+        html += '<div class="hardware-grid">';
+        html += '<div class="hw-card"><span class="hw-icon">🧠</span><span class="hw-label">Procesador</span><div class="hw-valor">' + data.cpu.modelo + '</div><div class="hw-detalle">' + data.cpu.hilos + ' hilos · ' + Math.round(data.cpu.mhz) + ' MHz</div></div>';
+        html += '<div class="hw-card"><span class="hw-icon">💾</span><span class="hw-label">Memoria RAM</span><div class="hw-valor">' + data.ram_gb + ' GB</div><div class="hw-detalle">Memoria del sistema</div></div>';
+        var gpuTexto = (data.gpus && data.gpus.length > 0) ? data.gpus[0].split(":").pop().trim() : "No detectada";
+        html += '<div class="hw-card"><span class="hw-icon">🎨</span><span class="hw-label">Tarjeta grafica</span><div class="hw-valor">' + gpuTexto + '</div><div class="hw-detalle">' + (data.gpus ? data.gpus.length : 0) + ' GPU(s) detectada(s)</div></div>';
+        html += '<div class="hw-card"><span class="hw-icon">💿</span><span class="hw-label">Disco libre</span><div class="hw-valor">' + data.disco_libre + '</div><div class="hw-detalle">Espacio disponible</div></div>';
+        html += '</div>';
+
+        // Detalle del analisis
+        html += '<div class="detalle-lista"><h2>📋 Analisis detallado</h2><ul>';
+        data.detalle.forEach(function(d){
+            html += '<li>' + d + '</li>';
+        });
+        html += '</ul></div>';
+
+        // Recomendaciones
+        html += '<h2 class="recs-titulo">🎮 Configuracion recomendada</h2>';
+        html += '<div class="recs-grid">';
+        for(var emu in data.recomendaciones){
+            var rec = data.recomendaciones[emu];
+            html += '<div class="rec-card"><h3>' + emu + '</h3>';
+            for(var clave in rec){
+                html += '<div class="rec-item"><span class="label">' + clave + '</span><span class="valor">' + rec[clave] + '</span></div>';
+            }
+            html += '</div>';
+        }
+        html += '</div>';
+
+        // Boton repetir
+        html += '<button class="btn-repetir" onclick="repetirBenchmark()">🔄 Volver a analizar</button>';
+
+        cont.innerHTML = html;
+    })
+    .catch(function(e){
+        document.getElementById("contenido").innerHTML = '<div class="vacio">No se ha podido cargar el benchmark.<br><br><a href="#" onclick="repetirBenchmark();return false;">Pulsa aqui para ejecutarlo</a></div>';
+    });
+}
+
+function repetirBenchmark(){
+    var cont = document.getElementById("contenido");
+    cont.innerHTML = '<div class="vacio">Ejecutando benchmark... (10-20 segundos)</div>';
+    fetch("/benchmark")
+    .then(function(r){ return r.text(); })
+    .then(function(){ cargarBenchmark(); })
+    .catch(function(){ cont.innerHTML = '<div class="vacio">Error al ejecutar el benchmark</div>'; });
+}
+
+cargarBenchmark();
+</script>
+</body>
+</html>

@@ -650,6 +650,8 @@ html{scroll-behavior:smooth}
 .kiosco-error{color:#ff0044;font-size:0.9rem;margin-top:1rem;min-height:1.2rem;font-weight:bold}
 .kiosco-error.shake{animation:shake 0.5s}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+#btn-benchmark{background:rgba(255,136,0,0.15);border:1px solid #ff8800;color:#ff8800;padding:0.45rem 1rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.85rem;transition:all 0.3s;white-space:nowrap}
+#btn-benchmark:hover{background:rgba(255,136,0,0.3);transform:translateY(-2px)}
 </style>
 </head>
 <body>
@@ -666,6 +668,7 @@ html{scroll-behavior:smooth}
             <button id="btn-restaurar-configs" onclick="restaurarConfigs()">🔧 Restaurar configs</button>
             <button id="btn-mandos" onclick="instalarMandos()">🎮 Mandos</button>
             <button id="btn-radio" onclick="toggleRadio()">📻 Radio</button>
+<button id="btn-benchmark" onclick="window.open('benchmark.html', '_blank')">⚡ Benchmark</button>
             <button id="btn-settings" onclick="toggleSettings()">⚙️</button>
             <button class="menu-toggle" id="menuToggle">☰</button>
             <nav>
@@ -683,6 +686,7 @@ html{scroll-behavior:smooth}
 <li><a href="#redes">🌐 Redes</a></li>
                     <li><a href="manual.html">📖 Manual</a></li>
 <li><a href="estadisticas.html">📊 Estadisticas</a></li>
+<li><a href="benchmark.html">⚡ Benchmark</a></li>
                 </ul>
             </nav>
         </div>

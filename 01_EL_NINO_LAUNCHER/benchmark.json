@@ -1,0 +1,46 @@
+{
+  "fecha": "2026-09-12 14:53:08",
+  "sistema": "Linux 6.19.6-zen1-1-zen",
+  "cpu": {
+    "modelo": "Intel(R) Core(TM) i5-6300U CPU @ 2.40GHz",
+    "nucleos": 4,
+    "hilos": 4,
+    "mhz": 2569.062
+  },
+  "ram_gb": 15.4,
+  "gpus": [
+    "02.0 VGA compatible controller: Intel Corporation Skylake-U GT2 [HD Graphics 520] (rev 07)"
+  ],
+  "disco_libre": "239G",
+  "puntos": 45,
+  "categoria": "BASICA",
+  "color": "#ff8800",
+  "detalle": [
+    "CPU media (4 hilos)",
+    "RAM: 15.4 GB (buena)",
+    "GPU integrada"
+  ],
+  "recomendaciones": {
+    "PCSX2": {
+      "renderizador": "OpenGL",
+      "resolucion": "1x Native (480p)",
+      "filtros": "Desactivados",
+      "notas": "Prioriza velocidad"
+    },
+    "Dolphin": {
+      "renderizador": "OpenGL",
+      "resolucion": "1x Native (480p)",
+      "antialiasing": "Desactivado",
+      "notas": "Prioriza velocidad"
+    },
+    "PPSSPP": {
+      "renderizador": "OpenGL",
+      "resolucion": "1x PSP",
+      "notas": "Prioriza velocidad"
+    },
+    "RetroArch": {
+      "filtros": "Desactivados",
+      "notas": "Sin shaders"
+    }
+  }
+}
