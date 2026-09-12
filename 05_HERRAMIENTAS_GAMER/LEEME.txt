@@ -1,0 +1,85 @@
+============================================
+PERFILES DE MANDO - EL NINO
+============================================
+
+Aqui tienes perfiles preconfigurados para los mandos
+mas comunes. Se instalan automaticamente o se copian
+a mano segun el emulador.
+
+============================================
+COMO INSTALARLOS - AUTOMATICO
+============================================
+
+Ejecuta el script:
+
+    bash /run/media/urukais/PROYECTOS/05_HERRAMIENTAS_GAMER/instalar_mandos.sh
+
+Este script copia los perfiles a las carpetas correctas
+de cada emulador. Si no tienes alguno de los emuladores
+instalado, simplemente se salta ese paso.
+
+============================================
+MANDOS INCLUIDOS
+============================================
+
+RetroArch:
+  - Xbox One Controller
+  - Sony DualShock 4
+  - 8BitDo Pro 2
+
+PCSX2, PPSSPP, Dolphin:
+  - Instrucciones en sus respectivas carpetas.
+
+============================================
+RETROARCH
+============================================
+
+Copia los archivos .cfg de retroarch/ a:
+
+    ~/.config/retroarch/autoconfig/udev/
+
+RetroArch los detecta solo al conectar el mando.
+No hay que hacer nada mas.
+
+============================================
+PCSX2
+============================================
+
+1. Abre PCSX2
+2. Settings -> Controllers
+3. Selecciona "Automatic Mapping" si esta disponible
+4. Si no, mapea manualmente mirando la plantilla
+   de pcsx2/plantilla.txt
+
+============================================
+PPSSPP
+============================================
+
+1. Abre PPSSPP
+2. Settings -> Controls -> Control Mapping
+3. Pulsa "Auto-configure" si esta disponible
+4. Si no, mapea manualmente mirando la plantilla
+   de ppsspp/plantilla.txt
+
+============================================
+DOLPHIN
+============================================
+
+1. Abre Dolphin
+2. Controllers -> selecciona "Standard Controller"
+3. Pulsa "Refresh" con el mando conectado
+4. Mapea mirando la plantilla de dolphin/plantilla.txt
+
+============================================
+NOTAS
+============================================
+
+- Los mandos modernos suelen detectarse solos.
+  Estos perfiles son para asegurar compatibilidad.
+
+- Si tu mando no esta en la lista, conectalo y deja
+  que el emulador lo configure solo.
+
+- Cualquier duda, preguntale a Manuel.
+
+============================================

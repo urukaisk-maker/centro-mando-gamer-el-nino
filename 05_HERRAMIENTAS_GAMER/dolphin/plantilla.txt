@@ -1,0 +1,18 @@
+DOLPHIN - MAPEO DE MANDO (Xbox/PlayStation/8BitDo)
+
+Mapeo recomendado:
+
+  Stick izq            -> Stick principal
+  Cruceta              -> Cruceta
+  A (abajo)            -> A
+  B (derecha)          -> B
+  X (izq)              -> X
+  Y (arriba)           -> Y
+  L / LB               -> L
+  R / RB               -> R
+  L2 / LT              -> L-Analog
+  R2 / RT              -> R-Analog
+  Start                -> Start
+  Z (si tiene)         -> Z
+
+En Dolphin: Controllers -> Standard Controller -> Refresh

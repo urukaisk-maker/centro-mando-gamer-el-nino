@@ -1,0 +1,19 @@
+PCSX2 - MAPEO DE MANDO (Xbox/PlayStation/8BitDo)
+
+Mapeo recomendado:
+
+  Cruceta / Stick izq  -> Movimiento
+  A (abajo) / X        -> Cruz / X
+  B (derecha) / O      -> Circulo / O
+  X (izq) / Cuadrado   -> Cuadrado
+  Y (arriba) / Triang. -> Triangulo
+  L1 / LB              -> L1
+  R1 / RB              -> R1
+  L2 / LT              -> L2
+  R2 / RT              -> R2
+  L3 / Click stick izq -> L3
+  R3 / Click stick der -> R3
+  Start                -> Start
+  Select / Back        -> Select
+
+En PCSX2: Settings -> Controllers -> Automatic Mapping

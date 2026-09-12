@@ -1,0 +1,16 @@
+PPSSPP - MAPEO DE MANDO (Xbox/PlayStation/8BitDo)
+
+Mapeo recomendado:
+
+  Cruceta / Stick izq  -> Movimiento
+  A (abajo) / X        -> Cruz
+  B (derecha) / O      -> Circulo
+  X (izq) / Cuadrado   -> Cuadrado
+  Y (arriba) / Triang. -> Triangulo
+  L1 / LB              -> L
+  R1 / RB              -> R
+  Start                -> Start
+  Select / Back        -> Select
+  Stick der            -> Analogico
+
+En PPSSPP: Settings -> Controls -> Control Mapping
