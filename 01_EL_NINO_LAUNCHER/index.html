@@ -599,6 +599,30 @@ html{scroll-behavior:smooth}
 .rom-card .btn-jugar:hover{transform:scale(1.05)}
 .rom-vacio{text-align:center;padding:3rem 1rem;color:#8899aa;font-style:italic;background:rgba(26,26,36,0.5);border:1px dashed rgba(0,240,255,0.3);border-radius:14px;margin-top:1.5rem}
 .rom-vacio strong{color:#00f0ff}
+
+/* ===== RADIO RETRO ===== */
+#btn-radio{background:rgba(255,136,0,0.15);border:1px solid #ff8800;color:#ff8800;padding:0.45rem 1rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.85rem;transition:all 0.3s;white-space:nowrap}
+#btn-radio:hover{background:rgba(255,136,0,0.3);transform:translateY(-2px)}
+#radio-panel{position:fixed;top:80px;right:25px;width:340px;max-width:calc(100vw - 50px);background:linear-gradient(145deg,#12121a,#1a1a24);border:2px solid #ff8800;border-radius:16px;padding:1.2rem;z-index:14500;display:none;box-shadow:0 0 30px rgba(255,136,0,0.5),0 10px 40px rgba(0,0,0,0.6);animation:radioIn 0.3s ease-out}
+#radio-panel.open{display:block}
+@keyframes radioIn{from{opacity:0;transform:translateY(-10px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+#radio-panel h4{color:#ff8800;font-size:1rem;margin:0 0 1rem 0;display:flex;justify-content:space-between;align-items:center;letter-spacing:1px}
+#radio-panel h4 .close-radio{background:transparent;border:none;color:#ff00ff;cursor:pointer;font-size:1.1rem;font-weight:bold}
+.radio-stations{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1rem}
+.radio-station{background:rgba(255,136,0,0.1);border:1px solid rgba(255,136,0,0.3);color:#e0e0e0;padding:0.6rem;border-radius:10px;cursor:pointer;font-size:0.8rem;font-weight:bold;text-align:center;transition:all 0.2s;font-family:inherit}
+.radio-station:hover{background:rgba(255,136,0,0.25);border-color:#ff8800;color:#ff8800;transform:translateY(-2px)}
+.radio-station.active{background:linear-gradient(45deg,#ff8800,#ff00ff);border-color:#ff8800;color:#000;box-shadow:0 0 15px rgba(255,136,0,0.6)}
+.radio-nowplaying{background:#0a0a0f;border:1px solid rgba(255,136,0,0.3);border-radius:10px;padding:0.8rem;margin-bottom:1rem;text-align:center}
+.radio-nowplaying .label{color:#8899aa;font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:0.3rem}
+.radio-nowplaying .track{color:#00f0ff;font-size:0.85rem;font-weight:bold;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;animation:pulseTrack 2s ease-in-out infinite}
+.radio-nowplaying .track.idle{color:#8899aa;animation:none;font-weight:normal;font-style:italic}
+@keyframes pulseTrack{0%,100%{opacity:1}50%{opacity:0.7}}
+.radio-controls{display:flex;align-items:center;gap:0.8rem}
+.radio-play{background:linear-gradient(45deg,#ff8800,#ff00ff);color:#000;border:none;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:1.2rem;font-weight:bold;transition:all 0.3s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.radio-play:hover{transform:scale(1.1);box-shadow:0 0 20px rgba(255,136,0,0.8)}
+.radio-volume{flex:1;-webkit-appearance:none;height:6px;border-radius:3px;background:linear-gradient(90deg,#ff8800,#ff00ff);outline:none;cursor:pointer}
+.radio-volume::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;cursor:pointer;box-shadow:0 0 8px #ff8800}
+@media(max-width:768px){#radio-panel{top:70px;right:15px;width:calc(100vw - 30px)}}
 </style>
 </head>
 <body>
@@ -612,6 +636,7 @@ html{scroll-behavior:smooth}
             <button id="btn-backup" onclick="hacerBackup()">💾 Backup</button>
             <button id="btn-limpiar" onclick="hacerLimpieza()">🧹 Limpiar</button>
             <button id="btn-mandos" onclick="instalarMandos()">🎮 Mandos</button>
+            <button id="btn-radio" onclick="toggleRadio()">📻 Radio</button>
             <button id="btn-settings" onclick="toggleSettings()">⚙️</button>
             <button class="menu-toggle" id="menuToggle">☰</button>
             <nav>
@@ -1997,6 +2022,82 @@ async function reescanearRoms(){
 window.addEventListener('DOMContentLoaded', function(){
     setTimeout(cargarRoms, 300);
 });
+
+// ===== RADIO RETRO =====
+var radioAudio = null;
+var radioReproduciendo = false;
+var radioEmisora = 'jpop';
+var radioVolumen = 50;
+
+var EMISORAS = {
+    jpop:     { nombre: 'Listen Moe (J-Pop)',  url: 'https://listen.moe/stream' },
+    kpop:     { nombre: 'Listen Moe (K-Pop)',  url: 'https://listen.moe/kpop/stream' },
+    gensokyo: { nombre: 'Gensokyo Radio',      url: 'https://stream.gensokyoradio.net/1' },
+    fallback: { nombre: 'Listen Moe (Fallback)', url: 'https://listen.moe/fallback' }
+};
+
+function initRadio(){
+    if(radioAudio) return;
+    radioAudio = new Audio();
+    // crossOrigin quitado para permitir streams sin CORS
+    radioAudio.volume = radioVolumen / 100;
+    radioAudio.addEventListener('playing', function(){
+        document.getElementById('radio-track').textContent = '🎶 ' + EMISORAS[radioEmisora].nombre;
+        document.getElementById('radio-track').classList.remove('idle');
+        document.getElementById('radio-play-btn').textContent = '⏸';
+        radioReproduciendo = true;
+    });
+    radioAudio.addEventListener('error', function(){
+        document.getElementById('radio-track').textContent = 'No se puede conectar';
+        document.getElementById('radio-track').classList.add('idle');
+    });
+    radioAudio.addEventListener('waiting', function(){
+        document.getElementById('radio-track').textContent = 'Cargando...';
+        document.getElementById('radio-track').classList.add('idle');
+    });
+}
+
+function toggleRadio(){
+    var panel = document.getElementById('radio-panel');
+    if(panel) panel.classList.toggle('open');
+}
+
+function togglePlayRadio(){
+    initRadio();
+    if(radioReproduciendo){
+        radioAudio.pause();
+        radioAudio.src = '';
+        radioReproduciendo = false;
+        document.getElementById('radio-play-btn').textContent = '▶';
+        document.getElementById('radio-track').textContent = 'Pausado';
+        document.getElementById('radio-track').classList.add('idle');
+    } else {
+        radioAudio.src = EMISORAS[radioEmisora].url + '?t=' + Date.now();
+        radioAudio.play().catch(function(e){
+            document.getElementById('radio-track').textContent = 'Error: ' + e.message;
+            document.getElementById('radio-track').classList.add('idle');
+        });
+    }
+}
+
+function cambiarEmisora(id){
+    radioEmisora = id;
+    document.querySelectorAll('.radio-station').forEach(function(btn){
+        btn.classList.toggle('active', btn.dataset.station === id);
+    });
+    if(radioReproduciendo){
+        radioAudio.src = EMISORAS[id].url + '?t=' + Date.now();
+        radioAudio.play().catch(function(){});
+    } else {
+        document.getElementById('radio-track').textContent = EMISORAS[id].nombre + ' (pulsa ▶)';
+        document.getElementById('radio-track').classList.add('idle');
+    }
+}
+
+function cambiarVolumenRadio(valor){
+    radioVolumen = parseInt(valor);
+    if(radioAudio) radioAudio.volume = radioVolumen / 100;
+}
 </script>
 
 <!-- PANEL DE CONFIGURACION -->
@@ -2073,6 +2174,26 @@ window.addEventListener('DOMContentLoaded', function(){
 <div id="panel-procesos">
 <h4>🎮 En ejecucion <span class="contador" id="panel-contador">0</span></h4>
 <div id="panel-lista"></div>
+</div>
+
+
+<!-- PANEL DE RADIO -->
+<div id="radio-panel">
+<h4>📻 Radio Retro <button class="close-radio" onclick="toggleRadio()">✕</button></h4>
+<div class="radio-stations">
+<button class="radio-station active" data-station="jpop" onclick="cambiarEmisora('jpop')">🎌 J-Pop</button>
+<button class="radio-station" data-station="kpop" onclick="cambiarEmisora('kpop')">🎤 K-Pop</button>
+<button class="radio-station" data-station="gensokyo" onclick="cambiarEmisora('gensokyo')">🎮 Gensokyo</button>
+<button class="radio-station" data-station="fallback" onclick="cambiarEmisora('fallback')">🎧 Fallback</button>
+</div>
+<div class="radio-nowplaying">
+<span class="label">Sonando ahora</span>
+<div class="track idle" id="radio-track">Pulsa ▶ para empezar</div>
+</div>
+<div class="radio-controls">
+<button class="radio-play" id="radio-play-btn" onclick="togglePlayRadio()">▶</button>
+<input type="range" class="radio-volume" id="radio-volume" min="0" max="100" value="50" oninput="cambiarVolumenRadio(this.value)">
+</div>
 </div>
 
 </body>
