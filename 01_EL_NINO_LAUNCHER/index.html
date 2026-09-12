@@ -461,6 +461,37 @@ nav ul{justify-content:flex-start}
 .seccion.aparece{opacity:0;transform:translateY(30px)}
 .seccion.visible{opacity:1;transform:translateY(0)}
 html{scroll-behavior:smooth}
+
+/* ===== SISTEMA DE POPUPS ===== */
+.toast-container{position:fixed;top:80px;right:20px;z-index:20000;display:flex;flex-direction:column;gap:0.8rem;pointer-events:none}
+.toast{background:linear-gradient(135deg,#12121a,#1a1a24);border:2px solid #00f0ff;border-radius:12px;padding:1rem 1.5rem;color:#e0e0e0;font-weight:500;min-width:280px;max-width:400px;box-shadow:0 0 25px rgba(0,240,255,0.5),0 10px 30px rgba(0,0,0,0.5);pointer-events:auto;position:relative;overflow:hidden;animation:toastIn 0.4s cubic-bezier(0.68,-0.55,0.27,1.55)}
+.toast::before{content:"";position:absolute;top:0;left:0;width:4px;height:100%;background:linear-gradient(180deg,#00f0ff,#ff00ff);box-shadow:0 0 15px #00f0ff}
+.toast.success{border-color:#00ff88;box-shadow:0 0 25px rgba(0,255,136,0.5)}
+.toast.success::before{background:linear-gradient(180deg,#00ff88,#00f0ff);box-shadow:0 0 15px #00ff88}
+.toast.error{border-color:#ff0044;box-shadow:0 0 25px rgba(255,0,68,0.5)}
+.toast.error::before{background:linear-gradient(180deg,#ff0044,#ff00ff);box-shadow:0 0 15px #ff0044}
+.toast.info{border-color:#00f0ff}
+.toast-icon{font-size:1.5rem;margin-right:0.8rem;vertical-align:middle}
+.toast-text{display:inline-block;vertical-align:middle;max-width:calc(100% - 3rem)}
+.toast.saliendo{animation:toastOut 0.3s ease-in forwards}
+@keyframes toastIn{from{opacity:0;transform:translateX(120%) scale(0.9)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes toastOut{to{opacity:0;transform:translateX(120%) scale(0.9)}}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);backdrop-filter:blur(6px);z-index:21000;display:flex;align-items:center;justify-content:center;padding:1rem;animation:fadeIn 0.3s ease-out}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:linear-gradient(145deg,#12121a,#1a1a24);border:2px solid #00f0ff;border-radius:18px;padding:2rem;max-width:480px;width:100%;box-shadow:0 0 40px rgba(0,240,255,0.6),0 0 80px rgba(255,0,255,0.3);animation:modalIn 0.4s cubic-bezier(0.68,-0.55,0.27,1.55);position:relative;overflow:hidden}
+.modal::before{content:"";position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,#00f0ff,#ff00ff,#00f0ff);background-size:200% auto;animation:brillo 3s linear infinite}
+@keyframes modalIn{from{opacity:0;transform:scale(0.85) translateY(30px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-icon{font-size:3rem;text-align:center;margin-bottom:1rem;display:block;filter:drop-shadow(0 0 15px currentColor)}
+.modal-title{color:#00f0ff;font-size:1.4rem;font-weight:900;text-align:center;margin-bottom:0.8rem;text-shadow:0 0 15px rgba(0,240,255,0.5);letter-spacing:1px}
+.modal-text{color:#d0d0e0;text-align:center;line-height:1.6;margin-bottom:1.8rem;white-space:pre-line}
+.modal-botones{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.modal-btn{padding:0.8rem 2rem;border:none;border-radius:30px;font-weight:bold;font-size:1rem;cursor:pointer;transition:all 0.3s;letter-spacing:1px;font-family:inherit}
+.modal-btn-primary{background:linear-gradient(45deg,#00f0ff,#ff00ff);color:#000;box-shadow:0 0 20px rgba(0,240,255,0.5)}
+.modal-btn-primary:hover{transform:scale(1.05);box-shadow:0 0 35px rgba(255,0,255,0.8)}
+.modal-btn-secondary{background:rgba(255,255,255,0.1);color:#e0e0e0;border:1px solid rgba(255,255,255,0.2)}
+.modal-btn-secondary:hover{background:rgba(255,255,255,0.2);color:#fff}
+.modal-btn-danger{background:linear-gradient(45deg,#ff0044,#ff00ff);color:#fff;box-shadow:0 0 20px rgba(255,0,68,0.5)}
+.modal-btn-danger:hover{transform:scale(1.05);box-shadow:0 0 35px rgba(255,0,68,0.8)}
 </style>
 </head>
 <body>
@@ -985,8 +1016,9 @@ cont.innerHTML = html;
 panel.style.display = 'block';
 }
 
-function resetActividad(){
-if(confirm('¿Borrar todo el historial de actividad?')){
+async function resetActividad(){
+var ok = await mostrarModal({icono:'🗑', titulo:'Borrar historial', texto:'Se borrara TODO el historial de actividad y el tiempo acumulado.\n\n¿Seguro?', btnOk:'Si, borrar', btnCancel:'Cancelar', tipoBoton:'danger'});
+if(ok){
 localStorage.removeItem('actividadElNino');
 localStorage.removeItem('tiempoTotalElNino');
 inicioSesion = Date.now();
@@ -1021,18 +1053,19 @@ setInterval(renderActividad, 5000);
 });
 
 // ===== BACKUP DE PARTIDAS =====
-function hacerBackup(){
-if(!confirm('¿Hacer copia de seguridad de todas las partidas guardadas?')){
+async function hacerBackup(){
+var ok = await mostrarModal({icono:'💾', titulo:'Hacer backup', texto:'Se copiaran TODAS las partidas guardadas de los emuladores y el diario exportado.\n\n¿Continuar?', btnOk:'Hacer backup', btnCancel:'Cancelar'});
+if(!ok){
 return;
 }
 // Lanzar el script de backup a través del servidor
 fetch('/backup')
 .then(function(r){return r.text();})
 .then(function(txt){
-alert('✅ Backup completado\n\n' + txt);
+mostrarToast('Backup completado: ' + txt, 'success');
 })
 .catch(function(){
-alert('❌ Error al hacer backup. Comprueba que el servidor está corriendo.');
+mostrarToast('Error al hacer backup. Comprueba que el servidor esta corriendo.', 'error');
 });
 }
 
@@ -1138,8 +1171,9 @@ function toggleMusicBtn(){
     }
 }
 
-function resetSettings(){
-    if(!confirm('¿Restaurar la configuracion por defecto?')){ return; }
+async function resetSettings(){
+    var ok = await mostrarModal({icono:'🔄', titulo:'Restaurar valores', texto:'Se restauraran los valores por defecto: tema cian, volumen al 50%, sonidos activados.', btnOk:'Restaurar', btnCancel:'Cancelar'});
+    if(!ok){ return; }
     config = { theme: 'cyan', volMusic: 50, volSfx: 50, hoverSfx: true, musicOn: true };
     guardarConfig();
     aplicarConfig();
@@ -1367,6 +1401,72 @@ document.querySelectorAll('.seccion').forEach(function(s){
     observer.observe(s);
 });
 })();
+
+// ===== SISTEMA DE POPUPS =====
+function mostrarToast(mensaje, tipo){
+    tipo = tipo || 'info';
+    var cont = document.getElementById('toast-container');
+    if(!cont){
+        cont = document.createElement('div');
+        cont.id = 'toast-container';
+        cont.className = 'toast-container';
+        document.body.appendChild(cont);
+    }
+    var iconos = { success: '✅', error: '❌', info: '💡' };
+    var toast = document.createElement('div');
+    toast.className = 'toast ' + tipo;
+    toast.innerHTML = '<span class="toast-icon">' + (iconos[tipo] || '💡') + '</span><span class="toast-text">' + mensaje + '</span>';
+    cont.appendChild(toast);
+    setTimeout(function(){
+        toast.classList.add('saliendo');
+        setTimeout(function(){ toast.remove(); }, 400);
+    }, 4000);
+}
+
+function mostrarModal(opciones){
+    return new Promise(function(resolve){
+        var overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        var icono = opciones.icono || '❓';
+        var titulo = opciones.titulo || 'Confirmar';
+        var texto = opciones.texto || '';
+        var btnOk = opciones.btnOk || 'Aceptar';
+        var btnCancel = opciones.btnCancel || 'Cancelar';
+        var soloOk = opciones.soloOk || false;
+        var tipoBoton = opciones.tipoBoton || 'primary';
+
+        var html = '<div class="modal">';
+        html += '<span class="modal-icon">' + icono + '</span>';
+        html += '<div class="modal-title">' + titulo + '</div>';
+        html += '<div class="modal-text">' + texto + '</div>';
+        html += '<div class="modal-botones">';
+        if(!soloOk){
+            html += '<button class="modal-btn modal-btn-secondary" data-resp="no">' + btnCancel + '</button>';
+        }
+        html += '<button class="modal-btn modal-btn-' + tipoBoton + '" data-resp="si">' + btnOk + '</button>';
+        html += '</div></div>';
+        overlay.innerHTML = html;
+        document.body.appendChild(overlay);
+
+        overlay.addEventListener('click', function(e){
+            var resp = e.target.getAttribute('data-resp');
+            if(resp){
+                overlay.remove();
+                resolve(resp === 'si');
+            } else if(e.target === overlay && !soloOk){
+                overlay.remove();
+                resolve(false);
+            }
+        });
+        document.addEventListener('keydown', function esc(e){
+            if(e.key === 'Escape'){
+                overlay.remove();
+                document.removeEventListener('keydown', esc);
+                resolve(false);
+            }
+        });
+    });
+}
 </script>
 
 <!-- PANEL DE CONFIGURACION -->
