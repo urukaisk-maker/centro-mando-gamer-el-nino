@@ -655,6 +655,10 @@ html{scroll-behavior:smooth}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
 #btn-benchmark{background:rgba(255,136,0,0.15);border:1px solid #ff8800;color:#ff8800;padding:0.45rem 1rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.85rem;transition:all 0.3s;white-space:nowrap}
 #btn-benchmark:hover{background:rgba(255,136,0,0.3);transform:translateY(-2px)}
+
+/* Header con ocultacion inteligente al hacer scroll */
+header{transition:transform 0.35s ease-in-out !important}
+header.header-oculto{transform:translateY(-100%)}
 </style>
 </head>
 <body>
@@ -2306,6 +2310,28 @@ if ('serviceWorker' in navigator) {
         });
     });
 }
+
+// ===== HEADER OCULTABLE AL SCROLL =====
+(function(){
+    var ultimoScroll = 0;
+    var header = document.querySelector("header");
+    if(!header) return;
+    var UMBRAL = 100;
+
+    window.addEventListener("scroll", function(){
+        var actual = window.pageYOffset || document.documentElement.scrollTop;
+        if(actual > UMBRAL){
+            if(actual > ultimoScroll + 5){
+                header.classList.add("header-oculto");
+            } else if(actual < ultimoScroll - 5){
+                header.classList.remove("header-oculto");
+            }
+        } else {
+            header.classList.remove("header-oculto");
+        }
+        ultimoScroll = actual;
+    }, {passive:true});
+})();
 </script>
 
 <!-- PANEL DE CONFIGURACION -->
