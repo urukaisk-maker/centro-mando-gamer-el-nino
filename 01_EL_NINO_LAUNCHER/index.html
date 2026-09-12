@@ -628,6 +628,28 @@ html{scroll-behavior:smooth}
 #btn-guardar-configs:hover{background:rgba(255,0,255,0.3);transform:translateY(-2px)}
 #btn-restaurar-configs{background:rgba(255,255,255,0.08);border:1px solid #8899aa;color:#8899aa;padding:0.45rem 1rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.85rem;transition:all 0.3s;white-space:nowrap}
 #btn-restaurar-configs:hover{background:rgba(255,255,255,0.15);color:#fff}
+
+/* ===== MODO KIOSCO ===== */
+#kiosco-lock{position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a0f;z-index:99999;display:none;align-items:center;justify-content:center;background-image:radial-gradient(circle at 30% 30%,rgba(0,240,255,0.15),transparent 50%),radial-gradient(circle at 70% 70%,rgba(255,0,255,0.15),transparent 50%);animation:fadeInLock 0.5s ease-out}
+#kiosco-lock.visible{display:flex}
+@keyframes fadeInLock{from{opacity:0}to{opacity:1}}
+.kiosco-box{background:linear-gradient(145deg,#12121a,#1a1a24);border:3px solid #00f0ff;border-radius:24px;padding:3rem 2.5rem;text-align:center;box-shadow:0 0 60px rgba(0,240,255,0.5),0 0 100px rgba(255,0,255,0.3);max-width:420px;width:90%;animation:lockIn 0.6s cubic-bezier(0.68,-0.55,0.27,1.55)}
+@keyframes lockIn{from{transform:scale(0.8) translateY(30px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.kiosco-icon{font-size:4rem;display:block;margin-bottom:1rem;animation:latirLock 2s ease-in-out infinite;filter:drop-shadow(0 0 20px #00f0ff)}
+@keyframes latirLock{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.kiosco-box h2{color:#00f0ff;font-size:1.6rem;margin-bottom:0.5rem;text-shadow:0 0 15px rgba(0,240,255,0.6);letter-spacing:2px}
+.kiosco-box p{color:#8899aa;margin-bottom:1.8rem;font-size:0.95rem}
+.kiosco-input{width:100%;padding:1rem;font-size:1.5rem;text-align:center;letter-spacing:1rem;background:#0a0a0f;border:2px solid #00f0ff;border-radius:14px;color:#fff;font-weight:bold;outline:none;font-family:inherit;transition:all 0.3s}
+.kiosco-input:focus{border-color:#ff00ff;box-shadow:0 0 25px rgba(255,0,255,0.6)}
+.kiosco-teclado{display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;margin-top:1.5rem}
+.kiosco-key{background:rgba(0,240,255,0.1);border:1px solid rgba(0,240,255,0.4);color:#00f0ff;font-size:1.5rem;font-weight:bold;padding:1rem;border-radius:14px;cursor:pointer;transition:all 0.2s;font-family:inherit}
+.kiosco-key:hover{background:rgba(0,240,255,0.25);transform:scale(1.05)}
+.kiosco-key:active{transform:scale(0.95)}
+.kiosco-key.borrar{color:#ff8800;border-color:#ff8800;background:rgba(255,136,0,0.1)}
+.kiosco-key.entrar{color:#00ff88;border-color:#00ff88;background:rgba(0,255,136,0.1)}
+.kiosco-error{color:#ff0044;font-size:0.9rem;margin-top:1rem;min-height:1.2rem;font-weight:bold}
+.kiosco-error.shake{animation:shake 0.5s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
 </style>
 </head>
 <body>
@@ -2147,6 +2169,124 @@ async function restaurarConfigs(){
         mostrarToast('Error al restaurar las configuraciones', 'error');
     }
 }
+
+// ===== MODO KIOSCO =====
+var kioscoActivo = false;
+var kioscoPinActual = '';
+
+function toggleKiosco(){
+    var activo = localStorage.getItem('kioscoElNino') === 'on';
+    if(activo){
+        // Desactivar
+        mostrarModal({
+            icono: '🔓',
+            titulo: 'Desactivar modo kiosco',
+            texto: 'Se desactivara el bloqueo del launcher.\n\n¿Seguro?',
+            btnOk: 'Desactivar',
+            btnCancel: 'Cancelar'
+        }).then(function(ok){
+            if(ok){
+                localStorage.removeItem('kioscoElNino');
+                localStorage.removeItem('kioscoPinElNino');
+                actualizarConfigKiosco();
+                mostrarToast('Modo kiosco desactivado', 'success');
+            }
+        });
+    } else {
+        // Activar - necesita PIN
+        var pin = document.getElementById('kiosco-pin-input');
+        if(pin) pin.focus();
+        var conf = document.getElementById('kiosco-config');
+        if(conf) conf.style.display = 'block';
+    }
+}
+
+function guardarPinKiosco(){
+    var pin = document.getElementById('kiosco-pin-input').value.trim();
+    if(pin.length !== 4 || !/^\d{4}$/.test(pin)){
+        mostrarToast('El PIN debe tener 4 digitos numericos', 'error');
+        return;
+    }
+    localStorage.setItem('kioscoElNino', 'on');
+    localStorage.setItem('kioscoPinElNino', pin);
+    actualizarConfigKiosco();
+    mostrarToast('Modo kiosco activado con PIN', 'success');
+    var pinInput = document.getElementById('kiosco-pin-input');
+    if(pinInput) pinInput.value = '';
+}
+
+function actualizarConfigKiosco(){
+    var activo = localStorage.getItem('kioscoElNino') === 'on';
+    var toggle = document.getElementById('toggle-kiosco');
+    var config = document.getElementById('kiosco-config');
+    if(toggle) toggle.classList.toggle('on', activo);
+    if(config) config.style.display = activo ? 'none' : 'none';
+    if(config && !activo) config.style.display = 'none';
+    if(config && activo) config.style.display = 'none';
+}
+
+function kioscoKey(digito){
+    if(kioscoPinActual.length < 4){
+        kioscoPinActual += digito;
+        var inp = document.getElementById('kiosco-input');
+        if(inp) inp.value = '*'.repeat(kioscoPinActual.length);
+        if(kioscoPinActual.length === 4){
+            setTimeout(kioscoEntrar, 200);
+        }
+    }
+}
+
+function kioscoBorrar(){
+    if(kioscoPinActual.length > 0){
+        kioscoPinActual = kioscoPinActual.slice(0, -1);
+        var inp = document.getElementById('kiosco-input');
+        if(inp) inp.value = '*'.repeat(kioscoPinActual.length);
+    }
+}
+
+function kioscoEntrar(){
+    var pinGuardado = localStorage.getItem('kioscoPinElNino');
+    if(kioscoPinActual === pinGuardado){
+        document.getElementById('kiosco-lock').classList.remove('visible');
+        mostrarToast('Bienvenido, Mario', 'success');
+        kioscoPinActual = '';
+        var inp = document.getElementById('kiosco-input');
+        if(inp) inp.value = '';
+    } else {
+        var err = document.getElementById('kiosco-error');
+        if(err){
+            err.textContent = 'PIN incorrecto';
+            err.classList.add('shake');
+            setTimeout(function(){ err.classList.remove('shake'); }, 500);
+        }
+        kioscoPinActual = '';
+        var inp2 = document.getElementById('kiosco-input');
+        if(inp2) inp2.value = '';
+    }
+}
+
+// Comprobar al cargar si hay kiosco activo
+window.addEventListener('DOMContentLoaded', function(){
+    setTimeout(function(){
+        if(localStorage.getItem('kioscoElNino') === 'on'){
+            document.getElementById('kiosco-lock').classList.add('visible');
+        }
+        actualizarConfigKiosco();
+    }, 200);
+});
+
+// Detectar teclado fisico para la pantalla de bloqueo
+document.addEventListener('keydown', function(e){
+    var lock = document.getElementById('kiosco-lock');
+    if(!lock || !lock.classList.contains('visible')) return;
+    if(e.key >= '0' && e.key <= '9'){
+        kioscoKey(e.key);
+    } else if(e.key === 'Backspace'){
+        kioscoBorrar();
+    } else if(e.key === 'Enter'){
+        kioscoEntrar();
+    }
+});
 </script>
 
 <!-- PANEL DE CONFIGURACION -->
@@ -2184,6 +2324,21 @@ async function restaurarConfigs(){
 <div class="toggle-row">
 <span>🎵 Música de fondo</span>
 <div class="toggle on" id="toggle-music" onclick="toggleMusicBtn()"></div>
+</div>
+</div>
+
+
+<div class="setting-group">
+<label>🔒 Modo kiosco</label>
+<div class="toggle-row">
+<span>Bloquear el launcher con PIN</span>
+<div class="toggle" id="toggle-kiosco" onclick="toggleKiosco()"></div>
+</div>
+<div id="kiosco-config" style="display:none;margin-top:1rem">
+<label style="color:#00f0ff;font-size:0.85rem;margin-bottom:0.5rem;display:block">PIN actual (4 digitos)</label>
+<input type="password" id="kiosco-pin-input" maxlength="4" placeholder="----" style="width:100%;padding:0.7rem;font-size:1.2rem;text-align:center;letter-spacing:0.5rem;background:#0a0a0f;border:2px solid #00f0ff;border-radius:10px;color:#fff;font-weight:bold;outline:none;font-family:inherit">
+<button onclick="guardarPinKiosco()" style="width:100%;margin-top:0.8rem;padding:0.7rem;background:linear-gradient(45deg,#00f0ff,#ff00ff);color:#000;border:none;border-radius:10px;font-weight:bold;cursor:pointer;font-family:inherit">Guardar PIN</button>
+<p style="color:#8899aa;font-size:0.75rem;margin-top:0.5rem;text-align:center">Anota el PIN. Si lo olvidas, tendras que borrar los datos del navegador.</p>
 </div>
 </div>
 
@@ -2242,6 +2397,32 @@ async function restaurarConfigs(){
 <div class="radio-controls">
 <button class="radio-play" id="radio-play-btn" onclick="togglePlayRadio()">▶</button>
 <input type="range" class="radio-volume" id="radio-volume" min="0" max="100" value="50" oninput="cambiarVolumenRadio(this.value)">
+</div>
+</div>
+
+
+<!-- MODO KIOSCO - Pantalla de bloqueo -->
+<div id="kiosco-lock">
+<div class="kiosco-box">
+<span class="kiosco-icon">🔒</span>
+<h2>MODO KIOSCO</h2>
+<p>Introduce el PIN de 4 digitos para desbloquear</p>
+<input type="password" class="kiosco-input" id="kiosco-input" maxlength="4" readonly placeholder="----">
+<div class="kiosco-teclado">
+<button class="kiosco-key" onclick="kioscoKey('1')">1</button>
+<button class="kiosco-key" onclick="kioscoKey('2')">2</button>
+<button class="kiosco-key" onclick="kioscoKey('3')">3</button>
+<button class="kiosco-key" onclick="kioscoKey('4')">4</button>
+<button class="kiosco-key" onclick="kioscoKey('5')">5</button>
+<button class="kiosco-key" onclick="kioscoKey('6')">6</button>
+<button class="kiosco-key" onclick="kioscoKey('7')">7</button>
+<button class="kiosco-key" onclick="kioscoKey('8')">8</button>
+<button class="kiosco-key" onclick="kioscoKey('9')">9</button>
+<button class="kiosco-key borrar" onclick="kioscoBorrar()">⌫</button>
+<button class="kiosco-key" onclick="kioscoKey('0')">0</button>
+<button class="kiosco-key entrar" onclick="kioscoEntrar()">✓</button>
+</div>
+<div class="kiosco-error" id="kiosco-error"></div>
 </div>
 </div>
 
