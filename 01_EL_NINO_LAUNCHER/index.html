@@ -492,6 +492,28 @@ html{scroll-behavior:smooth}
 .modal-btn-secondary:hover{background:rgba(255,255,255,0.2);color:#fff}
 .modal-btn-danger{background:linear-gradient(45deg,#ff0044,#ff00ff);color:#fff;box-shadow:0 0 20px rgba(255,0,68,0.5)}
 .modal-btn-danger:hover{transform:scale(1.05);box-shadow:0 0 35px rgba(255,0,68,0.8)}
+
+/* ===== TARJETA DE REDES SOCIALES ===== */
+.redes-sociales{margin-top:3rem;background:linear-gradient(145deg,#12121a,#1a1a24);border:2px solid rgba(0,240,255,0.3);border-radius:20px;padding:2rem;text-align:center;position:relative;overflow:hidden}
+.redes-sociales::before{content:"";position:absolute;top:0;left:-100%;width:100%;height:3px;background:linear-gradient(90deg,transparent,#00f0ff,#ff00ff,transparent);animation:lineaRedes 4s ease-in-out infinite}
+@keyframes lineaRedes{0%,100%{left:-100%}50%{left:100%}}
+.redes-sociales h2{color:#ff00ff;font-size:1.8rem;margin-bottom:0.5rem;text-shadow:0 0 15px rgba(255,0,255,0.5)}
+.redes-sociales p.sub{color:#8899aa;margin-bottom:2rem;font-size:1rem}
+.redes-grid{display:flex;justify-content:center;gap:1.2rem;flex-wrap:wrap}
+.red-social{display:flex;flex-direction:column;align-items:center;justify-content:center;width:110px;height:110px;border-radius:20px;text-decoration:none;color:#fff;font-weight:bold;font-size:0.8rem;transition:all 0.3s;position:relative;overflow:hidden;border:2px solid transparent}
+.red-social:hover{transform:translateY(-8px) scale(1.05);border-color:#fff}
+.red-social .icono-red{font-size:2.5rem;margin-bottom:0.5rem;display:block}
+.red-social .nombre-red{letter-spacing:1px;text-transform:uppercase}
+.red-instagram{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);box-shadow:0 0 25px rgba(220,39,67,0.5)}
+.red-instagram:hover{box-shadow:0 0 40px rgba(220,39,67,0.9)}
+.red-youtube{background:linear-gradient(45deg,#ff0000,#cc0000);box-shadow:0 0 25px rgba(255,0,0,0.5)}
+.red-youtube:hover{box-shadow:0 0 40px rgba(255,0,0,0.9)}
+.red-tiktok{background:linear-gradient(45deg,#000,#25f4ee,#fe2c55);box-shadow:0 0 25px rgba(254,44,85,0.5)}
+.red-tiktok:hover{box-shadow:0 0 40px rgba(254,44,85,0.9)}
+.red-discord{background:linear-gradient(45deg,#5865f2,#7289da);box-shadow:0 0 25px rgba(88,101,242,0.5)}
+.red-discord:hover{box-shadow:0 0 40px rgba(88,101,242,0.9)}
+.red-telegram{background:linear-gradient(45deg,#0088cc,#229ed9);box-shadow:0 0 25px rgba(34,158,217,0.5)}
+.red-telegram:hover{box-shadow:0 0 40px rgba(34,158,217,0.9)}
 </style>
 </head>
 <body>
@@ -516,6 +538,7 @@ html{scroll-behavior:smooth}
                     <li><a href="#media">Media</a></li>
                     <li><a href="#diario">Diario</a></li>
                     <li><a href="#acerca">Acerca de</a></li>
+<li><a href="#redes">🌐 Redes</a></li>
                     <li><a href="manual.html">📖 Manual</a></li>
 <li><a href="estadisticas.html">📊 Estadisticas</a></li>
                 </ul>
@@ -709,6 +732,36 @@ https://github.com/urukaisk-maker                <a href="https://pdroms.de/" ta
 <h2>📊 Actividad reciente</h2>
 <div id="actividad-contenido"></div>
 <button class="btn" style="background:#555;color:#fff;margin-top:1rem" onclick="resetActividad()">🗑 Borrar historial</button>
+</section>
+
+
+<!-- TARJETA DE REDES SOCIALES -->
+<section class="redes-sociales" id="redes">
+<h2>🌐 Sígueme en redes</h2>
+<p class="sub">Encuentra contenido, directos y novedades en mis redes sociales</p>
+<button id="btn-editar-redes" onclick="editarRedes()" style="background:rgba(122,0,255,0.3);border:1px solid #7a00ff;color:#c090ff;padding:0.5rem 1.2rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.85rem;margin-bottom:1.5rem;transition:all 0.3s">✏️ Editar mis redes</button>
+<div class="redes-grid">
+<a id="link-instagram" class="red-social red-instagram" href="https://instagram.com/TU_USUARIO" target="_blank" title="Instagram">
+<span class="icono-red">📷</span>
+<span class="nombre-red">Instagram</span>
+</a>
+<a id="link-youtube" class="red-social red-youtube" href="https://youtube.com/@TU_USUARIO" target="_blank" title="YouTube">
+<span class="icono-red">▶️</span>
+<span class="nombre-red">YouTube</span>
+</a>
+<a id="link-tiktok" class="red-social red-tiktok" href="https://tiktok.com/@TU_USUARIO" target="_blank" title="TikTok">
+<span class="icono-red">🎵</span>
+<span class="nombre-red">TikTok</span>
+</a>
+<a id="link-discord" class="red-social red-discord" href="https://discord.gg/TU_INVITACION" target="_blank" title="Discord">
+<span class="icono-red">💬</span>
+<span class="nombre-red">Discord</span>
+</a>
+<a id="link-telegram" class="red-social red-telegram" href="https://t.me/TU_USUARIO" target="_blank" title="Telegram">
+<span class="icono-red">✈️</span>
+<span class="nombre-red">Telegram</span>
+</a>
+</div>
 </section>
 
 <!-- FOOTER -->
@@ -1467,6 +1520,87 @@ function mostrarModal(opciones){
         });
     });
 }
+
+// ===== EDITAR REDES SOCIALES =====
+function editarRedes(){
+    var redes = JSON.parse(localStorage.getItem('redesElNino') || '{}');
+    var html = '<div style="display:flex;flex-direction:column;gap:1rem;text-align:left">';
+    var campos = [
+        {id:'instagram', label:'📷 Instagram (sin la @)', placeholder:'ejemplo'},
+        {id:'youtube', label:'▶️ YouTube (canal)', placeholder:'ejemplo'},
+        {id:'tiktok', label:'🎵 TikTok (sin la @)', placeholder:'ejemplo'},
+        {id:'discord', label:'💬 Discord (codigo de invitacion)', placeholder:'ejemplo'},
+        {id:'telegram', label:'✈️ Telegram (sin la @)', placeholder:'ejemplo'}
+    ];
+    campos.forEach(function(campo){
+        var valor = redes[campo.id] || '';
+        html += '<div>';
+        html += '<label style="display:block;color:#00f0ff;font-size:0.85rem;margin-bottom:0.4rem;font-weight:bold">' + campo.label + '</label>';
+        html += '<input type="text" id="input-' + campo.id + '" value="' + valor + '" placeholder="' + campo.placeholder + '" style="width:100%;padding:0.6rem 1rem;background:#0a0a0f;border:1px solid #00f0ff;border-radius:8px;color:#fff;font-size:1rem;outline:none;box-sizing:border-box">';
+        html += '</div>';
+    });
+    html += '</div>';
+
+    // Crear modal personalizado
+    var overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    var modalHtml = '<div class="modal" style="max-width:550px">';
+    modalHtml += '<span class="modal-icon">✏️</span>';
+    modalHtml += '<div class="modal-title">Mis redes sociales</div>';
+    modalHtml += '<div style="max-height:60vh;overflow-y:auto;padding:0.5rem 0">' + html + '</div>';
+    modalHtml += '<div class="modal-botones" style="margin-top:1.5rem">';
+    modalHtml += '<button class="modal-btn modal-btn-secondary" data-resp="cancelar">Cancelar</button>';
+    modalHtml += '<button class="modal-btn modal-btn-primary" data-resp="guardar">💾 Guardar</button>';
+    modalHtml += '</div></div>';
+    overlay.innerHTML = modalHtml;
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener('click', function(e){
+        var resp = e.target.getAttribute('data-resp');
+        if(resp === 'guardar'){
+            var datos = {};
+            ['instagram','youtube','tiktok','discord','telegram'].forEach(function(k){
+                var input = document.getElementById('input-' + k);
+                if(input) datos[k] = input.value.trim();
+            });
+            localStorage.setItem('redesElNino', JSON.stringify(datos));
+            aplicarRedes();
+            overlay.remove();
+            mostrarToast('Redes actualizadas correctamente', 'success');
+        } else if(resp === 'cancelar' || e.target === overlay){
+            overlay.remove();
+        }
+    });
+}
+
+function aplicarRedes(){
+    var redes = JSON.parse(localStorage.getItem('redesElNino') || '{}');
+    if(redes.instagram){
+        var el = document.getElementById('link-instagram');
+        if(el) el.href = 'https://instagram.com/' + redes.instagram;
+    }
+    if(redes.youtube){
+        var el = document.getElementById('link-youtube');
+        if(el) el.href = 'https://youtube.com/@' + redes.youtube;
+    }
+    if(redes.tiktok){
+        var el = document.getElementById('link-tiktok');
+        if(el) el.href = 'https://tiktok.com/@' + redes.tiktok;
+    }
+    if(redes.discord){
+        var el = document.getElementById('link-discord');
+        if(el) el.href = 'https://discord.gg/' + redes.discord;
+    }
+    if(redes.telegram){
+        var el = document.getElementById('link-telegram');
+        if(el) el.href = 'https://t.me/' + redes.telegram;
+    }
+}
+
+// Aplicar al cargar
+window.addEventListener('DOMContentLoaded', function(){
+    setTimeout(aplicarRedes, 200);
+});
 </script>
 
 <!-- PANEL DE CONFIGURACION -->
