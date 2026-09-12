@@ -326,6 +326,39 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(str(e).encode())
 
+        elif self.path.startswith("/modo-fiesta"):
+            script = os.path.join(DIRECTORY, "modo_fiesta.sh")
+            if os.path.exists(script):
+                try:
+                    # No esperamos la salida porque cierra el navegador
+                    subprocess.Popen(["bash", script])
+                    self.send_response(200)
+                    self.send_header("Content-Type", "text/plain; charset=utf-8")
+                    self.end_headers()
+                    self.wfile.write(b"Modo fiesta activado")
+                except Exception as e:
+                    self.send_response(500)
+                    self.end_headers()
+                    self.wfile.write(str(e).encode())
+            else:
+                self.not_found("Script no encontrado")
+
+        elif self.path.startswith("/modo-cine"):
+            script = os.path.join(DIRECTORY, "modo_cine.sh")
+            if os.path.exists(script):
+                try:
+                    subprocess.Popen(["bash", script])
+                    self.send_response(200)
+                    self.send_header("Content-Type", "text/plain; charset=utf-8")
+                    self.end_headers()
+                    self.wfile.write(b"Modo cine activado")
+                except Exception as e:
+                    self.send_response(500)
+                    self.end_headers()
+                    self.wfile.write(str(e).encode())
+            else:
+                self.not_found("Script no encontrado")
+
         elif self.path.startswith("/eventos"):
             # Server-Sent Events: stream continuo de estado
             self.send_response(200)

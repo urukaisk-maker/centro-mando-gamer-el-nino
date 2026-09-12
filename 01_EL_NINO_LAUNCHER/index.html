@@ -677,6 +677,11 @@ header.header-oculto{transform:translateY(-100%)}
 .recurso-barra .fill.cpu{background:linear-gradient(90deg,#00f0ff,#ff00ff)}
 .recurso-barra .fill.ram{background:linear-gradient(90deg,#00ff88,#00f0ff)}
 .recurso-item .extra{color:#666;font-size:0.7rem;margin-top:0.2rem;text-align:right}
+
+#btn-fiesta{background:rgba(255,0,255,0.15);border:1px solid #ff00ff;color:#ff00ff;padding:0.45rem 1rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.85rem;transition:all 0.3s;white-space:nowrap}
+#btn-fiesta:hover{background:rgba(255,0,255,0.3);transform:translateY(-2px)}
+#btn-cine{background:rgba(136,0,255,0.15);border:1px solid #8800ff;color:#8800ff;padding:0.45rem 1rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.85rem;transition:all 0.3s;white-space:nowrap}
+#btn-cine:hover{background:rgba(136,0,255,0.3);transform:translateY(-2px)}
 </style>
 </head>
 <body>
@@ -695,6 +700,8 @@ header.header-oculto{transform:translateY(-100%)}
             <button id="btn-radio" onclick="toggleRadio()">📻 Radio</button>
 <button id="btn-benchmark" onclick="window.open('benchmark.html', '_blank')">⚡ Benchmark</button>
 <button id="btn-comprimir" onclick="comprimirRoms()">📦 Comprimir</button>
+            <button id="btn-fiesta" onclick="activarModoFiesta()">🎉 Fiesta</button>
+            <button id="btn-cine" onclick="activarModoCine()">🎬 Cine</button>
             <button id="btn-settings" onclick="toggleSettings()">⚙️</button>
             <button class="menu-toggle" id="menuToggle">☰</button>
             <nav>
@@ -2442,6 +2449,39 @@ function actualizarProcesosDesdeSSE(d){
 window.addEventListener('DOMContentLoaded', function(){
     setTimeout(conectarSSE, 500);
 });
+
+// ===== MODOS FIESTA Y CINE =====
+async function activarModoFiesta(){
+    var ok = await mostrarModal({
+        icono: '🎉',
+        titulo: 'Activar Modo Fiesta',
+        texto: 'Se preparara el PC para jugar con amigos:\n\n- Se cerraran los navegadores y apps pesadas\n- Se subira el volumen al 80%\n- Se desactivara el salvapantallas\n- Se abrira RetroArch\n\nATENCION: se cerrara el navegador actual.\n\n¿Continuar?',
+        btnOk: 'Activar Fiesta',
+        btnCancel: 'Cancelar'
+    });
+    if(!ok) return;
+    fetch('/modo-fiesta').then(function(){
+        setTimeout(function(){
+            document.body.innerHTML = '<div style="background:#0a0a0f;color:#ff00ff;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;font-size:2rem;text-align:center;flex-direction:column;gap:1rem"><div>🎉</div><div>MODO FIESTA ACTIVADO</div><div style="font-size:1rem;color:#8899aa">Puedes cerrar esta pestana</div></div>';
+        }, 2000);
+    });
+}
+
+async function activarModoCine(){
+    var ok = await mostrarModal({
+        icono: '🎬',
+        titulo: 'Activar Modo Cine',
+        texto: 'Se preparara el PC para ver peliculas:\n\n- Se cerraran los navegadores\n- Se ajustara el volumen al 60%\n- Se abrira Kodi / Stremio / VLC\n\nATENCION: se cerrara el navegador actual.\n\n¿Continuar?',
+        btnOk: 'Activar Cine',
+        btnCancel: 'Cancelar'
+    });
+    if(!ok) return;
+    fetch('/modo-cine').then(function(){
+        setTimeout(function(){
+            document.body.innerHTML = '<div style="background:#0a0a0f;color:#8800ff;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;font-size:2rem;text-align:center;flex-direction:column;gap:1rem"><div>🎬</div><div>MODO CINE ACTIVADO</div><div style="font-size:1rem;color:#8899aa">Puedes cerrar esta pestana</div></div>';
+        }, 2000);
+    });
+}
 </script>
 
 <!-- PANEL DE CONFIGURACION -->
