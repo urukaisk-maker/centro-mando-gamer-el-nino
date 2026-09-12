@@ -1,16 +1,4 @@
-<!DOCTYPE html>
-<html lang="es"><head><meta charset="UTF-8">
-<title>Manual - El Niño</title>
-<style>
-body{font-family:'Segoe UI',sans-serif;background:#0a0a0f;color:#e0e0e0;padding:2rem;margin:0;line-height:1.6}
-pre{white-space:pre-wrap;font-family:'Consolas','Monaco',monospace;background:#1a1a24;border:1px solid rgba(0,240,255,0.3);border-radius:12px;padding:2rem;max-width:900px;margin:0 auto;color:#e0e0e0;font-size:0.95rem}
-a.volver{color:#ff00ff;text-decoration:none;display:block;max-width:900px;margin:0 auto 1rem;font-weight:bold;font-size:1.1rem}
-a.volver:hover{text-decoration:underline}
-h1{color:#00f0ff;text-align:center;text-shadow:0 0 20px #00f0ff;margin-bottom:1.5rem}
-</style></head><body>
-<a class="volver" href="/01_EL_NINO_LAUNCHER/index.html">← Volver al Dashboard</a>
-<h1>📖 Manual de uso</h1>
-<pre>================================================================
+================================================================
 MANUAL DE USO - CENTRO DE MANDO GAMER "EL NIÑO"
 ================================================================
 
@@ -257,8 +245,8 @@ SI ALGO NO FUNCIONA
   http://localhost:8080/01_EL_NINO_LAUNCHER/index.html
 
 - Windows bloquea el .bat:
-  Clic derecho sobre el archivo -&gt; Propiedades -&gt;
-  marca "Desbloquear" abajo del todo -&gt; Aceptar.
+  Clic derecho sobre el archivo -> Propiedades ->
+  marca "Desbloquear" abajo del todo -> Aceptar.
 
 - Un juego no arranca:
   Prueba a lanzarlo desde el propio emulador en lugar
@@ -286,5 +274,3 @@ Demo:      https://centro-mando-gamer-el-nino.vercel.app/
 ================================================================
 Disfruta el regalo, Mario. Lo he hecho pensando en ti.
 ================================================================
-</pre>
-</body></html>
