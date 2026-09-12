@@ -5,6 +5,10 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://www.python.org/)
 
+![Demo del launcher](demo-launcher.gif)
+
+<sub>Demo del launcher: particulas, glow y modo alerta</sub>
+
 ![Launcher](captura-launcher.png)
 
 > Demo Vercel: https://centro-mando-gamer-el-nino.vercel.app/
