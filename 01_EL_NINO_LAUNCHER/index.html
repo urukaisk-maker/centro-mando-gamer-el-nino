@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Centro de Mando Gamer - El Niño</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00f0ff">
+    <link rel="apple-touch-icon" href="icono-512.png">
     <style>
         :root {
             --bg: #0a0a0f;
@@ -2292,6 +2295,17 @@ document.addEventListener('keydown', function(e){
         kioscoEntrar();
     }
 });
+
+// ===== PWA - SERVICE WORKER =====
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function(){
+        navigator.serviceWorker.register('service-worker.js?v=3').then(function(reg){
+            console.log('Service Worker registrado:', reg.scope);
+        }).catch(function(err){
+            console.log('Service Worker error:', err);
+        });
+    });
+}
 </script>
 
 <!-- PANEL DE CONFIGURACION -->
