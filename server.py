@@ -326,6 +326,47 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(str(e).encode())
 
+        elif self.path.startswith("/eventos"):
+            # Server-Sent Events: stream continuo de estado
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream")
+            self.send_header("Cache-Control", "no-cache")
+            self.send_header("Connection", "keep-alive")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            try:
+                import psutil
+                TIENE_PSUTIL = True
+            except ImportError:
+                TIENE_PSUTIL = False
+            try:
+                while True:
+                    limpiar_procesos()
+                    with lock:
+                        activos = []
+                        ahora = time.time()
+                        for n, d in procesos_activos.items():
+                            activos.append({
+                                "nombre": n,
+                                "pid": d["pid"],
+                                "tipo": d["tipo"],
+                                "segundos": int(ahora - d["hora"])
+                            })
+                    datos = {"activos": activos, "tiempo": int(time.time())}
+                    if TIENE_PSUTIL:
+                        datos["cpu"] = psutil.cpu_percent(interval=None)
+                        datos["ram"] = psutil.virtual_memory().percent
+                        datos["ram_libre_gb"] = round(psutil.virtual_memory().available / 1024 / 1024 / 1024, 1)
+                    payload = "data: " + json.dumps(datos) + chr(10) + chr(10)
+
+                    self.wfile.write(payload.encode())
+                    self.wfile.flush()
+                    time.sleep(3)
+            except (BrokenPipeError, ConnectionResetError):
+                pass
+            except Exception:
+                pass
+
         elif self.path.startswith("/comprimir-roms"):
             script = os.path.join(DIRECTORY, "comprimir_roms.sh")
             if os.path.exists(script):

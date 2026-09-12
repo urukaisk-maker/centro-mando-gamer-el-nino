@@ -661,6 +661,22 @@ header{transition:transform 0.35s ease-in-out !important}
 header.header-oculto{transform:translateY(-100%)}
 #btn-comprimir{background:rgba(0,255,136,0.15);border:1px solid #00ff88;color:#00ff88;padding:0.45rem 1rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.85rem;transition:all 0.3s;white-space:nowrap}
 #btn-comprimir:hover{background:rgba(0,255,136,0.3);transform:translateY(-2px)}
+
+/* ===== PANEL DE RECURSOS (SSE) ===== */
+#panel-recursos{position:fixed;bottom:25px;left:25px;background:linear-gradient(145deg,#12121a,#1a1a24);border:2px solid #ff8800;border-radius:14px;padding:1rem 1.2rem;min-width:260px;box-shadow:0 0 25px rgba(255,136,0,0.5);z-index:14000;font-size:0.8rem;display:none;animation:panelIn 0.3s ease-out}
+#panel-recursos.visible{display:block}
+#panel-recursos h4{color:#ff8800;font-size:0.85rem;margin:0 0 0.8rem 0;letter-spacing:1px;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
+#panel-recursos h4 .live{width:8px;height:8px;border-radius:50%;background:#00ff88;box-shadow:0 0 10px #00ff88;animation:pulseLive 2s ease-in-out infinite}
+@keyframes pulseLive{0%,100%{opacity:1}50%{opacity:0.3}}
+.recurso-item{margin-bottom:0.7rem}
+.recurso-item:last-child{margin-bottom:0}
+.recurso-item .label{display:flex;justify-content:space-between;color:#8899aa;font-size:0.75rem;margin-bottom:0.3rem}
+.recurso-item .label .valor{color:#00f0ff;font-weight:bold}
+.recurso-barra{width:100%;height:6px;background:#0a0a0f;border-radius:3px;overflow:hidden}
+.recurso-barra .fill{height:100%;border-radius:3px;transition:width 1s ease-out, background 0.5s}
+.recurso-barra .fill.cpu{background:linear-gradient(90deg,#00f0ff,#ff00ff)}
+.recurso-barra .fill.ram{background:linear-gradient(90deg,#00ff88,#00f0ff)}
+.recurso-item .extra{color:#666;font-size:0.7rem;margin-top:0.2rem;text-align:right}
 </style>
 </head>
 <body>
@@ -2359,6 +2375,73 @@ async function comprimirRoms(){
         mostrarToast('Error al comprimir', 'error');
     }
 }
+
+// ===== SERVER-SENT EVENTS (estado en vivo) =====
+var sseConexion = null;
+
+function conectarSSE(){
+    if(sseConexion){
+        try { sseConexion.close(); } catch(e){}
+    }
+    sseConexion = new EventSource('/eventos');
+
+    sseConexion.onmessage = function(e){
+        try {
+            var d = JSON.parse(e.data);
+            actualizarRecursos(d);
+            actualizarProcesosDesdeSSE(d);
+        } catch(err){}
+    };
+
+    sseConexion.onerror = function(){
+        // Reconectar en 5 segundos si se cae
+        try { sseConexion.close(); } catch(e){}
+        sseConexion = null;
+        setTimeout(conectarSSE, 5000);
+    };
+}
+
+function actualizarRecursos(d){
+    var panel = document.getElementById('panel-recursos');
+    if(!panel) return;
+    if(typeof d.cpu === 'undefined'){ return; }
+    panel.classList.add('visible');
+    var cpu = Math.round(d.cpu);
+    var ram = Math.round(d.ram);
+    document.getElementById('cpu-valor').textContent = cpu + '%';
+    document.getElementById('cpu-barra').style.width = cpu + '%';
+    document.getElementById('ram-valor').textContent = ram + '%';
+    document.getElementById('ram-barra').style.width = ram + '%';
+    document.getElementById('ram-extra').textContent = d.ram_libre_gb + ' GB libres';
+}
+
+function actualizarProcesosDesdeSSE(d){
+    var panel = document.getElementById('panel-procesos');
+    var lista = document.getElementById('panel-lista');
+    var cont = document.getElementById('panel-contador');
+    if(!panel || !lista) return;
+    var activos = d.activos || [];
+    if(activos.length === 0){
+        panel.classList.remove('visible');
+        return;
+    }
+    panel.classList.add('visible');
+    if(cont) cont.textContent = activos.length;
+    lista.innerHTML = '';
+    activos.forEach(function(p){
+        var tiempo = formatearTiempoProc(p.segundos);
+        var icono = p.tipo === 'emulador' ? '🕹' : '🎮';
+        var div = document.createElement('div');
+        div.className = 'proceso-item';
+        div.innerHTML = '<span class="icono-proc">' + icono + '</span><div class="info"><span class="nombre">' + p.nombre + '</span><span class="tiempo">PID ' + p.pid + ' · ' + tiempo + '</span></div><button class="btn-kill" onclick="matarProceso(\'' + p.nombre + '\')" title="Cerrar">⛔</button>';
+        lista.appendChild(div);
+    });
+}
+
+// Arrancar al cargar
+window.addEventListener('DOMContentLoaded', function(){
+    setTimeout(conectarSSE, 500);
+});
 </script>
 
 <!-- PANEL DE CONFIGURACION -->
@@ -2445,6 +2528,21 @@ async function comprimirRoms(){
 </div>
 </div>
 
+
+
+<!-- PANEL DE RECURSOS (SSE) -->
+<div id="panel-recursos">
+<h4>⚡ Recursos del PC <span class="live"></span></h4>
+<div class="recurso-item">
+<div class="label"><span>CPU</span><span class="valor" id="cpu-valor">--%</span></div>
+<div class="recurso-barra"><div class="fill cpu" id="cpu-barra" style="width:0%"></div></div>
+</div>
+<div class="recurso-item">
+<div class="label"><span>RAM</span><span class="valor" id="ram-valor">--%</span></div>
+<div class="recurso-barra"><div class="fill ram" id="ram-barra" style="width:0%"></div></div>
+<div class="extra" id="ram-extra">-- GB libres</div>
+</div>
+</div>
 
 <!-- PANEL DE PROCESOS ACTIVOS -->
 <div id="panel-procesos">
