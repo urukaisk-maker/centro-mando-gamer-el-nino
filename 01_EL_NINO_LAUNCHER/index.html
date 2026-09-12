@@ -682,9 +682,49 @@ header.header-oculto{transform:translateY(-100%)}
 #btn-fiesta:hover{background:rgba(255,0,255,0.3);transform:translateY(-2px)}
 #btn-cine{background:rgba(136,0,255,0.15);border:1px solid #8800ff;color:#8800ff;padding:0.45rem 1rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.85rem;transition:all 0.3s;white-space:nowrap}
 #btn-cine:hover{background:rgba(136,0,255,0.3);transform:translateY(-2px)}
+
+/* ===== RELOJ Y BARRA DE ESTADO (HUD) ===== */
+#hud-reloj{background:linear-gradient(145deg,#12121a,#1a1a24);border:1px solid #00f0ff;color:#00f0ff;padding:0.4rem 0.9rem;border-radius:20px;font-family:'Consolas','Monaco',monospace;font-size:0.9rem;font-weight:bold;letter-spacing:1px;text-shadow:0 0 8px rgba(0,240,255,0.6);white-space:nowrap;display:flex;align-items:center;gap:0.4rem}
+#hud-reloj .punto{width:8px;height:8px;border-radius:50%;background:#00ff88;box-shadow:0 0 8px #00ff88;animation:pulseLive 2s ease-in-out infinite}
+#hud-bar{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(90deg,rgba(10,10,15,0.98),rgba(26,26,36,0.98));border-top:2px solid #00f0ff;color:#8899aa;padding:0.4rem 1.2rem;font-family:'Consolas','Monaco',monospace;font-size:0.75rem;letter-spacing:1px;z-index:13999;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;box-shadow:0 -2px 15px rgba(0,240,255,0.3)}
+#hud-bar .bloque{display:flex;align-items:center;gap:0.4rem}
+#hud-bar .etiqueta{color:#666;text-transform:uppercase}
+#hud-bar .valor{color:#00f0ff;font-weight:bold;text-shadow:0 0 8px rgba(0,240,255,0.4)}
+#hud-bar .valor.ok{color:#00ff88;text-shadow:0 0 8px rgba(0,255,136,0.5)}
+#hud-bar .valor.alerta{color:#ff8800;text-shadow:0 0 8px rgba(255,136,0,0.5)}
+#hud-bar .valor.error{color:#ff0044;text-shadow:0 0 8px rgba(255,0,68,0.5)}
+body.tiene-hud{padding-bottom:40px}
+@media(max-width:600px){
+#hud-reloj{font-size:0.75rem;padding:0.3rem 0.6rem}
+#hud-bar{font-size:0.65rem;padding:0.3rem 0.8rem}
+}
+
+/* ===== SECUENCIA DE ARRANQUE (BOOT) ===== */
+#boot-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a0f;z-index:99998;display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:'Consolas','Monaco',monospace;color:#00f0ff;cursor:pointer;transition:opacity 0.8s ease, visibility 0.8s}
+#boot-screen.oculto{opacity:0;visibility:hidden}
+#boot-screen .logo{font-size:4rem;margin-bottom:1rem;filter:drop-shadow(0 0 25px #00f0ff);animation:latirBoot 2s ease-in-out infinite}
+@keyframes latirBoot{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+#boot-screen .titulo{font-size:1.6rem;letter-spacing:4px;margin-bottom:2rem;text-shadow:0 0 15px #00f0ff;animation:pulseBoot 1.5s ease-in-out infinite}
+@keyframes pulseBoot{0%,100%{opacity:1}50%{opacity:0.6}}
+#boot-screen .linea{font-size:0.9rem;color:#8899aa;margin-bottom:0.4rem;letter-spacing:1px;opacity:0;animation:aparecerLinea 0.3s ease-out forwards;max-width:500px;width:90%;text-align:left}
+#boot-screen .linea .ok{color:#00ff88;float:right}
+#boot-screen .linea .progreso{color:#ff00ff}
+@keyframes aparecerLinea{to{opacity:1}}
+#boot-screen .barra-boot{width:min(500px,90%);height:6px;background:#0a0a0f;border:1px solid rgba(0,240,255,0.3);border-radius:3px;overflow:hidden;margin-top:1.5rem}
+#boot-screen .barra-boot .fill{height:100%;background:linear-gradient(90deg,#00f0ff,#ff00ff);width:0;border-radius:3px;box-shadow:0 0 15px #00f0ff;transition:width 0.4s ease}
+#boot-screen .pista{margin-top:2rem;font-size:0.75rem;color:#666;font-style:italic;letter-spacing:1px}
 </style>
 </head>
 <body>
+<!-- SECUENCIA DE ARRANQUE -->
+<div id="boot-screen" onclick="saltarBoot()">
+<span class="logo">🎮</span>
+<div class="titulo">INICIALIZANDO SISTEMA</div>
+<div class="lineas" id="boot-lineas"></div>
+<div class="barra-boot"><div class="fill" id="boot-progreso"></div></div>
+<div class="pista">Pulsa en cualquier sitio para saltar</div>
+</div>
+
 <canvas id="neon-canvas"></canvas>
     <!-- MENÚ SUPERIOR -->
     <header>
@@ -703,6 +743,7 @@ header.header-oculto{transform:translateY(-100%)}
             <button id="btn-fiesta" onclick="activarModoFiesta()">🎉 Fiesta</button>
             <button id="btn-cine" onclick="activarModoCine()">🎬 Cine</button>
             <button id="btn-settings" onclick="toggleSettings()">⚙️</button>
+            <div id="hud-reloj"><span class="punto"></span><span id="hud-hora">--:--:--</span></div>
             <button class="menu-toggle" id="menuToggle">☰</button>
             <nav>
                 <ul id="navMenu">
@@ -2497,6 +2538,105 @@ async function activarModoCine(){
         }, 2000);
     });
 }
+
+// ===== RELOJ Y BARRA HUD =====
+var inicioSesionHUD = Date.now();
+
+function actualizarReloj(){
+    var ahora = new Date();
+    var h = String(ahora.getHours()).padStart(2, '0');
+    var m = String(ahora.getMinutes()).padStart(2, '0');
+    var s = String(ahora.getSeconds()).padStart(2, '0');
+    var hora = h + ':' + m + ':' + s;
+    var el = document.getElementById('hud-hora');
+    if(el) el.textContent = hora;
+
+    // Tiempo de sesion
+    var seg = Math.floor((Date.now() - inicioSesionHUD) / 1000);
+    var hs = String(Math.floor(seg / 3600)).padStart(2, '0');
+    var ms = String(Math.floor((seg % 3600) / 60)).padStart(2, '0');
+    var ss = String(seg % 60).padStart(2, '0');
+    var ses = document.getElementById('hud-sesion');
+    if(ses) ses.textContent = hs + ':' + ms + ':' + ss;
+}
+
+// Actualizar cada segundo
+setInterval(actualizarReloj, 1000);
+window.addEventListener('DOMContentLoaded', function(){
+    document.body.classList.add('tiene-hud');
+    actualizarReloj();
+    // Detectar IP local
+    var red = document.getElementById('hud-red');
+    if(red){
+        red.textContent = location.hostname === 'localhost' ? 'LOCAL' : 'LAN';
+    }
+});
+
+// ===== SECUENCIA DE ARRANQUE =====
+var BOOT_LINEAS = [
+    '> Cargando nucleo del sistema',
+    '> Detectando hardware',
+    '> Inicializando launcher',
+    '> Montando disco portatil',
+    '> Cargando juegos',
+    '> Conectando a servicios',
+    '> Sistema listo'
+];
+
+function arrancarBoot(){
+    var cont = document.getElementById('boot-lineas');
+    var prog = document.getElementById('boot-progreso');
+    if(!cont || !prog){ saltarBoot(); return; }
+
+    // Si el usuario ya lo ha visto hace poco (menos de 5 min), saltarlo
+    var ultimoBoot = localStorage.getItem('ultimoBoot');
+    var ahora = Date.now();
+    if(ultimoBoot && (ahora - parseInt(ultimoBoot)) < 300000){
+        saltarBoot();
+        return;
+    }
+
+    var i = 0;
+    var intervalo = setInterval(function(){
+        if(i >= BOOT_LINEAS.length){
+            clearInterval(intervalo);
+            setTimeout(saltarBoot, 400);
+            return;
+        }
+        var linea = document.createElement('div');
+        linea.className = 'linea';
+        linea.innerHTML = BOOT_LINEAS[i] + ' <span class="ok">[OK]</span>';
+        cont.appendChild(linea);
+        prog.style.width = ((i + 1) / BOOT_LINEAS.length * 100) + '%';
+        i++;
+    }, 280);
+}
+
+function saltarBoot(){
+    var boot = document.getElementById('boot-screen');
+    if(!boot || boot.classList.contains('oculto')) return;
+    boot.classList.add('oculto');
+    localStorage.setItem('ultimoBoot', Date.now().toString());
+    // Quitar del DOM despues de la animacion
+    setTimeout(function(){
+        if(boot.parentNode) boot.parentNode.removeChild(boot);
+    }, 900);
+}
+
+// Arrancar el boot cuando el DOM este listo
+window.addEventListener('DOMContentLoaded', function(){
+    setTimeout(arrancarBoot, 100);
+});
+
+// Saltar con Escape
+document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
+        var boot = document.getElementById('boot-screen');
+        if(boot && !boot.classList.contains('oculto')){
+            saltarBoot();
+        }
+    }
+});
 </script>
 
 <!-- PANEL DE CONFIGURACION -->
