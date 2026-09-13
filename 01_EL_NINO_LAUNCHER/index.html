@@ -2655,6 +2655,19 @@ function actualizarRecursos(d){
     document.getElementById('ram-valor').textContent = ram + '%';
     document.getElementById('ram-barra').style.width = ram + '%';
     document.getElementById('ram-extra').textContent = d.ram_libre_gb + ' GB libres';
+// CPU del servidor Python
+var cpuServ = document.getElementById('server-valor');
+var ramServ = document.getElementById('server-extra');
+var barraServ = document.getElementById('server-barra');
+if(cpuServ && typeof d.cpu_server !== 'undefined'){
+    cpuServ.textContent = d.cpu_server + '%';
+    if(barraServ){
+        barraServ.style.width = Math.min(100, d.cpu_server * 10) + '%';
+    }
+}
+if(ramServ && typeof d.ram_server_mb !== 'undefined'){
+    ramServ.textContent = d.ram_server_mb + ' MB';
+}
 }
 
 function actualizarProcesosDesdeSSE(d){
@@ -3225,6 +3238,11 @@ window.addEventListener('DOMContentLoaded', function(){
 <div class="label"><span>RAM</span><span class="valor" id="ram-valor">--%</span></div>
 <div class="recurso-barra"><div class="fill ram" id="ram-barra" style="width:0%"></div></div>
 <div class="extra" id="ram-extra">-- GB libres</div>
+</div>
+<div class="recurso-item" style="border-top:1px solid rgba(255,136,0,0.2);padding-top:0.6rem;margin-top:0.6rem">
+<div class="label"><span>⚙️ Servidor</span><span class="valor" id="server-valor">--%</span></div>
+<div class="recurso-barra"><div class="fill cpu" id="server-barra" style="width:0%"></div></div>
+<div class="extra" id="server-extra">-- MB</div>
 </div>
 </div>
 
