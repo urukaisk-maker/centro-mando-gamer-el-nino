@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://www.python.org/)
 
-![Demo del launcher](demo-launcher-v2.gif)
+![Demo del launcher](screenshots/demo-launcher-v2.gif)
 
 <sub>Demo del launcher: particulas, glow y modo alerta</sub>
 
@@ -14,16 +14,16 @@
 <div align="center">
 
 ### Launcher principal
-![Launcher](captura-launcher-v2.png)
+![Launcher](screenshots/captura-launcher-v2.png)
 
 ### Modo Alerta
-![Modo Alerta](captura-alerta-v2.png)
+![Modo Alerta](screenshots/captura-alerta-v2.png)
 
 ### Panel de configuracion
-![Panel de configuracion](captura-config-v2.png)
+![Panel de configuracion](screenshots/captura-config-v2.png)
 
 ### Diario personal con subcategorias
-![Diario de Mario](captura-diario-v2.png)
+![Diario de Mario](screenshots/captura-diario-v2.png)
 
 </div>
 
