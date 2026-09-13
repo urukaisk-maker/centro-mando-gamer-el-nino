@@ -9,7 +9,23 @@
 
 <sub>Demo del launcher: particulas, glow y modo alerta</sub>
 
+## Galeria
+
+<div align="center">
+
+### Launcher principal
 ![Launcher](captura-launcher.png)
+
+### Modo Alerta
+![Modo Alerta](captura-alerta.png)
+
+### Panel de configuracion
+![Panel de configuracion](captura-config.png)
+
+### Diario personal con subcategorias
+![Diario de Mario](captura-diario.png)
+
+</div>
 
 > Demo Vercel: https://centro-mando-gamer-el-nino.vercel.app/
 > Demo Pages: https://urukaisk-maker.github.io/centro-mando-gamer-el-nino/

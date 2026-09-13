@@ -383,7 +383,7 @@ body.tv-mode #btn-salir-tv{display:block}
 #btn-tv,#btn-mute{background:rgba(var(--cian-rgb),0.1);border:1px solid var(--cian);color:var(--cian);padding:0.45rem 1rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.85rem;transition:all 0.3s;white-space:nowrap}
 #btn-tv:hover,#btn-mute:hover{background:rgba(var(--rosa-rgb),0.2);border-color:var(--rosa);color:var(--rosa);transform:translateY(-2px)}
 nav{width:100%;border-top:1px solid rgba(var(--cian-rgb),0.15);margin-top:0.5rem;padding-top:0.8rem}
-nav ul{display:flex;flex-wrap:wrap;justify-content:center;gap:0.4rem 1.2rem;list-style:none;margin:0;padding:0}
+nav ul{display:flex;flex-wrap:wrap;justify-content:center;gap:0.5rem 0.8rem;list-style:none;margin:0;padding:0}
 nav ul li a{display:inline-block;padding:0.4rem 0.8rem;border-radius:20px;transition:all 0.3s}
 nav ul li a:hover{background:rgba(var(--cian-rgb),0.1);color:var(--cian)}
 @media (max-width:768px){
@@ -762,11 +762,18 @@ button:focus-visible,.btn:focus-visible,.tarjeta:focus-visible,a:focus-visible,i
 #btn-tv.activo,#btn-mute.activo,#btn-alerta.activo,#btn-backup.activo,#btn-limpiar.activo,#btn-guardar-configs.activo,#btn-restaurar-configs.activo,#btn-mandos.activo,#btn-radio.activo,#btn-benchmark.activo,#btn-comprimir.activo,#btn-fiesta.activo,#btn-cine.activo,#btn-settings.activo{background:linear-gradient(45deg,#00f0ff,#ff00ff);color:#000;font-weight:900;box-shadow:0 0 20px rgba(0,240,255,0.7),inset 0 0 10px rgba(255,255,255,0.2);border-color:transparent}
 #btn-tv.activo::before,#btn-radio.activo::before{content:"● ";color:#000;animation:pulseActivo 1.5s ease-in-out infinite}
 @keyframes pulseActivo{0%,100%{opacity:1}50%{opacity:0.4}}
+
+nav ul li a{display:inline-flex;align-items:center;gap:0.3rem;padding:0.4rem 0.9rem;border-radius:20px;background:rgba(0,240,255,0.08);border:1px solid rgba(0,240,255,0.2);transition:all 0.2s;font-size:0.9rem}
+nav ul li a:hover{background:rgba(0,240,255,0.15);border-color:#00f0ff;color:#00f0ff;transform:translateY(-2px);box-shadow:0 0 15px rgba(0,240,255,0.4)}
+nav ul li a:active{transform:scale(0.95)}
+
+#btn-timeline{background:rgba(0,255,136,0.15);border:1px solid #00ff88;color:#00ff88;padding:0.45rem 1rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.85rem;transition:all 0.3s;white-space:nowrap}
+#btn-timeline:hover{background:rgba(0,255,136,0.3);transform:translateY(-2px)}
 </style>
 </head>
 <body>
 <!-- SECUENCIA DE ARRANQUE -->
-<div id="boot-screen" onclick="saltarBoot()">
+<div id="boot-screen" role="button" tabindex="0" onclick="saltarBoot()">
 <span class="logo">🎮</span>
 <div class="titulo">INICIALIZANDO SISTEMA</div>
 <div class="lineas" id="boot-lineas"></div>
@@ -788,6 +795,7 @@ button:focus-visible,.btn:focus-visible,.tarjeta:focus-visible,a:focus-visible,i
             <button id="btn-mandos" onclick="instalarMandos()">🎮 Mandos</button>
             <button id="btn-radio" onclick="toggleRadio()">📻 Radio</button>
 <button id="btn-benchmark" onclick="window.open('benchmark.html', '_blank')">⚡ Benchmark</button>
+<button id="btn-timeline" onclick="window.open('timeline.html', '_blank')">📅 Partidas</button>
 <button id="btn-comprimir" onclick="comprimirRoms()">📦 Comprimir</button>
             <button id="btn-fiesta" onclick="activarModoFiesta()">🎉 Fiesta</button>
             <button id="btn-cine" onclick="activarModoCine()">🎬 Cine</button>
@@ -796,24 +804,24 @@ button:focus-visible,.btn:focus-visible,.tarjeta:focus-visible,a:focus-visible,i
             <div id="hud-reloj"><span class="punto"></span><span id="hud-hora">--:--:--</span></div>
             <button class="menu-toggle" id="menuToggle">☰</button>
             <nav>
-                <ul id="navMenu">
-                    <li><a href="#inicio">Inicio</a></li>
-                    <li><a href="sorpresa.html" target="_blank">🎁 Sorpresa</a></li>
-                    <li><a href="#emuladores">Emuladores</a></li>
+<ul id="navMenu">
+<li><a href="#inicio">🏠 Inicio</a></li>
+<li><a href="#emuladores">🎮 Emuladores</a></li>
 <li><a href="#seccion-roms">📀 Mis Juegos</a></li>
-                    <li><a href="#streaming">Streaming</a></li>
-                    <li><a href="#mods">Mods</a></li>
-                    <li><a href="#herramientas">Herramientas</a></li>
-                    <li><a href="#media">Media</a></li>
-                    <li><a href="#diario">Diario</a></li>
-                    <li><a href="#acerca">Acerca de</a></li>
+<li><a href="sorpresa.html" target="_blank">🎁 Sorpresa</a></li>
+<li><a href="#streaming">📡 Streaming</a></li>
+<li><a href="#mods">🧩 Mods</a></li>
+<li><a href="#herramientas">🛠 Herramientas</a></li>
+<li><a href="#media">🖼️ Media</a></li>
+<li><a href="#diario">📓 Diario</a></li>
 <li><a href="#redes">🌐 Redes</a></li>
-                    <li><a href="manual.html">📖 Manual</a></li>
+<li><a href="#acerca">👨‍💻 Acerca de</a></li>
+<li><a href="manual.html">📖 Manual</a></li>
 <li><a href="estadisticas.html">📊 Estadisticas</a></li>
-<li><a href="benchmark.html">⚡ Benchmark</a></li>
 <li><a href="retroachievements.html">🏆 Logros</a></li>
-                </ul>
-            </nav>
+<li><a href="timeline.html">📅 Partidas</a></li>
+</ul>
+</nav>
         </div>
     </header>
 
@@ -1204,7 +1212,8 @@ document.addEventListener('keydown',function(e){
 if((e.key==='t'||e.key==='T') && e.target.tagName!=='INPUT' && e.target.tagName!=='TEXTAREA'){toggleTV();}
 });
 
-// ===== AUDIO CYBERPUNK =====
+// ===== AUDIO CYBERPUNK
+// // Sistema de audio: sonidos sintetizados y musica de fondo =====
 var audioCtx = null;
 var audioActivo = true;
 var musicaActiva = false;
@@ -1406,7 +1415,8 @@ renderActividad();
 setInterval(renderActividad, 5000);
 });
 
-// ===== BACKUP DE PARTIDAS =====
+// ===== BACKUP DE PARTIDAS
+// // Backup manual de partidas =====
 async function hacerBackup(){
 var ok = await mostrarModal({icono:'💾', titulo:'Hacer backup', texto:'Se copiaran TODAS las partidas guardadas de los emuladores y el diario exportado.\n\n¿Continuar?', btnOk:'Hacer backup', btnCancel:'Cancelar'});
 if(!ok){
@@ -1423,7 +1433,8 @@ mostrarToast('Error al hacer backup. Comprueba que el servidor esta corriendo.',
 });
 }
 
-// ===== PANEL DE CONFIGURACION =====
+// ===== PANEL DE CONFIGURACION
+// // Panel lateral de configuracion (temas, volumen, kiosco) =====
 
 var THEMES = {
     cyan:   { primary: '#00f0ff', secondary: '#ff00ff' },
@@ -1548,7 +1559,8 @@ document.addEventListener('keydown', function(e){
     }
 });
 
-// ===== BUSCADOR GLOBAL =====
+// ===== BUSCADOR GLOBAL
+// // Buscador global: juegos, wallpapers, secciones y diario =====
 var WALLPAPERS = [
     {nombre:'Cyberpunk 01', archivo:'cyberpunk-01.jpg'},
     {nombre:'Neon 02', archivo:'neon-02.jpg'},
@@ -1822,7 +1834,8 @@ function mostrarModal(opciones){
     });
 }
 
-// ===== EDITAR REDES SOCIALES =====
+// ===== EDITAR REDES SOCIALES
+// // Edicion de redes sociales guardadas en localStorage =====
 function editarRedes(){
     var redes = JSON.parse(localStorage.getItem('redesElNino') || '{}');
     var html = '<div style="display:flex;flex-direction:column;gap:1rem;text-align:left">';
@@ -2037,7 +2050,8 @@ window.addEventListener('DOMContentLoaded', function(){
     }
 });
 
-// ===== PANEL DE PROCESOS ACTIVOS =====
+// ===== PANEL DE PROCESOS
+// // Panel flotante de procesos activos ACTIVOS =====
 function actualizarProcesos(){
     fetch('/estado')
         .then(function(r){ return r.json(); })
@@ -2109,7 +2123,8 @@ window.addEventListener('DOMContentLoaded', function(){
     setTimeout(actualizarProcesos, 500);
 });
 
-// ===== LIMPIEZA =====
+// ===== LIMPIEZA
+// // Limpieza de archivos temporales =====
 async function hacerLimpieza(){
     var ok = await mostrarModal({
         icono: '🧹',
@@ -2133,7 +2148,8 @@ async function hacerLimpieza(){
         });
 }
 
-// ===== INSTALAR MANDOS =====
+// ===== INSTALAR MANDOS
+// // Instalacion de perfiles de mando =====
 async function instalarMandos(){
     var ok = await mostrarModal({
         icono: '🎮',
@@ -2210,7 +2226,8 @@ window.addEventListener('DOMContentLoaded', function(){
     setTimeout(cargarRoms, 300);
 });
 
-// ===== RADIO RETRO =====
+// ===== RADIO RETRO
+// // Radio retro con 4 emisoras online =====
 var radioAudio = null;
 var radioReproduciendo = false;
 var radioEmisora = 'jpop';
@@ -2286,7 +2303,8 @@ function cambiarVolumenRadio(valor){
     if(radioAudio) radioAudio.volume = radioVolumen / 100;
 }
 
-// ===== GUARDAR / RESTAURAR CONFIGS =====
+// ===== GUARDAR / RESTAURAR CONFIGS
+// // Snapshots de configuraciones de emuladores =====
 async function guardarConfigs(){
     var ok = await mostrarModal({
         icono: '📸',
@@ -2328,7 +2346,8 @@ async function restaurarConfigs(){
     }
 }
 
-// ===== MODO KIOSCO =====
+// ===== MODO KIOSCO
+// // Modo kiosco: bloqueo con PIN de 4 digitos =====
 var kioscoActivo = false;
 var kioscoPinActual = '';
 
@@ -2457,7 +2476,8 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// ===== HEADER OCULTABLE AL SCROLL =====
+// ===== HEADER OCULTABLE
+// // Header que se oculta al bajar y aparece al subir AL SCROLL =====
 (function(){
     var ultimoScroll = 0;
     var header = document.querySelector("header");
@@ -2479,7 +2499,8 @@ if ('serviceWorker' in navigator) {
     }, {passive:true});
 })();
 
-// ===== COMPRIMIR ROMS =====
+// ===== COMPRIMIR ROMS
+// // Compresion de ISOs a .chd =====
 async function comprimirRoms(){
     var ok = await mostrarModal({
         icono: '📦',
@@ -2503,7 +2524,8 @@ async function comprimirRoms(){
     }
 }
 
-// ===== SERVER-SENT EVENTS (estado en vivo) =====
+// ===== SERVER-SENT EVENTS
+// // Conexion SSE para CPU/RAM en vivo y procesos (estado en vivo) =====
 var sseConexion = null;
 
 function conectarSSE(){
@@ -2570,7 +2592,8 @@ window.addEventListener('DOMContentLoaded', function(){
     setTimeout(conectarSSE, 500);
 });
 
-// ===== MODOS FIESTA Y CINE =====
+// ===== MODOS FIESTA Y CINE
+// // Modos de preparacion del PC =====
 async function activarModoFiesta(){
     var ok = await mostrarModal({
         icono: '🎉',
@@ -2603,7 +2626,8 @@ async function activarModoCine(){
     });
 }
 
-// ===== RELOJ Y BARRA HUD =====
+// ===== RELOJ Y BARRA HUD
+// // Reloj digital y barra de estado inferior =====
 var inicioSesionHUD = Date.now();
 
 function actualizarReloj(){
@@ -2636,7 +2660,8 @@ window.addEventListener('DOMContentLoaded', function(){
     }
 });
 
-// ===== SECUENCIA DE ARRANQUE =====
+// ===== SECUENCIA DE ARRANQUE
+// // Pantalla de arranque tipo HUD =====
 var BOOT_LINEAS = [
     '> Cargando nucleo del sistema',
     '> Detectando hardware',
@@ -2702,7 +2727,8 @@ document.addEventListener('keydown', function(e){
     }
 });
 
-// ===== MODO ALERTA =====
+// ===== MODO ALERTA
+// // Modo alerta (paleta rojo/ambar) =====
 function toggleAlerta(){
     var activo = document.body.classList.toggle('modo-alerta');
     localStorage.setItem('modoAlerta', activo ? 'on' : 'off');
@@ -2804,10 +2830,21 @@ window.addEventListener('DOMContentLoaded', function(){
 // Refrescar estados cada 3 segundos por si algo cambia externamente
 setInterval(actualizarEstadosBotones, 3000);
 
+
+// ===== ACCESIBILIDAD: Activar divs interactivos con teclado =====
+document.addEventListener('keydown', function(e){
+    var el = e.target;
+    if(el.getAttribute && el.getAttribute('role') === 'button'){
+        if(e.key === 'Enter' || e.key === ' '){
+            e.preventDefault();
+            el.click();
+        }
+    }
+});
 </script>
 
 <!-- PANEL DE CONFIGURACION -->
-<div id="settings-overlay" onclick="toggleSettings()"></div>
+<div id="settings-overlay" role="button" tabindex="0" onclick="toggleSettings()"></div>
 <div id="settings-panel">
 <button class="close-btn" onclick="toggleSettings()">✕</button>
 <h2>⚙️ Configuración</h2>
@@ -2815,11 +2852,11 @@ setInterval(actualizarEstadosBotones, 3000);
 <div class="setting-group">
 <label>🎨 Tema de colores</label>
 <div class="theme-options" id="theme-options">
-<div class="theme-option active" data-theme="cyan" style="background:linear-gradient(45deg,#00f0ff,#ff00ff);color:#00f0ff" onclick="setTheme('cyan')"></div>
-<div class="theme-option" data-theme="green" style="background:linear-gradient(45deg,#00ff88,#88ff00);color:#00ff88" onclick="setTheme('green')"></div>
-<div class="theme-option" data-theme="orange" style="background:linear-gradient(45deg,#ff8800,#ff0055);color:#ff8800" onclick="setTheme('orange')"></div>
-<div class="theme-option" data-theme="purple" style="background:linear-gradient(45deg,#7a00ff,#ff00ff);color:#7a00ff" onclick="setTheme('purple')"></div>
-<div class="theme-option" data-theme="red" style="background:linear-gradient(45deg,#ff0044,#ff8800);color:#ff0044" onclick="setTheme('red')"></div>
+<div class="theme-option active" data-theme="cyan" style="background:linear-gradient(45deg,#00f0ff,#ff00ff);color:#00f0ff" role="button" tabindex="0" onclick="setTheme('cyan')"></div>
+<div class="theme-option" data-theme="green" style="background:linear-gradient(45deg,#00ff88,#88ff00);color:#00ff88" role="button" tabindex="0" onclick="setTheme('green')"></div>
+<div class="theme-option" data-theme="orange" style="background:linear-gradient(45deg,#ff8800,#ff0055);color:#ff8800" role="button" tabindex="0" onclick="setTheme('orange')"></div>
+<div class="theme-option" data-theme="purple" style="background:linear-gradient(45deg,#7a00ff,#ff00ff);color:#7a00ff" role="button" tabindex="0" onclick="setTheme('purple')"></div>
+<div class="theme-option" data-theme="red" style="background:linear-gradient(45deg,#ff0044,#ff8800);color:#ff0044" role="button" tabindex="0" onclick="setTheme('red')"></div>
 </div>
 </div>
 
@@ -2836,11 +2873,11 @@ setInterval(actualizarEstadosBotones, 3000);
 <div class="setting-group">
 <div class="toggle-row">
 <span>✨ Sonidos al pasar el ratón</span>
-<div class="toggle on" id="toggle-hover" onclick="toggleHover()"></div>
+<div class="toggle on" id="toggle-hover" role="button" tabindex="0" onclick="toggleHover()"></div>
 </div>
 <div class="toggle-row">
 <span>🎵 Música de fondo</span>
-<div class="toggle on" id="toggle-music" onclick="toggleMusicBtn()"></div>
+<div class="toggle on" id="toggle-music" role="button" tabindex="0" onclick="toggleMusicBtn()"></div>
 </div>
 </div>
 
@@ -2849,7 +2886,7 @@ setInterval(actualizarEstadosBotones, 3000);
 <label>🔒 Modo kiosco</label>
 <div class="toggle-row">
 <span>Bloquear el launcher con PIN</span>
-<div class="toggle" id="toggle-kiosco" onclick="toggleKiosco()"></div>
+<div class="toggle" id="toggle-kiosco" role="button" tabindex="0" onclick="toggleKiosco()"></div>
 </div>
 <div id="kiosco-config" style="display:none;margin-top:1rem">
 <label style="color:#00f0ff;font-size:0.85rem;margin-bottom:0.5rem;display:block">PIN actual (4 digitos)</label>

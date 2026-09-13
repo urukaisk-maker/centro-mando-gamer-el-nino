@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Historial de partidas - El Nino</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:2rem 1rem;background-image:radial-gradient(circle at 20% 30%,rgba(0,240,255,0.05),transparent 50%),radial-gradient(circle at 80% 70%,rgba(255,0,255,0.05),transparent 50%);background-attachment:fixed}
+.container{max-width:1100px;margin:0 auto}
+a.volver{color:#ff00ff;text-decoration:none;font-weight:bold;display:inline-block;margin-bottom:1.5rem;font-size:1.05rem}
+a.volver:hover{text-decoration:underline}
+h1{color:#00f0ff;text-align:center;font-size:2.5rem;text-shadow:0 0 20px #00f0ff;margin-bottom:0.5rem}
+.sub{text-align:center;color:#8899aa;margin-bottom:2rem;font-style:italic}
+.btn-scan{display:block;margin:0 auto 2rem;padding:0.8rem 2rem;background:linear-gradient(45deg,#00f0ff,#ff00ff);color:#000;border:none;border-radius:30px;font-weight:bold;font-size:1rem;cursor:pointer;transition:all 0.3s;font-family:inherit;letter-spacing:1px}
+.btn-scan:hover{transform:scale(1.05);box-shadow:0 0 25px rgba(255,0,255,0.7)}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem}
+.stat-card{background:linear-gradient(145deg,#12121a,#1a1a24);border:2px solid rgba(0,240,255,0.3);border-radius:16px;padding:1.5rem;text-align:center;transition:all 0.3s}
+.stat-card:hover{transform:translateY(-5px);border-color:#00f0ff;box-shadow:0 10px 30px rgba(0,240,255,0.3)}
+.stat-icon{font-size:2rem;display:block;margin-bottom:0.5rem}
+.stat-value{color:#00f0ff;font-size:2rem;font-weight:900;display:block;margin-bottom:0.3rem;text-shadow:0 0 15px rgba(0,240,255,0.5)}
+.stat-label{color:#8899aa;font-size:0.85rem;text-transform:uppercase;letter-spacing:1px}
+.seccion-titulo{color:#ff00ff;font-size:1.4rem;margin:2rem 0 1rem;text-shadow:0 0 15px rgba(255,0,255,0.4);display:flex;align-items:center;gap:0.5rem;border-bottom:1px solid rgba(255,0,255,0.2);padding-bottom:0.5rem}
+.timeline{position:relative;padding-left:30px}
+.timeline::before{content:"";position:absolute;left:10px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,#00f0ff,#ff00ff);border-radius:2px}
+.snapshot{background:linear-gradient(145deg,#12121a,#1a1a24);border:1px solid rgba(0,240,255,0.3);border-left:4px solid #00f0ff;border-radius:12px;padding:1rem 1.2rem;margin-bottom:1rem;position:relative;transition:all 0.3s}
+.snapshot:hover{border-left-color:#ff00ff;transform:translateX(5px);box-shadow:0 0 20px rgba(0,240,255,0.3)}
+.snapshot::before{content:"";position:absolute;left:-27px;top:20px;width:12px;height:12px;border-radius:50%;background:#00f0ff;border:3px solid #0a0a0f;box-shadow:0 0 10px #00f0ff}
+.snapshot .fecha{color:#00f0ff;font-weight:bold;font-size:0.9rem;margin-bottom:0.3rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem}
+.snapshot .fecha .badge{background:rgba(255,0,255,0.15);color:#ff00ff;padding:0.2rem 0.6rem;border-radius:10px;font-size:0.75rem;border:1px solid rgba(255,0,255,0.3)}
+.snapshot .archivo{color:#e0e0e0;font-size:0.95rem;margin-bottom:0.3rem;font-family:'Consolas','Monaco',monospace}
+.snapshot .info{color:#8899aa;font-size:0.8rem}
+.vacio{text-align:center;padding:3rem;color:#8899aa;font-style:italic;background:rgba(26,26,36,0.5);border:1px dashed rgba(0,240,255,0.3);border-radius:14px}
+@media(max-width:600px){h1{font-size:1.8rem}.timeline{padding-left:20px}}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="volver" href="/01_EL_NINO_LAUNCHER/index.html">← Volver al Dashboard</a>
+<h1>📅 Historial de partidas</h1>
+<p class="sub">Histórico de todas tus partidas guardadas</p>
+<button class="btn-scan" onclick="escanearAhora()">🔄 Escanear ahora</button>
+<div id="contenido"><div class="vacio">Cargando...</div></div>
+</div>
+
+<script>
+function cargarTimeline(){
+    fetch('/02_EMULADORES_Y_ROMS/SAVES_GUARDADOS/timeline/indice.json?_=' + Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        mostrarTimeline(data);
+    })
+    .catch(function(){
+        document.getElementById('contenido').innerHTML = '<div class="vacio">No hay historico todavia.<br><br>Pulsa "Escanear ahora" para crear el primero.</div>';
+    });
+}
+
+function mostrarTimeline(data){
+    var entradas = data.entradas || [];
+    var cont = document.getElementById('contenido');
+
+    if(entradas.length === 0){
+        cont.innerHTML = '<div class="vacio">No hay snapshots todavia.<br><br>Cuando juegues y guardes partidas, apareceran aqui automaticamente.</div>';
+        return;
+    }
+
+    // Agrupar por fuente
+    var porFuente = {};
+    entradas.forEach(function(e){
+        if(!porFuente[e.fuente]) porFuente[e.fuente] = [];
+        porFuente[e.fuente].push(e);
+    });
+
+    var html = '';
+
+    // Stats
+    var totalKb = entradas.reduce(function(s, e){ return s + (e.tamano_kb || 0); }, 0);
+    html += '<div class="stats-grid">';
+    html += '<div class="stat-card"><span class="stat-icon">📦</span><span class="stat-value">' + entradas.length + '</span><span class="stat-label">Snapshots</span></div>';
+    html += '<div class="stat-card"><span class="stat-icon">🎮</span><span class="stat-value">' + Object.keys(porFuente).length + '</span><span class="stat-label">Fuentes</span></div>';
+    html += '<div class="stat-card"><span class="stat-icon">💾</span><span class="stat-value">' + Math.round(totalKb/1024*10)/10 + ' MB</span><span class="stat-label">Tamano total</span></div>';
+    html += '<div class="stat-card"><span class="stat-icon">🕐</span><span class="stat-value" style="font-size:1rem;line-height:1.4">' + (data.ultimo_escaneo || '--') + '</span><span class="stat-label">Ultimo escaneo</span></div>';
+    html += '</div>';
+
+    // Timeline por fuente
+    Object.keys(porFuente).forEach(function(fuente){
+        html += '<h2 class="seccion-titulo">📁 ' + fuente + ' <span style="color:#8899aa;font-size:0.9rem;font-weight:normal">(' + porFuente[fuente].length + ')</span></h2>';
+        html += '<div class="timeline">';
+        porFuente[fuente].forEach(function(e){
+            html += '<div class="snapshot">';
+            html += '<div class="fecha"><span>📅 ' + e.fecha + '</span><span class="badge">' + (e.tamano_kb || 0) + ' KB</span></div>';
+            html += '<div class="archivo">' + e.archivo + '</div>';
+            html += '<div class="info">Copia: ' + (e.ruta_copia || '').replace('/run/media/urukais/PROYECTOS/', '') + '</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+    });
+
+    cont.innerHTML = html;
+}
+
+function escanearAhora(){
+    var cont = document.getElementById('contenido');
+    cont.innerHTML = '<div class="vacio">Escaneando...</div>';
+    fetch('/timeline-escanear')
+    .then(function(r){ return r.text(); })
+    .then(function(){
+        setTimeout(cargarTimeline, 500);
+    })
+    .catch(function(){
+        cont.innerHTML = '<div class="vacio">Error al escanear</div>';
+    });
+}
+
+cargarTimeline();
+</script>
+</body>
+</html>
