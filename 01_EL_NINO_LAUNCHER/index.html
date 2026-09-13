@@ -773,12 +773,17 @@ nav ul li a:active{transform:scale(0.95)}
 .btn-trailer{position:absolute;top:10px;right:10px;background:linear-gradient(45deg,#ff0000,#cc0000);color:#fff;border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:0.95rem;display:none;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(255,0,0,0.6);transition:all 0.3s;z-index:10}
 .btn-trailer:hover{transform:scale(1.15);box-shadow:0 0 25px rgba(255,0,0,0.9)}
 .tarjeta.tiene-trailer .btn-trailer{display:flex}
+
+#boot-screen .saludo-personal{font-size:1.4rem;color:#ff00ff;letter-spacing:3px;margin-bottom:1rem;text-shadow:0 0 20px rgba(255,0,255,0.8);animation:fadeSaludo 1.2s ease-out;font-weight:600}
+@keyframes fadeSaludo{from{opacity:0;transform:translateY(-15px)}to{opacity:1;transform:translateY(0)}}
+#boot-screen .mensaje-mario{margin-top:1.5rem;font-size:0.95rem;color:#8899aa;font-style:italic;letter-spacing:1px;animation:fadeSaludo 1.8s ease-out;max-width:500px;text-align:center;line-height:1.5}
 </style>
 </head>
 <body>
 <!-- SECUENCIA DE ARRANQUE -->
 <div id="boot-screen" role="button" tabindex="0" onclick="saltarBoot()">
 <span class="logo">🎮</span>
+<div class="saludo-personal" id="saludo-mario">Hola, Mario</div>
 <div class="titulo">INICIALIZANDO SISTEMA</div>
 <div class="lineas" id="boot-lineas"></div>
 <div class="barra-boot"><div class="fill" id="boot-progreso"></div></div>
@@ -1923,7 +1928,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
 // ===== CHATBOT ASISTENTE =====
 var RESPUESTAS = [
-    { claves: ['hola','buenas','hey','saludos','que tal','hello'], resp: 'Hola Mario! Soy el asistente de El Nino. Preguntame lo que quieras sobre el Centro de Mando. Puedes escribir: <b>juegos</b>, <b>backup</b>, <b>diario</b>, <b>radio</b>, <b>benchmark</b>, <b>kiosco</b>, <b>mando</b>, <b>anadir juegos</b>, <b>manual</b>...' },
+    { claves: ['hola','buenas','hey','saludos','que tal','hello','ey'], resp: 'Ey Mario! Aqui estoy para lo que necesites. Preguntame por <b>juegos</b>, <b>backup</b>, <b>diario</b>, <b>radio</b>, <b>benchmark</b>, <b>kiosco</b>, <b>mando</b>... o lo que se te ocurra.' },
     { claves: ['juego','jugar','juegos','que puedo jugar','lista'], resp: 'Tienes <b>13 juegos completos</b>: Cave Story, Freedoom, Quake, OpenRA, 0 A.D., Xonotic, Luanti, Battle for Wesnoth, OpenTTD, Endless Sky, SuperTux, Widelands y Shattered Pixel Dungeon. Pulsa la tarjeta de cada uno para jugar.' },
     { claves: ['emulador','emuladores','ps2','psp','gamecube','wii','retroarch','consola'], resp: 'Hay 4 emuladores: <b>PCSX2</b> (PS2), <b>PPSSPP</b> (PSP), <b>Dolphin</b> (GameCube/Wii) y <b>RetroArch</b> (multi-sistema). Necesitan BIOS y ROMs propias. Si falta algo, el launcher te avisa.' },
     { claves: ['backup','copia','seguridad','guardar partida','partidas'], resp: 'Pulsa el boton <b>Backup</b> arriba. Copia todas las partidas de los emuladores a SAVES_GUARDADOS. Ademas, cada <b>domingo a las 20:00</b> se hace uno automatico.' },
@@ -1940,7 +1945,7 @@ var RESPUESTAS = [
     { claves: ['radio','musica','jpop','kpop','gensokyo','emisora'], resp: 'Pulsa el boton <b>Radio</b> arriba. Tienes 4 emisoras: <b>J-Pop</b>, <b>K-Pop</b>, <b>Gensokyo</b> (musica de Touhou) y <b>Fallback</b>. Necesitas internet. Tiene control de volumen.' },
     { claves: ['benchmark','rendimiento','gpu','cpu','ram','hardware'], resp: 'Pulsa el boton <b>Benchmark</b> arriba. Analiza tu PC (CPU, RAM, GPU) y te recomienda la configuracion ideal para cada emulador.' },
     { claves: ['kiosco','pin','bloquear','bloqueo','seguridad','contrasena'], resp: 'El <b>Modo kiosco</b> bloquea el launcher con un PIN de 4 digitos. Se activa desde el panel de <b>Configuracion</b> (engranaje). Util si vienen visitas.' },
-    { claves: ['retroachievements','logros','achievements','ra','insignias'], resp: 'En el menu hay un enlace a <b>Logros</b>. Conecta tu cuenta de retroachievements.org (usuario + API Key) y veras tus puntos y logros. Necesitas una cuenta gratis.' },
+    { claves: ['retroachievements','logros','achievements','insignias'], resp: 'En el menu hay un enlace a <b>Logros</b>. Conecta tu cuenta de retroachievements.org (usuario + API Key) y veras tus puntos y logros. Necesitas una cuenta gratis.' },
     { claves: ['fiesta','modo fiesta','party'], resp: 'El <b>Modo Fiesta</b> prepara el PC para jugar: cierra navegadores, sube el volumen al 80%, desactiva el salvapantallas y abre RetroArch. Cuidado: cierra el navegador actual.' },
     { claves: ['cine','modo cine','pelicula','peliculas','kodi','stremio','vlc'], resp: 'El <b>Modo Cine</b> prepara el PC para ver peliculas: cierra navegadores, ajusta el volumen al 60% y abre Kodi / Stremio / VLC. Cuidado: cierra el navegador actual.' },
     { claves: ['configs','configuracion guardar','restaurar configs','snapshot'], resp: 'Puedes guardar y restaurar las configuraciones de los emuladores. Botones <b>Guardar configs</b> y <b>Restaurar configs</b> del launcher. Se guardan las 5 ultimas fotos.' },
@@ -1950,15 +1955,76 @@ var RESPUESTAS = [
     { claves: ['cpu','ram','recursos','rendimiento en vivo'], resp: 'Abajo a la izquierda veras un <b>panel de recursos</b> con CPU y RAM en tiempo real. Se actualiza solo cada 3 segundos con Server-Sent Events.' },
     { claves: ['sorpresa','regalo','premio','gift'], resp: 'El boton <b>Sorpresa</b> del menu te lleva a una pagina con efectos especiales. Pulsalo cuando quieras.' },
     { claves: ['error','falla','roto','no funciona','problema'], resp: 'Prueba: 1) Cierra el navegador y vuelve a abrirlo. 2) Si sigue, ejecuta <b>Detener.sh</b> y luego <b>ABRIR EL NIÑO</b>. 3) Si nada funciona, preguntale a Manuel.' },
-    { claves: ['gracias','genial','guay','perfecto','bravo'], resp: 'De nada Mario! Estoy aqui para lo que necesites. 🎮' },
+    { claves: ['gracias','genial','guay','perfecto','bravo'], resp: 'De nada, Mario! Para eso estoy. Cualquier cosa, aqui me tienes. 🎮' },
     { claves: ['quien eres','que eres','como te llamas','eres una ia'], resp: 'Soy el asistente de El Nino, un chatbot por reglas. No soy IA real (no uso GPT ni nada), pero conozco el proyecto al detalle. Preguntame lo que quieras.' },
-    { claves: ['creador','quien lo hizo','manuel','padre','papa'], resp: 'Este proyecto lo hizo <b>Manuel Casimiro Carrasco</b> (urukaisk-maker) desde Reus, Tarragona, como regalo para ti, Mario. 💚' },
+    { claves: ['creador','quien lo hizo','manuel','padre','papa'], resp: 'Este proyecto lo hizo <b>Manuel</b> (tu padre) desde Reus, Tarragona. Lo ha hecho pensando en ti, Mario, con mucho carino. 💚' },
     { claves: ['github','repositorio','codigo','web'], resp: 'El proyecto esta publicado en GitHub: <b>github.com/urukaisk-maker/centro-mando-gamer-el-nino</b>. Tambien hay demo online en Vercel y GitHub Pages.' },
     { claves: ['windows','linux','sistema operativo'], resp: 'El Centro de Mando funciona tanto en <b>Windows</b> como en <b>Linux</b>. En Windows se abre con "ABRIR EL NIÑO.bat", en Linux con "Abrir El Niño.desktop".' },
     { claves: ['nuevo','novedades','actualizacion','que hay de nuevo'], resp: 'Ultimas funciones anadidas: <b>Radio retro</b>, <b>Benchmark</b>, <b>RetroAchievements</b>, <b>Modo kiosco con PIN</b>, <b>Mando tactil</b>, <b>Modos Fiesta/Cine</b>, <b>Panel de recursos CPU/RAM</b> y <b>Manual en formato libro</b>.' }
+,
+    { claves: ['mario','yo','mi nombre'], resp: 'Tu eres Mario, el protagonista de este Centro de Mando. Todo lo que ves aqui esta hecho para ti. 😊' }
+,
+    { claves: ['que es el nino','que es esto','que es este proyecto','de que va','explicame','que es'], resp: 'El Centro de Mando Gamer <b>"El Nino"</b> es tu disco portatil de 224 GB. Dentro tienes juegos, emuladores, radio, diario personal, wallpapers y muchas herramientas. Todo en uno, sin instalar nada. Es un regalo que te ha hecho Manuel. 💚' },
+    { claves: ['quien es mario','quien soy','soy mario'], resp: 'Tu eres <b>Mario</b>, el dueno de este Centro de Mando. Todo lo que hay aqui esta pensado para ti. 😊' },
+    { claves: ['quien es manuel','quien te ha hecho','quien es el jefe','papa','padre'], resp: 'Manuel es la persona que ha creado este proyecto. Lo ha hecho desde Reus, con mucho carino, pensando en ti. Es tu <b>padre</b>. 💚' },
+    { claves: ['cuantos juegos','cuantos','numero de juegos'], resp: 'Tienes <b>13 juegos completos</b> instalados y listos para jugar. Ademas, puedes anadir tus propias ROMs a la seccion "Mis Juegos".' },
+    { claves: ['como se usa','como funciona','como se juega','como empiezo'], resp: 'Muy facil: pulsa la tarjeta del juego que quieras y luego el boton <b>Jugar</b>. Se abre solo. Si es un emulador, necesitas primero tener las BIOS y ROMs en su carpeta.' },
+    { claves: ['por que','para que','motivo','razon'], resp: 'Este proyecto es un <b>regalo</b> para ti. Manuel lo ha hecho porque le apetecia darte algo especial, con juegos, herramientas y un rincon para que escribas lo que quieras.' },
+    { claves: ['que hago','aburrido','no se que hacer','que puedo hacer'], resp: 'Prueba a: 1) Jugar a <b>Cave Story</b> o <b>Quake</b>. 2) Escuchar la <b>radio</b>. 3) Escribir en el <b>diario</b>. 4) Cambiar el <b>tema de colores</b>. 5) Ver los <b>wallpapers</b>. Hay mucho donde elegir!' },
+    { claves: ['tema','color','apariencia','aspecto'], resp: 'Puedes cambiar los colores en <b>Configuracion</b> (boton de engranaje). Hay 5 temas: cian, verde, naranja, morado y rojo. Y ademas el boton <b>Alerta</b> pone todo en rojo/ambar.' },
+    { claves: ['me ayudas','ayuda','auxilio'], resp: 'Claro Mario! Dime que necesitas y te ayudo. Si no se la respuesta, mira el <b>Manual</b> o preguntale a Manuel.' },
+    { claves: ['adios','hasta luego','chao','bye','nos vemos'], resp: 'Hasta luego, Mario! Que disfrutes del Centro de Mando. Vuelve cuando quieras. 🎮' },
+    { claves: ['te quiero','eres genial','me gusta','molas','guay'], resp: 'Gracias Mario! Tu si que molas. Disfruta del disco. 💚' },
+    { claves: ['que puedes hacer','para que sirves','funciones'], resp: 'Puedo responderte sobre <b>juegos</b>, <b>emuladores</b>, <b>backup</b>, <b>diario</b>, <b>radio</b>, <b>benchmark</b>, <b>kiosco</b>, <b>mando</b>, <b>trailers</b>, <b>timeline</b>, <b>modos fiesta/cine</b>... Preguntame lo que quieras!' }
+,
+    { claves: ['arquitectura','como esta hecho','como funciona por dentro','tecnologia','estructura tecnica'], resp: 'El proyecto tiene 3 capas:\n\n1) <b>Launcher web</b> (HTML/CSS/JS) - la interfaz que ves\n2) <b>Servidor Python</b> - escucha en el puerto 8080 y lanza los juegos\n3) <b>Scripts Bash</b> - preparan todo y llaman a los emuladores\n\nTodo se comunica por HTTP local. No necesita internet ni instalar nada.' },
+    { claves: ['servidor','python','server','8080','puerto'], resp: 'El servidor esta hecho en <b>Python 3</b> y escucha en el puerto <b>8080</b>. Se llama <code>server.py</code>. Sirve el launcher, lanza juegos, hace backups, comprime ROMs... Todo lo gestiona el. Se arranca solo al encender el PC.' },
+    { claves: ['systemd','servicio','elnino.service','arranque automatico','como arranca'], resp: 'El servidor corre como <b>servicio systemd</b> llamado <code>elnino.service</code>. Se arranca automaticamente al iniciar sesion. Ademas hay un servicio <code>elnino-env.service</code> que le pasa el entorno grafico (para que RetroArch se vea bien).' },
+    { claves: ['backup automatico','domingo','cuando backup','frecuencia backup'], resp: 'El backup automatico se hace <b>cada domingo a las 20:00</b>. Si el PC estaba apagado, se ejecuta al encenderlo. Se guardan las ultimas 5 copias y se borran las mas viejas.' },
+    { claves: ['carpetas','estructura disco','donde estan los archivos','organizacion'], resp: 'El disco esta organizado en carpetas numeradas:\n\n<b>01</b>_EL_NINO_LAUNCHER - launcher\n<b>02</b>_EMULADORES_Y_ROMS - emuladores y juegos\n<b>03</b>_STREAMING_Y_CLIPS - OBS\n<b>04</b>_MODS_Y_SHADERS - mods\n<b>05</b>_HERRAMIENTAS_GAMER - utilidades\n<b>06</b>_MEDIA_Y_WALLPAPERS - fondos\n<b>07</b>_DIARIO_MARIO - tu diario\n<b>08</b>_JUEGOS_EXTRA - 13 juegos' },
+    { claves: ['pcsx2','ps2','playstation 2','bios ps2'], resp: '<b>PCSX2</b> emula PlayStation 2. Necesita 2 cosas:\n\n1) <b>BIOS</b> en 02_EMULADORES_Y_ROMS/01_PS2/BIOS/\n2) <b>ISOs</b> en 02_EMULADORES_Y_ROMS/01_PS2/\n\nSin BIOS no arranca. Las BIOS se extraen de tu propia PS2.' },
+    { claves: ['ppsspp','psp','playstation portable'], resp: '<b>PPSSPP</b> emula PSP. Solo necesita <b>ISOs</b> en 02_EMULADORES_Y_ROMS/02_PSP/. No necesita BIOS. Acepta .iso, .cso y .pbp.' },
+    { claves: ['dolphin','gamecube','wii'], resp: '<b>Dolphin</b> emula GameCube y Wii. Necesita <b>BIOS</b> (IPL.bin para GC) y <b>ISOs</b> en 02_EMULADORES_Y_ROMS/03_GAMECUBE_WII/.' },
+    { claves: ['retroarch','cores','multi sistema','multiemulador'], resp: '<b>RetroArch</b> es un multi-emulador. En lugar de emular un solo sistema, usa <b>cores</b> (nucleos) para emular muchos: NES, SNES, GBA, Mega Drive, PS1, Neo Geo... Instalamos los cores: fceumm, snes9x, mgba, nxengine, prboom, tyrquake.' },
+    { claves: ['bios','que son las bios','donde pongo bios'], resp: 'Las <b>BIOS</b> son el firmware original de las consolas. Sin ellas, PCSX2 y Dolphin no arrancan. Se extraen de tu propia consola (es legal si la tienes). Se ponen en las subcarpetas BIOS/ de cada emulador.' },
+    { claves: ['iso','que es una iso','formatos','rom vs iso'], resp: 'Una <b>ISO</b> es la imagen de un disco (PS2, GameCube). Una <b>ROM</b> es el archivo de un cartucho (NES, SNES, GBA). Ambos son "el juego" en un archivo. Se ponen en sus carpetas y el launcher los detecta.' },
+    { claves: ['chd','comprimir iso','ahorrar espacio'], resp: 'El formato <b>.chd</b> comprime ISOs de PS2/GameCube ocupando <b>40-60% menos</b> sin perder calidad. Usa el boton <b>Comprimir</b> del launcher. Tarda 5-15 min por juego.' },
+    { claves: ['savestate','save state','partida guardada','estados'], resp: 'Los <b>savestates</b> son "fotos" del juego en un momento exacto. Cada emulador los guarda distinto:\n\nPCSX2: ~/.config/PCSX2/sstates\nDolphin: ~/.local/share/dolphin-emu/StateSaves\nRetroArch: ~/.config/retroarch/states\n\nEl Timeline los vigila automaticamente.' },
+    { claves: ['memcard','tarjeta de memoria','memory card'], resp: 'Las <b>memcards</b> son las tarjetas de memoria virtuales de PS2. Se guardan en ~/.config/PCSX2/memcards/. El backup las copia todas.' },
+    { claves: ['timeline','historial de partidas','linea temporal'], resp: 'El <b>Timeline</b> vigila las carpetas de saves. Cada vez que guardas una partida, copia el archivo con la fecha. Asi puedes ver un historico completo en <b>📅 Partidas</b> del menu. Muy util si un save se corrompe.' },
+    { claves: ['trailers','videos','youtube'], resp: 'En el menu hay <b>🎬 Trailers</b>. Es una pagina de administracion donde pegas URLs de YouTube para cada juego. Luego en el launcher aparece un boton rojo ▶ en las tarjetas con trailer.' },
+    { claves: ['mods','shaders','mods'], resp: 'La carpeta <b>04_MODS_Y_SHADERS</b> esta pensada para mods de GTA V, shaders de Minecraft y modpacks varios. Ahora mismo esta vacia, la puedes llenar tu.' },
+    { claves: ['obs','streaming','grabar','directos'], resp: 'En <b>03_STREAMING_Y_CLIPS</b> tienes OBS portable (version Windows). Con OBS puedes grabar tu pantalla o hacer directos en Twitch/YouTube. Tambien hay overlays en RECURSOS_CANAL.' },
+    { claves: ['wallpapers','fondos','4k','wallpaper'], resp: 'Hay <b>12 wallpapers 4K</b> en 06_MEDIA_Y_WALLPAPERS. Los ves en la seccion <b>Media</b> del launcher y cada uno tiene boton de descarga.' },
+    { claves: ['benchmark detalles','que mide benchmark','como funciona benchmark'], resp: 'El <b>Benchmark</b> lee tu CPU, RAM y GPU y te da una puntuacion de 0 a 100. Segun ella te recomienda la configuracion ideal para PCSX2, Dolphin, PPSSPP y RetroArch. Si cambias de PC, vuelve a pulsarlo.' },
+    { claves: ['radio emisoras','que radio','musica'], resp: 'La <b>Radio</b> tiene 4 emisoras online:\n\n🎌 <b>J-Pop</b> - Listen Moe\n🎤 <b>K-Pop</b> - Listen Moe K-Pop\n🎮 <b>Gensokyo</b> - Musica de Touhou\n🎧 <b>Fallback</b> - Respaldo\n\nNecesitas internet. Tiene volumen propio.' },
+    { claves: ['kiosco detalles','como activo kiosco','pin'], resp: 'El <b>Modo kiosco</b> bloquea el launcher con un PIN de 4 digitos. Se activa en Configuracion > Modo kiosco. Cuando esta activo, al abrir pide el PIN. Util si vienen visitas o para que no toquen tus cosas.' },
+    { claves: ['mando movil detalles','como uso movil','telefono mando'], resp: 'Para usar el movil como mando:\n\n1) Conecta movil y PC a la misma WiFi\n2) En el movil abre <code>http://IP_DEL_PC:8080/01_EL_NINO_LAUNCHER/mobile.html</code>\n3) Aparece un mando tactil\n4) Los toques se envian al PC\n\nLa IP del PC la sacas con: <code>ip route get 8.8.8.8</code>' },
+    { claves: ['mando fisico detalles','gamepad','xbox','dualshock','8bitdo'], resp: 'Conecta un mando por USB o Bluetooth. El launcher lo detecta. Puedes moverte por las tarjetas con el stick y abrir con el boton A. El boton <b>🎮 Mandos</b> instala perfiles preconfigurados para Xbox, DualShock 4 y 8BitDo.' },
+    { claves: ['modo tv detalles','pantalla grande','sofa'], resp: 'El <b>Modo TV</b> hace las tarjetas gigantes para verlas desde el sofa. Se activa con el boton <b>📺 TV</b> o con la tecla <b>T</b>. Se queda guardado entre sesiones.' },
+    { claves: ['modo fiesta detalles','que hace fiesta','party'], resp: 'El <b>Modo Fiesta</b> (boton 🎉):\n\n- Cierra navegadores y apps pesadas\n- Sube volumen al 80%\n- Desactiva salvapantallas\n- Abre RetroArch\n\nIdeal para jugar con amigos. Cierra el navegador actual.' },
+    { claves: ['modo cine detalles','que hace cine','pelicula'], resp: 'El <b>Modo Cine</b> (boton 🎬):\n\n- Cierra navegadores\n- Ajusta volumen al 60%\n- Abre Kodi / Stremio / VLC\n\nIdeal para ver peliculas. Cierra el navegador actual.' },
+    { claves: ['alerta detalles','modo alerta','rojo'], resp: 'El <b>Modo Alerta</b> (boton 🚨) cambia toda la paleta a rojo/ambar pulsante. Es un efecto visual tipo "alerta de sistema". Se activa y desactiva con el mismo boton.' },
+    { claves: ['config detalles','panel configuracion','ajustes'], resp: 'En <b>Configuracion</b> (boton de engranaje) puedes:\n\n- Elegir 5 temas de colores\n- Ajustar volumen de musica\n- Ajustar volumen de efectos\n- Activar/desactivar sonidos al pasar el raton\n- Activar/desactivar musica de fondo\n- Activar modo kiosco\n\nTodo se guarda en tu navegador.' },
+    { claves: ['estadisticas detalles','que estadisticas','graficos'], resp: 'En <b>📊 Estadisticas</b> ves:\n\n- Tiempo total de uso\n- Juegos lanzados\n- Juegos distintos probados\n- Tu juego favorito\n- Grafico de barras con top 5\n- Grafico de actividad de los ultimos 7 dias\n- Reparto emuladores vs juegos' },
+    { claves: ['logros retroachievements detalles','retro achievements','ra'], resp: 'RetroAchievements es como los logros de PlayStation pero para juegos retro. En <b>🏆 Logros</b> metes tu usuario y tu API Key de retroachievements.org y ves tus puntos, logros y juegos recientes. Necesitas cuenta gratis.' },
+    { claves: ['chatbot detalles','eres ia','usas gpt','eres listo'], resp: 'No soy IA real. Soy un chatbot por <b>reglas</b>: tengo respuestas preparadas para las preguntas mas comunes. No uso internet ni GPT ni nada parecido. Todo local en tu PC.' },
+    { claves: ['como se hizo','cuanto tardo','cuando se hizo','historia'], resp: 'Manuel empezo el proyecto en septiembre de 2026 y le ha llevado unos 6 dias intensos. Empezo con un launcher sencillo y fue anadiendo: juegos, emuladores, radio, diario, benchmark, trailer... Todo pensado para ti.' },
+    { claves: ['codigo abierto','github','repositorio','donde esta el codigo'], resp: 'Todo el codigo esta en GitHub: <b>github.com/urukaisk-maker/centro-mando-gamer-el-nino</b>. Es publico. Tiene README, LICENSE MIT, documentacion tecnica completa y hasta un GIF de demo.' },
+    { claves: ['windows funciona','en windows','en linux','compatible'], resp: 'Funciona en <b>Windows</b> y <b>Linux</b>. En Windows abres "ABRIR EL NINO.bat" y en Linux "Abrir El Nino.desktop". Los emuladores necesitan los ejecutables de cada sistema (Windows usa .exe, Linux usa AppImage).' },
+    { claves: ['error detalles','da error','se rompe','no funciona','problema'], resp: 'Si algo falla:\n\n1) Cierra el navegador y vuelve a abrirlo\n2) Si sigue, ejecuta Detener.sh y luego ABRIR EL NINO\n3) Si nada, reinicia el PC\n4) Si sigue, preguntale a Manuel\n\nEl 90% de los problemas se arreglan reiniciando el servidor.' },
+    { claves: ['no arranca','no abre','no carga','no funciona el launcher'], resp: 'Si el launcher no arranca:\n\n1) Mira si el servidor esta vivo:\n<code>systemctl --user status elnino.service</code>\n\n2) Si esta caido, reinicialo:\n<code>systemctl --user restart elnino.service</code>\n\n3) Abre manualmente: <code>http://localhost:8080/01_EL_NINO_LAUNCHER/index.html</code>' },
+    { claves: ['emulador no arranca','juego no arranca','no se abre el juego'], resp: 'Si un emulador no arranca:\n\n1) Mira el <b>panel de procesos</b> (arriba izquierda), puede que ya este abierto\n2) Comprueba que tienes las BIOS y ROMs en su carpeta\n3) Prueba el emulador directamente desde el launcher\n4) Si nada, reinicia el servidor' },
+    { claves: ['actualizar','nueva version','mejoras futuras','que vendra'], resp: 'El proyecto sigue creciendo. Hay propuestas para mas mejoras en <b>docs/PROPUESTAS_MEJORAS.md</b> del repositorio. Entre ellas: scraper de trailers automatico, modos de ahorro de energia y mas funciones.' },
+    { claves: ['cuantos juegos detalles','lista de juegos','cuales son los juegos'], resp: 'Los 13 juegos son:\n\n1) Cave Story (plataformas)\n2) Freedoom (FPS tipo Doom)\n3) Quake (FPS clasico)\n4) OpenRA Red Alert (estrategia)\n5) 0 A.D. (estrategia historica)\n6) Xonotic (FPS arena)\n7) Luanti (tipo Minecraft)\n8) Battle for Wesnoth (tactico)\n9) OpenTTD (trenes)\n10) Endless Sky (espacial)\n11) SuperTux (plataformas)\n12) Widelands (Settlers)\n13) Shattered Pixel Dungeon (roguelike)' },
+    { claves: ['cuanto pesa','cuanto ocupa','espacio disco','224 gb'], resp: 'El disco tiene <b>224 GB</b>. Los juegos, emuladores y wallpapers ocupan unos 10-15 GB. El resto esta libre para que anadas tus ROMs, ISOs, videos y lo que quieras.' },
+    { claves: ['fondo de pantalla cambiar','cambiar fondo'], resp: 'Los fondos estan en <b>06_MEDIA_Y_WALLPAPERS/FONDOS_4K_ANIMADOS/</b>. Hay 12 wallpapers 4K. Abre la seccion <b>Media</b> del launcher y descarga el que quieras.' },
+    { claves: ['redes sociales','instagram','youtube','tiktok','discord','telegram'], resp: 'En la seccion <b>🌐 Redes</b> hay iconos para Instagram, YouTube, TikTok, Discord y Telegram. Como no sabemos tus usuarios todavia, hay un boton <b>Editar mis redes</b> para que los metas tu.' },
+    { claves: ['carta','mensaje de manuel','mensaje personal','dedicatoria'], resp: 'Mario, este disco lo he hecho pensando en ti. Cada juego, cada script, cada linea de codigo es un trocito de tiempo que he pasado pensando en que te gustaria. Disfrutalo. Con carino, Manuel. 💚' },
+    { claves: ['referencia hack','pixel','cyberpunk'], resp: 'Todo el diseno esta inspirado en el estilo <b>cyberpunk</b>: fondo negro, neon cian y rosa, particulas flotando, glow, animaciones... Como un HUD de videojuego futurista.' }
 ];
 
-var SUGERENCIAS = ['¿Que juegos hay?','¿Como hago backup?','¿Como exporto el diario?','¿Como anado juegos?','¿Que es El Nino?'];
+var SUGERENCIAS = ['¿Que es El Nino?','¿Que juegos hay?','¿Como juego?','¿Como hago backup?','¿Que puedo hacer?'];
 
 function toggleChatbot(){
     var bot = document.getElementById('chatbot');
@@ -2006,24 +2072,38 @@ function agregarMensaje(tipo, texto){
 }
 
 function buscarRespuesta(texto){
-    texto = texto.toLowerCase();
-    var mejor = null;
-    var mejorPuntos = 0;
-    for(var i = 0; i < RESPUESTAS.length; i++){
-        var r = RESPUESTAS[i];
-        var puntos = 0;
-        r.claves.forEach(function(k){
-            if(texto.indexOf(k) !== -1) puntos++;
-        });
-        if(puntos > mejorPuntos){
-            mejorPuntos = puntos;
-            mejor = r;
-        }
-    }
-    if(mejorPuntos > 0){
-        return mejor.resp;
-    }
-    return 'No estoy seguro de eso. Prueba con: <b>juegos</b>, <b>backup</b>, <b>diario</b>, <b>configuracion</b>, <b>mando</b>... O mira el <a href="manual.html">📖 Manual</a>.';
+texto = texto.toLowerCase().trim();
+var textoConEspacios = ' ' + texto + ' ';
+var mejor = null;
+var mejorPuntos = 0;
+var mejorLongitud = 0;
+for(var i = 0; i < RESPUESTAS.length; i++){
+var r = RESPUESTAS[i];
+var puntos = 0;
+var longitudTotal = 0;
+r.claves.forEach(function(k){
+var kk = k.toLowerCase();
+var coincide = false;
+if(kk.length >= 4){
+if(texto.indexOf(kk) !== -1) coincide = true;
+} else {
+if(textoConEspacios.indexOf(' ' + kk + ' ') !== -1) coincide = true;
+}
+if(coincide){
+puntos++;
+longitudTotal += kk.length;
+}
+});
+if(puntos > mejorPuntos || (puntos === mejorPuntos && longitudTotal > mejorLongitud)){
+mejorPuntos = puntos;
+mejorLongitud = longitudTotal;
+mejor = r;
+}
+}
+if(mejorPuntos > 0){
+return mejor.resp;
+}
+return 'No estoy seguro de eso. Prueba con: <b>juegos</b>, <b>backup</b>, <b>diario</b>, <b>configuracion</b>, <b>mando</b>... O mira el <a href="manual.html">📖 Manual</a>.';
 }
 
 function enviarChat(){
@@ -2889,6 +2969,94 @@ function cargarTrailers(){
 
 window.addEventListener('DOMContentLoaded', function(){
     setTimeout(cargarTrailers, 600);
+});
+
+// ===== SALUDO PERSONALIZADO PARA MARIO =====
+function obtenerSaludoMario(){
+    var hora = new Date().getHours();
+    var dia = new Date().getDay();
+
+    // Por hora del dia
+    var saludo = 'Hola, Mario';
+    if(hora >= 6 && hora < 13) saludo = 'Buenos dias, Mario';
+    else if(hora >= 13 && hora < 21) saludo = 'Buenas tardes, Mario';
+    else saludo = 'Buenas noches, Mario';
+
+    // Mensaje segun el dia de la semana
+    var mensajes = [
+        'Domingo, dia perfecto para una aventura larga.',
+        'Lunes. Empieza la semana con energia.',
+        'Martes. Un clasico siempre sienta bien.',
+        'Miercoles. Mitad de semana, mitad de aventura.',
+        'Jueves. Casi viernes, casi victoria.',
+        'Viernes. Toca celebrarlo.',
+        'Sabado. Dia de maraton.'
+    ];
+
+    return {saludo: saludo, mensaje: mensajes[dia] || 'Bienvenido de nuevo.'};
+}
+
+function aplicarSaludoMario(){
+    var el = document.getElementById('saludo-mario');
+    if(!el) return;
+    var info = obtenerSaludoMario();
+    el.textContent = info.saludo;
+
+    // Anadir el mensaje justo antes de la barra de progreso
+    var boot = document.getElementById('boot-screen');
+    if(boot && !boot.querySelector('.mensaje-mario')){
+        var msg = document.createElement('div');
+        msg.className = 'mensaje-mario';
+        msg.textContent = info.mensaje;
+        var barra = boot.querySelector('.barra-boot');
+        if(barra) boot.insertBefore(msg, barra);
+        else boot.appendChild(msg);
+    }
+}
+
+// Llamar cuando se arranca el boot
+if(typeof arrancarBoot === 'function'){
+    var _arrancarBoot_original = arrancarBoot;
+    arrancarBoot = function(){
+        aplicarSaludoMario();
+        _arrancarBoot_original.apply(this, arguments);
+    };
+}
+
+// ===== SALUDO PERSONALIZADO AL ENTRAR =====
+function saludarMario(){
+    var ahora = new Date();
+    var hoy = ahora.toISOString().split('T')[0];
+    var ultimaVisita = localStorage.getItem('ultimaVisitaMario');
+    var hora = ahora.getHours();
+
+    var mensaje = '';
+    if(ultimaVisita !== hoy){
+        // Primera vez hoy
+        if(hora >= 6 && hora < 13) mensaje = 'Buenos dias, Mario. Que aventura empezamos hoy?';
+        else if(hora >= 13 && hora < 21) mensaje = 'Buenas tardes, Mario. Que jugamos hoy?';
+        else mensaje = 'Buenas noches, Mario. Una partida antes de dormir?';
+        localStorage.setItem('ultimaVisitaMario', hoy);
+    } else {
+        // Ya ha entrado hoy
+        var frases = [
+            'Otra vez por aqui, Mario? Vamos alla!',
+            'De vuelta, Mario? Que te apetece hoy?',
+            'Ey Mario, sigues por aqui! A darle caña.',
+            'Mario otra vez! Se nota que te gusta esto.'
+        ];
+        mensaje = frases[Math.floor(Math.random() * frases.length)];
+    }
+
+    setTimeout(function(){
+        if(typeof mostrarToast === 'function'){
+            mostrarToast(mensaje, 'info');
+        }
+    }, 1500);
+}
+
+window.addEventListener('DOMContentLoaded', function(){
+    setTimeout(saludarMario, 800);
 });
 </script>
 
