@@ -777,6 +777,14 @@ nav ul li a:active{transform:scale(0.95)}
 #boot-screen .saludo-personal{font-size:1.4rem;color:#ff00ff;letter-spacing:3px;margin-bottom:1rem;text-shadow:0 0 20px rgba(255,0,255,0.8);animation:fadeSaludo 1.2s ease-out;font-weight:600}
 @keyframes fadeSaludo{from{opacity:0;transform:translateY(-15px)}to{opacity:1;transform:translateY(0)}}
 #boot-screen .mensaje-mario{margin-top:1.5rem;font-size:0.95rem;color:#8899aa;font-style:italic;letter-spacing:1px;animation:fadeSaludo 1.8s ease-out;max-width:500px;text-align:center;line-height:1.5}
+
+.btn-peligro{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(255,0,68,0.08);border:2px solid rgba(255,0,68,0.5);color:#ff6688;padding:0.8rem 1.8rem;border-radius:30px;font-weight:bold;font-size:0.95rem;cursor:pointer;transition:all 0.3s;font-family:inherit;margin-top:1.5rem;position:relative;overflow:hidden;letter-spacing:0.5px}
+.btn-peligro::before{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,0,68,0.2),transparent);transition:left 0.5s}
+.btn-peligro:hover{background:rgba(255,0,68,0.18);border-color:#ff0044;color:#fff;box-shadow:0 0 25px rgba(255,0,68,0.6);transform:translateY(-2px)}
+.btn-peligro:hover::before{left:100%}
+.btn-peligro:active{transform:scale(0.95)}
+.btn-peligro .icono-peligro{font-size:1.1rem;transition:transform 0.3s}
+.btn-peligro:hover .icono-peligro{transform:rotate(-10deg) scale(1.15)}
 </style>
 </head>
 <body>
@@ -1033,7 +1041,7 @@ https://github.com/urukaisk-maker                <a href="https://pdroms.de/" ta
 <section class="seccion" id="actividad" style="display:none">
 <h2>📊 Actividad reciente</h2>
 <div id="actividad-contenido"></div>
-<button class="btn" style="background:#555;color:#fff;margin-top:1rem" onclick="resetActividad()">🗑 Borrar historial</button>
+<button class="btn-peligro" onclick="resetActividad()"><span class="icono-peligro">🗑️</span> Borrar historial</button>
 </section>
 
 
@@ -3057,6 +3065,66 @@ function saludarMario(){
 
 window.addEventListener('DOMContentLoaded', function(){
     setTimeout(saludarMario, 800);
+});
+
+// ===== DETECCION DE SISTEMA OPERATIVO =====
+var SO = {es_windows: false, es_linux: false};
+
+function detectarSO(){
+    fetch('/plataforma')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+        SO = d;
+        aplicarSO();
+    })
+    .catch(function(){
+        // Fallback: detectar con JS
+        var ua = navigator.userAgent.toLowerCase();
+        SO.es_windows = ua.indexOf('windows') !== -1;
+        SO.es_linux = ua.indexOf('linux') !== -1;
+        aplicarSO();
+    });
+}
+
+function aplicarSO(){
+    // Cambiar los enlaces de los juegos segun el SO
+    var mapping = {
+        'cavestory': 'cavestory',
+        'freedoom': 'gzdoom',
+        'quake': 'quakespasm',
+        'openra': 'openra',
+        'luanti': 'luanti',
+        'openttd': 'openttd',
+        'endless-sky': 'endless-sky',
+        'supertux': 'supertux',
+        'shattered': 'shattered'
+    };
+
+    document.querySelectorAll('.tarjeta').forEach(function(tarjeta){
+        var link = tarjeta.querySelector('a.btn');
+        if(!link) return;
+        var href = link.getAttribute('href') || '';
+        var match = href.match(/\/juego\/([^\/?]+)/);
+        if(!match) return;
+        var id = match[1];
+
+        if(SO.es_windows && mapping[id]){
+            link.setAttribute('href', '/juego-win/' + mapping[id]);
+            // Anadir aviso visual
+            var h3 = tarjeta.querySelector('h3');
+            if(h3 && !h3.querySelector('.badge-so')){
+                var badge = document.createElement('span');
+                badge.className = 'badge-so';
+                badge.textContent = 'WIN';
+                badge.style.cssText = 'background:#00f0ff;color:#000;font-size:0.65rem;padding:0.15rem 0.4rem;border-radius:6px;margin-left:0.5rem;font-weight:bold;vertical-align:middle';
+                h3.appendChild(badge);
+            }
+        }
+    });
+}
+
+window.addEventListener('DOMContentLoaded', function(){
+    setTimeout(detectarSO, 800);
 });
 </script>
 
