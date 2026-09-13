@@ -1,0 +1,108 @@
+{
+  "juegos": [
+    {
+      "id": "cavestory",
+      "nombre": "Cave Story",
+      "icono": "🕳️",
+      "youtube": "https://www.youtube.com/watch?v=eWfVe1rIHsM&list=PLkPOogHoNsPkgwruZ6A6ubyEN0miGcesa&pp=0gcJCf8COCosWNin"
+    },
+    {
+      "id": "freedoom",
+      "nombre": "Freedoom",
+      "icono": "👹",
+      "youtube": "https://www.youtube.com/watch?v=ZNgSyIt_2a4&pp=ygUIRnJlZWRvb20%3D"
+    },
+    {
+      "id": "quake",
+      "nombre": "Quake",
+      "icono": "🔫",
+      "youtube": ""
+    },
+    {
+      "id": "openra",
+      "nombre": "OpenRA (Red Alert)",
+      "icono": "⚔️",
+      "youtube": ""
+    },
+    {
+      "id": "0ad",
+      "nombre": "0 A.D.",
+      "icono": "🏛️",
+      "youtube": ""
+    },
+    {
+      "id": "xonotic",
+      "nombre": "Xonotic",
+      "icono": "🚀",
+      "youtube": ""
+    },
+    {
+      "id": "luanti",
+      "nombre": "Luanti",
+      "icono": "🧱",
+      "youtube": ""
+    },
+    {
+      "id": "wesnoth",
+      "nombre": "Battle for Wesnoth",
+      "icono": "⚔️",
+      "youtube": ""
+    },
+    {
+      "id": "openttd",
+      "nombre": "OpenTTD",
+      "icono": "🚂",
+      "youtube": ""
+    },
+    {
+      "id": "endless-sky",
+      "nombre": "Endless Sky",
+      "icono": "🚀",
+      "youtube": ""
+    },
+    {
+      "id": "supertux",
+      "nombre": "SuperTux",
+      "icono": "🐧",
+      "youtube": ""
+    },
+    {
+      "id": "widelands",
+      "nombre": "Widelands",
+      "icono": "🏰",
+      "youtube": ""
+    },
+    {
+      "id": "shattered",
+      "nombre": "Shattered Pixel Dungeon",
+      "icono": "⚔️",
+      "youtube": ""
+    }
+  ],
+  "emuladores": [
+    {
+      "id": "pcsx2",
+      "nombre": "PCSX2 (PS2)",
+      "icono": "🎮",
+      "youtube": ""
+    },
+    {
+      "id": "ppsspp",
+      "nombre": "PPSSPP (PSP)",
+      "icono": "🕹️",
+      "youtube": ""
+    },
+    {
+      "id": "dolphin",
+      "nombre": "Dolphin (GC/Wii)",
+      "icono": "🐬",
+      "youtube": ""
+    },
+    {
+      "id": "retroarch",
+      "nombre": "RetroArch",
+      "icono": "🎯",
+      "youtube": ""
+    }
+  ]
+}

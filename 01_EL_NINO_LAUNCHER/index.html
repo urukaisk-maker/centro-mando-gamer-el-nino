@@ -769,6 +769,10 @@ nav ul li a:active{transform:scale(0.95)}
 
 #btn-timeline{background:rgba(0,255,136,0.15);border:1px solid #00ff88;color:#00ff88;padding:0.45rem 1rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.85rem;transition:all 0.3s;white-space:nowrap}
 #btn-timeline:hover{background:rgba(0,255,136,0.3);transform:translateY(-2px)}
+
+.btn-trailer{position:absolute;top:10px;right:10px;background:linear-gradient(45deg,#ff0000,#cc0000);color:#fff;border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:0.95rem;display:none;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(255,0,0,0.6);transition:all 0.3s;z-index:10}
+.btn-trailer:hover{transform:scale(1.15);box-shadow:0 0 25px rgba(255,0,0,0.9)}
+.tarjeta.tiene-trailer .btn-trailer{display:flex}
 </style>
 </head>
 <body>
@@ -820,6 +824,7 @@ nav ul li a:active{transform:scale(0.95)}
 <li><a href="estadisticas.html">📊 Estadisticas</a></li>
 <li><a href="retroachievements.html">🏆 Logros</a></li>
 <li><a href="timeline.html">📅 Partidas</a></li>
+<li><a href="trailers-admin.html">🎬 Trailers</a></li>
 </ul>
 </nav>
         </div>
@@ -2840,6 +2845,50 @@ document.addEventListener('keydown', function(e){
             el.click();
         }
     }
+});
+
+// ===== TRAILERS EN LAS TARJETAS =====
+function extraerIdYoutube(url){
+    if(!url) return '';
+    var m = url.match(/(?:youtube[.]com[/]watch[?]v=|youtu[.]be[/]|youtube[.]com[/]embed[/])([A-Za-z0-9_-]+)/);
+    return m ? m[1] : '';
+}
+
+function cargarTrailers(){
+    fetch('/01_EL_NINO_LAUNCHER/trailers.json?_=' + Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(datos){
+        var todos = [].concat(datos.juegos || [], datos.emuladores || []);
+        document.querySelectorAll('.tarjeta').forEach(function(tarjeta){
+            var link = tarjeta.querySelector('a.btn');
+            if(!link) return;
+            var href = link.getAttribute('href') || '';
+            var match = href.match(/[/](?:juego|launch)[/]([^/?]+)/);
+            if(!match) return;
+            var id = match[1];
+            var item = todos.find(function(x){ return x.id === id; });
+            if(item && item.youtube && item.youtube.trim()){
+                var vid = extraerIdYoutube(item.youtube);
+                if(!vid) return;
+                var btn = document.createElement('button');
+                btn.className = 'btn-trailer';
+                btn.title = 'Ver trailer de ' + item.nombre;
+                btn.textContent = '▶';
+                btn.onclick = function(e){
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.open('https://www.youtube.com/watch?v=' + vid, '_blank');
+                };
+                tarjeta.appendChild(btn);
+                tarjeta.classList.add('tiene-trailer');
+            }
+        });
+    })
+    .catch(function(){});
+}
+
+window.addEventListener('DOMContentLoaded', function(){
+    setTimeout(cargarTrailers, 600);
 });
 </script>
 

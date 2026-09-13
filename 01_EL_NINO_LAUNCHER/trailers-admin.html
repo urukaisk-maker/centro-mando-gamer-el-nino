@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trailers - El Nino</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:2rem 1rem;background-image:radial-gradient(circle at 20% 30%,rgba(0,240,255,0.05),transparent 50%),radial-gradient(circle at 80% 70%,rgba(255,0,255,0.05),transparent 50%);background-attachment:fixed}
+.container{max-width:1000px;margin:0 auto}
+a.volver{color:#ff00ff;text-decoration:none;font-weight:bold;display:inline-block;margin-bottom:1.5rem;font-size:1.05rem}
+h1{color:#00f0ff;text-align:center;font-size:2.5rem;text-shadow:0 0 20px #00f0ff;margin-bottom:0.5rem}
+.sub{text-align:center;color:#8899aa;margin-bottom:2rem;font-style:italic}
+.info-box{background:rgba(0,240,255,0.08);border:1px solid #00f0ff;border-radius:12px;padding:1rem 1.5rem;margin-bottom:2rem;font-size:0.9rem;line-height:1.7}
+.info-box strong{color:#00f0ff}
+.trailer-item{background:linear-gradient(145deg,#12121a,#1a1a24);border:1px solid rgba(0,240,255,0.3);border-radius:14px;padding:1.2rem;margin-bottom:1rem;display:grid;grid-template-columns:60px 1fr 1fr auto;gap:1rem;align-items:center;transition:all 0.3s}
+.trailer-item:hover{border-color:#00f0ff;box-shadow:0 5px 20px rgba(0,240,255,0.2)}
+.trailer-icono{font-size:2rem;text-align:center}
+.trailer-nombre{color:#00f0ff;font-weight:bold;font-size:1rem}
+.trailer-input{width:100%;padding:0.7rem 1rem;background:#0a0a0f;border:2px solid #2a2a3a;border-radius:10px;color:#fff;font-size:0.9rem;outline:none;font-family:inherit;transition:all 0.3s}
+.trailer-input:focus{border-color:#ff00ff;box-shadow:0 0 15px rgba(255,0,255,0.4)}
+.trailer-input.con-url{border-color:#00ff88}
+.btn-play{background:linear-gradient(45deg,#00f0ff,#ff00ff);color:#000;border:none;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:1.2rem;font-weight:bold;transition:all 0.3s;display:flex;align-items:center;justify-content:center}
+.btn-play:hover{transform:scale(1.1);box-shadow:0 0 20px rgba(255,0,255,0.7)}
+.btn-play:disabled{opacity:0.3;cursor:not-allowed}
+.btn-guardar{display:block;margin:2rem auto 0;padding:1rem 3rem;background:linear-gradient(45deg,#00f0ff,#ff00ff);color:#000;border:none;border-radius:30px;font-weight:bold;font-size:1rem;cursor:pointer;transition:all 0.3s;font-family:inherit;letter-spacing:1px;box-shadow:0 0 20px rgba(0,240,255,0.5)}
+.btn-guardar:hover{transform:scale(1.05);box-shadow:0 0 35px rgba(255,0,255,0.8)}
+.separador{color:#ff00ff;font-size:1.3rem;margin:2.5rem 0 1.5rem;padding-bottom:0.5rem;border-bottom:2px solid rgba(255,0,255,0.3);display:flex;align-items:center;gap:0.5rem}
+@media(max-width:700px){.trailer-item{grid-template-columns:50px 1fr auto}.trailer-input{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="volver" href="/01_EL_NINO_LAUNCHER/index.html">← Volver al Dashboard</a>
+<h1>🎬 Trailers</h1>
+<p class="sub">Asocia trailers de YouTube a cada juego y emulador</p>
+
+<div class="info-box">
+<strong>Como funciona:</strong> Pega la URL de un video de YouTube en el campo correspondiente. Solo necesitas la URL normal (ej: <code>https://www.youtube.com/watch?v=XXXXX</code>). El sistema extrae el ID automaticamente. Los cambios se guardan y el boton "▶" aparece en las tarjetas del launcher.
+</div>
+
+<div id="contenido"><div style="text-align:center;color:#8899aa;padding:2rem">Cargando...</div></div>
+<button class="btn-guardar" onclick="guardarTodo()">💾 Guardar todos los cambios</button>
+</div>
+
+<script>
+var DATOS = null;
+
+function cargar(){
+    fetch('/01_EL_NINO_LAUNCHER/trailers.json?_=' + Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+        DATOS = d;
+        renderizar();
+    })
+    .catch(function(){
+        document.getElementById('contenido').innerHTML = '<div style="text-align:center;color:#ff0044;padding:2rem">Error al cargar trailers.json</div>';
+    });
+}
+
+function extraerId(url){
+    if(!url) return '';
+    var m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]+)/);
+    return m ? m[1] : '';
+}
+
+function renderizar(){
+    var html = '';
+    html += '<h2 class="separador">🎮 Juegos</h2>';
+    DATOS.juegos.forEach(function(j, i){
+        var tiene = j.youtube && j.youtube.trim();
+        html += '<div class="trailer-item">';
+        html += '<div class="trailer-icono">' + j.icono + '</div>';
+        html += '<div class="trailer-nombre">' + j.nombre + '</div>';
+        html += '<input type="text" class="trailer-input' + (tiene ? ' con-url' : '') + '" id="yt-' + j.id + '" placeholder="https://youtube.com/watch?v=..." value="' + (j.youtube || '') + '" onchange="marcarCambio()">';
+        html += '<button class="btn-play" onclick="probarVideo(\'' + j.id + '\')" ' + (tiene ? '' : 'disabled') + '>▶</button>';
+        html += '</div>';
+    });
+
+    html += '<h2 class="separador">🕹️ Emuladores</h2>';
+    DATOS.emuladores.forEach(function(e, i){
+        var tiene = e.youtube && e.youtube.trim();
+        html += '<div class="trailer-item">';
+        html += '<div class="trailer-icono">' + e.icono + '</div>';
+        html += '<div class="trailer-nombre">' + e.nombre + '</div>';
+        html += '<input type="text" class="trailer-input' + (tiene ? ' con-url' : '') + '" id="yt-' + e.id + '" placeholder="https://youtube.com/watch?v=..." value="' + (e.youtube || '') + '" onchange="marcarCambio()">';
+        html += '<button class="btn-play" onclick="probarVideo(\'' + e.id + '\')" ' + (tiene ? '' : 'disabled') + '>▶</button>';
+        html += '</div>';
+    });
+
+    document.getElementById('contenido').innerHTML = html;
+}
+
+function marcarCambio(){
+    // Actualiza el color del input segun tenga contenido
+    document.querySelectorAll('.trailer-input').forEach(function(inp){
+        var tiene = inp.value && inp.value.trim();
+        inp.classList.toggle('con-url', !!tiene);
+    });
+}
+
+function probarVideo(id){
+    var inp = document.getElementById('yt-' + id);
+    var url = inp.value.trim();
+    var vid = extraerId(url);
+    if(vid){
+        window.open('https://www.youtube.com/watch?v=' + vid, '_blank');
+    }
+}
+
+function guardarTodo(){
+    // Recoger los valores actuales
+    DATOS.juegos.forEach(function(j){
+        var inp = document.getElementById('yt-' + j.id);
+        if(inp) j.youtube = inp.value.trim();
+    });
+    DATOS.emuladores.forEach(function(e){
+        var inp = document.getElementById('yt-' + e.id);
+        if(inp) e.youtube = inp.value.trim();
+    });
+
+    // Guardar via endpoint del servidor
+    fetch('/trailers-guardar', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(DATOS)
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(resp){
+        if(resp.ok){
+            alert('Trailers guardados correctamente');
+        } else {
+            alert('Error al guardar: ' + (resp.error || 'desconocido'));
+        }
+    })
+    .catch(function(e){
+        alert('Error de conexion: ' + e.message);
+    });
+}
+
+cargar();
+</script>
+</body>
+</html>
