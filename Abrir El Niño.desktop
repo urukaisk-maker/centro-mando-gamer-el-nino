@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Abrir El Niño
+Comment=Inicia el Centro de Mando Gamer El Niño
+Exec=bash /mnt/elNiño/Iniciar.sh
+Icon=/mnt/elNiño/01_EL_NINO_LAUNCHER/icono-512.png
+Terminal=false
+Categories=Game;
+Path=/mnt/elNiño

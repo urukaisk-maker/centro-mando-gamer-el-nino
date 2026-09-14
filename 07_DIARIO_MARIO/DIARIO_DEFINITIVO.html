@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Diario de Mario</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#0a0a0f;color:#e0e6ed;min-height:100vh;background-image:radial-gradient(circle at 20% 20%,rgba(0,240,255,0.08) 0%,transparent 50%),radial-gradient(circle at 80% 80%,rgba(255,0,255,0.08) 0%,transparent 50%)}
+header{background:rgba(26,26,36,0.9);border-bottom:2px solid #00f0ff;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+header h1{color:#00f0ff;margin:0;font-size:1.5rem}
+header button{background:#00f0ff;color:#000;border:none;padding:0.6rem 1.4rem;border-radius:20px;cursor:pointer;font-weight:bold}
+header button:hover{background:#ff00ff;color:#fff}
+.layout{max-width:1300px;margin:2rem auto;display:grid;grid-template-columns:280px 1fr;gap:2rem;padding:0 1rem}
+.sidebar{background:#1a1a24;border-radius:12px;padding:1.5rem;height:fit-content}
+.sidebar h2{color:#00f0ff;margin-bottom:1rem;border-bottom:1px solid #2a2a3a;padding-bottom:0.5rem}
+.cat-list{list-style:none}
+.cat-list li{background:#12121a;border:1px solid #2a2a3a;border-radius:8px;padding:0.6rem 0.8rem;margin-bottom:0.4rem;cursor:pointer;display:flex;align-items:center;gap:0.6rem;font-size:0.95rem;transition:all 0.2s}
+.cat-list li:hover{border-color:#00f0ff;background:#22222e}
+.cat-list li.active{border-color:#ff00ff;background:#22222e}
+.cat-icon{font-size:1.3rem}
+.main{background:#1a1a24;border-radius:12px;padding:2rem}
+.main h2{color:#ff00ff;margin-bottom:1rem;font-size:1.4rem}
+.entrada{background:#12121a;border-left:4px solid #00f0ff;padding:1rem;margin-bottom:1rem;border-radius:8px}
+.entrada h4{color:#00f0ff;margin-bottom:0.3rem}
+.entrada p{color:#aaa;font-size:0.95rem}
+.entrada .fecha{display:inline-block;margin-top:0.5rem;font-size:0.8rem;color:#00f0ff;background:rgba(0,240,255,0.1);padding:0.2rem 0.6rem;border-radius:4px}
+.entrada .categoria{display:inline-block;margin-left:0.5rem;font-size:0.8rem;color:#ff00ff;background:rgba(255,0,255,0.1);padding:0.2rem 0.6rem;border-radius:4px}
+.botones{display:flex;gap:0.8rem;margin-top:1.5rem}
+.btn{background:#00f0ff;color:#000;border:none;padding:0.7rem 1.5rem;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.95rem}
+.btn:hover{background:#ff00ff;color:#fff}
+.btn-sec{background:#2a2a3a;color:#e0e6ed}
+.formulario{display:none;background:#22222e;border:1px solid #00f0ff;border-radius:12px;padding:1.5rem;margin-top:1.5rem}
+.formulario h3{color:#00f0ff;margin-bottom:1rem}
+.formulario label{display:block;color:#aaa;font-size:0.9rem;margin-bottom:0.3rem}
+.formulario input,.formulario textarea,.formulario select{width:100%;padding:0.7rem;background:#0a0a0f;border:1px solid #2a2a3a;border-radius:6px;color:#e0e6ed;font-family:inherit;margin-bottom:1rem}
+.formulario input:focus,.formulario textarea:focus,.formulario select:focus{outline:none;border-color:#00f0ff}
+footer{text-align:center;padding:1.5rem;border-top:1px solid #2a2a3a;margin-top:2rem;color:#888;font-size:0.85rem}
+footer a{color:#00f0ff;text-decoration:none;margin:0 6px}
+</style>
+</head>
+<body>
+<header>
+<h1>📖 DIARIO DE MARIO</h1>
+<button onclick="window.scrollTo({top:0,behavior:'smooth'})">🏠 Inicio</button>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<h2>📂 Categorías</h2>
+<ul class="cat-list" id="listaCategorias">
+<li data-cat="" class="active"><span class="cat-icon">📋</span> Todas</li>
+<li data-cat="Vida Diaria"><span class="cat-icon">☀️</span> Vida Diaria</li>
+<li data-cat="Reflexiones"><span class="cat-icon">💭</span> Reflexiones</li>
+<li data-cat="Metas y Sueños"><span class="cat-icon">🎯</span> Metas y Sueños</li>
+<li data-cat="Relaciones"><span class="cat-icon">❤️</span> Relaciones</li>
+<li data-cat="Salud y Bienestar"><span class="cat-icon">🌱</span> Salud y Bienestar</li>
+<li data-cat="Trabajo y Estudios"><span class="cat-icon">💼</span> Trabajo y Estudios</li>
+<li data-cat="Aficiones"><span class="cat-icon">🎮</span> Aficiones</li>
+<li data-cat="Eventos Especiales"><span class="cat-icon">🎉</span> Eventos Especiales</li>
+<li data-cat="Finanzas"><span class="cat-icon">💰</span> Finanzas</li>
+<li data-cat="Espiritualidad"><span class="cat-icon">✨</span> Espiritualidad</li>
+</ul>
+</aside>
+<main class="main">
+<h2 id="tituloSeccion">Todas las entradas</h2>
+<div id="contenedorEntradas"></div>
+<div class="botones">
+<button class="btn" onclick="mostrarFormulario()">✏️ Nueva entrada</button>
+<button class="btn btn-sec" onclick="exportar()">📤 Exportar</button>
+<button class="btn btn-sec" onclick="document.getElementById('importFile').click()">📥 Importar</button>
+<input type="file" id="importFile" style="display:none" onchange="importar(this)">
+</div>
+<div class="formulario" id="formulario">
+<h3 id="tituloForm">Nueva entrada</h3>
+<label>Título</label><input type="text" id="tituloInput">
+<label>Contenido</label><textarea id="contenidoInput" rows="5"></textarea>
+<label>Fecha</label><input type="date" id="fechaInput">
+<label>Categoría</label>
+<select id="categoriaInput">
+<option value="Vida Diaria">☀️ Vida Diaria</option>
+<option value="Reflexiones">💭 Reflexiones</option>
+<option value="Metas y Sueños">🎯 Metas y Sueños</option>
+<option value="Relaciones">❤️ Relaciones</option>
+<option value="Salud y Bienestar">🌱 Salud y Bienestar</option>
+<option value="Trabajo y Estudios">💼 Trabajo y Estudios</option>
+<option value="Aficiones">🎮 Aficiones</option>
+<option value="Eventos Especiales">🎉 Eventos Especiales</option>
+<option value="Finanzas">💰 Finanzas</option>
+<option value="Espiritualidad">✨ Espiritualidad</option>
+</select>
+<div style="display:flex; gap:0.8rem;">
+<button class="btn" onclick="guardarEntrada()">💾 Guardar</button>
+<button class="btn btn-sec" onclick="ocultarFormulario()">Cancelar</button>
+</div>
+</div>
+</main>
+</div>
+</div>
+<footer>
+<strong>Manuel Casimiro Carrasco</strong> | 📧 <a href="mailto:urukaisk@gmail.com">urukaisk@gmail.com</a> | 📍 Reus, Tarragona<br>
+🌐 <a href="https://unique-biscochitos-31bcea.netlify.app/">Portfolio</a> | 💻 <a href="https://thriving-otter-cc1e25.netlify.app/">Urukais Klick</a> | ✨ <a href="https://rad-dolphin-182dfb.netlify.app/">Los Guardianes Silenciosos</a> | 🐙 <a href="https://github.com/urukaisk-maker">GitHub</a><br>
+<span style="font-size:0.8rem"><a href="privacidad.html">Privacidad</a> | <a href="terminos.html">Términos</a> | <a href="aviso_legal.html">Aviso Legal</a></span>
+</footer>
+<script>
+// CONTENIDO INICIAL LIMPIO
+const contenidoInicial = {
+'Aficiones': [
+{titulo:'Shadow of the Colossus', contenido:'Uno de los juegos más épicos de PS2.', fecha:'2026-09-08'},
+{titulo:'Mario Kart Wii', contenido:'El clásico de las carreras.', fecha:'2026-09-08'}
+],
+'Vida Diaria': [
+{titulo:'Inicio del proyecto', contenido:'Hoy he comenzado a diseñar el Centro de Mando Gamer El Niño.', fecha:'2026-09-08'}
+],
+'Metas y Sueños': [
+{titulo:'Ampliar biblioteca', contenido:'Quiero añadir más juegos de GameCube al disco.', fecha:'2026-09-08'},
+{titulo:'Probar RetroArch', contenido:'Quiero instalar RetroArch con RetroAchievements.', fecha:'2026-09-08'}
+]
+};
+// BORRAR TODO Y CARGAR CONTENIDO NUEVO
+localStorage.clear();
+localStorage.setItem('diarioMario', JSON.stringify(contenidoInicial));
+let categoriaActual = '';
+function obtenerDatos(){ return JSON.parse(localStorage.getItem('diarioMario')||'{}'); }
+function guardarDatos(d){ localStorage.setItem('diarioMario', JSON.stringify(d)); }
+// Eventos de categorías
+document.querySelectorAll('#listaCategorias li').forEach(li => {
+li.addEventListener('click', function(){
+categoriaActual = this.getAttribute('data-cat');
+document.querySelectorAll('#listaCategorias li').forEach(l => l.classList.remove('active'));
+this.classList.add('active');
+dibujarEntradas();
+});
+});
+function dibujarEntradas(){
+const cont = document.getElementById('contenedorEntradas');
+cont.innerHTML = '';
+const d = obtenerDatos();
+let todas = [];
+Object.keys(d).forEach(clave => {
+if(categoriaActual && clave !== categoriaActual) return;
+d[clave].forEach(e => todas.push({...e, categoria: clave}));
+});
+todas.sort((a,b) => b.fecha.localeCompare(a.fecha));
+if(todas.length === 0){
+cont.innerHTML = '<p style="color:#888; text-align:center; padding:2rem;">No hay entradas. ¡Escribe la primera!</p>';
+return;
+}
+todas.forEach(e => {
+const div = document.createElement('div');
+div.className = 'entrada';
+div.innerHTML = `<h4>${e.titulo}</h4><p>${e.contenido}</p><span class="fecha">📅 ${e.fecha}</span><span class="categoria">${e.categoria}</span>`;
+cont.appendChild(div);
+});
+}
+function mostrarFormulario(){
+document.getElementById('formulario').style.display='block';
+document.getElementById('tituloInput').value = '';
+document.getElementById('contenidoInput').value = '';
+document.getElementById('fechaInput').value = new Date().toISOString().split('T')[0];
+document.getElementById('categoriaInput').value = categoriaActual || 'Vida Diaria';
+}
+function ocultarFormulario(){ document.getElementById('formulario').style.display='none'; }
+function guardarEntrada(){
+const titulo = document.getElementById('tituloInput').value.trim();
+const contenido = document.getElementById('contenidoInput').value.trim();
+const fecha = document.getElementById('fechaInput').value;
+const categoria = document.getElementById('categoriaInput').value;
+if(!titulo || !contenido || !fecha){ alert('Completa todos los campos.'); return; }
+const d = obtenerDatos();
+if(!d[categoria]) d[categoria] = [];
+d[categoria].push({titulo, contenido, fecha});
+guardarDatos(d);
+ocultarFormulario();
+dibujarEntradas();
+}
+function exportar(){
+const blob = new Blob([JSON.stringify(obtenerDatos(), null, 2)], {type:'application/json'});
+const a = document.createElement('a');
+a.href = URL.createObjectURL(blob);
+a.download = 'diario_mario_backup.json';
+a.click();
+}
+function importar(input){
+const file = input.files[0];
+if(!file) return;
+const reader = new FileReader();
+reader.onload = e => {
+try{
+const data = JSON.parse(e.target.result);
+guardarDatos(data);
+dibujarEntradas();
+alert('Diario importado correctamente.');
+}catch{ alert('Error al leer el archivo.'); }
+};
+reader.readAsText(file);
+}
+// Dibujar entradas al cargar
+dibujarEntradas();
+</script>
+</body>
+</html>

@@ -1,0 +1,2 @@
+# Copia aquí tus archivos .zip de shaders (ej: BSL Shaders, Complementary)
+# Luego selecciónalos desde el menú de opciones de Minecraft > Gráficos > Shaders

@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diario de Mario</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
+        :root {
+            --bg: #0a0a0f;
+            --bg2: #12121a;
+            --card: #1a1a24;
+            --card2: #22222e;
+            --border: #2a2a3a;
+            --text: #e0e6ed;
+            --muted: #8899aa;
+            --accent: #00f0ff;
+            --accent2: #ff00ff;
+            --accent3: #ffaa00;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 20% 20%, rgba(0,240,255,0.08) 0%, transparent 50%),
+                              radial-gradient(circle at 80% 80%, rgba(255,0,255,0.08) 0%, transparent 50%);
+        }
+        header {
+            background: var(--card);
+            border-bottom: 2px solid var(--accent);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+        header button {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 0.6rem 1.4rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        header button:hover { background: var(--accent2); color: #fff; }
+
+        /* Pantalla de bienvenida */
+        #welcomeScreen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+            padding: 2rem;
+        }
+        #welcomeScreen .logo { font-size: 5rem; margin-bottom: 1rem; }
+        #welcomeScreen h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            color: var(--accent);
+            text-shadow: 0 0 20px rgba(0,240,255,0.5);
+            margin-bottom: 1rem;
+        }
+        #welcomeScreen p {
+            font-size: 1.2rem;
+            color: var(--text);
+            margin-bottom: 2rem;
+            max-width: 600px;
+        }
+        .btn-grande {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 1.2rem 2.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            transition: all 0.3s;
+        }
+        .btn-grande:hover {
+            background: var(--accent2);
+            color: #fff;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255,0,255,0.4);
+        }
+
+        /* Pantalla principal */
+        #mainScreen { display: none; }
+        .container {
+            max-width: 1300px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+        }
+        .sidebar {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            height: fit-content;
+        }
+        .sidebar h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+        .cal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .cal-header button {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 6px;
+            padding: 0.3rem 0.7rem;
+            cursor: pointer;
+        }
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.2rem;
+            text-align: center;
+        }
+        .cal-weekday { font-weight: 700; color: var(--muted); font-size: 0.75rem; padding: 0.3rem 0; }
+        .cal-day {
+            padding: 0.5rem 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .cal-day:hover { background: var(--accent); color: #000; }
+        .cal-day.selected { background: var(--accent2); color: #fff; }
+        .cal-day.today { border: 1px solid var(--accent); }
+        .cat-list { list-style: none; margin-top: 1rem; }
+        .cat-list li {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.6rem 0.8rem;
+            margin-bottom: 0.4rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        .cat-list li:hover { border-color: var(--accent); background: var(--card2); }
+        .cat-list li.active { border-color: var(--accent2); background: var(--card2); }
+        .main-content {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .main-header h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent2);
+            font-size: 1.4rem;
+        }
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-right: 0.5rem;
+        }
+        .btn-primary { background: var(--accent); color: #000; }
+        .btn-export { background: #48bb78; color: #fff; }
+        .btn-import { background: #d69e2e; color: #fff; }
+        .search-box {
+            width: 100%;
+            padding: 0.7rem;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+        }
+        .entry {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        .entry h4 { color: var(--accent); margin-bottom: 0.3rem; }
+        .entry p { color: var(--muted); font-size: 0.95rem; }
+        .entry .date {
+            display: inline-block;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--accent);
+            background: rgba(0,240,255,0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+        .entry .actions {
+            position: absolute;
+            top: 0.8rem;
+            right: 0.8rem;
+            display: flex;
+            gap: 0.4rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .entry:hover .actions { opacity: 1; }
+        .entry .actions button {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 0.2rem 0.4rem;
+            cursor: pointer;
+            color: var(--muted);
+        }
+        .form-card {
+            background: var(--card2);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: none;
+            margin-top: 1rem;
+        }
+        .form-card h3 { color: var(--accent); margin-bottom: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; color: var(--muted); font-size: 0.9rem; margin-bottom: 0.3rem; }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 0.7rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-family: inherit;
+        }
+        .form-buttons { display: flex; gap: 0.8rem; }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+        footer a { color: var(--accent); text-decoration: none; margin: 0 6px; }
+        .empty { text-align: center; padding: 2rem; color: var(--muted); }
+    </style>
+</head>
+<body>
+
+<!-- PANTALLA DE BIENVENIDA -->
+<div id="welcomeScreen">
+    <div class="logo">🎮📖</div>
+    <h2>¡HOLA, MARIO!</h2>
+    <p>Este es tu diario personal, tu espacio para recordar tus aventuras, logros, partidas y todo lo que quieras. Cada día es una nueva página en tu historia.</p>
+    <button class="btn-grande" onclick="entrarAlDiario()">🚀 Entrar al diario</button>
+</div>
+
+<!-- PANTALLA PRINCIPAL -->
+<div id="mainScreen">
+    <header>
+        <h1>📖 DIARIO DE MARIO</h1>
+        <button onclick="volverInicio()">🏠 Inicio</button>
+    </header>
+    <div class="container">
+        <aside class="sidebar">
+            <h2>🗓️ Calendario</h2>
+            <div class="cal-header">
+                <button onclick="prevMonth()">‹</button>
+                <strong id="calTitle"></strong>
+                <button onclick="nextMonth()">›</button>
+            </div>
+            <div class="cal-grid" id="calGrid"></div>
+            <h2 style="margin-top:2rem;">📂 Categorías</h2>
+            <ul class="cat-list" id="catList"></ul>
+        </aside>
+        <main class="main-content">
+            <div class="main-header">
+                <h2 id="viewTitle">Todas las entradas</h2>
+                <div>
+                    <button class="btn btn-primary" onclick="showForm()">✏️ Nueva entrada</button>
+                    <button class="btn btn-export" onclick="exportData()">📤 Exportar</button>
+                    <button class="btn btn-import" onclick="document.getElementById('importFile').click()">📥 Importar</button>
+                    <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importData(this)">
+                </div>
+            </div>
+            <input type="text" class="search-box" id="searchInput" placeholder="🔍 Buscar entradas...">
+            <div id="entriesContainer"></div>
+            <div class="form-card" id="formSection">
+                <h3 id="formTitle">Nueva entrada</h3>
+                <div class="form-group"><label>Título</label><input type="text" id="entryTitle" placeholder="Título"></div>
+                <div class="form-group"><label>Contenido</label><textarea id="entryContent" rows="5" placeholder="¿Qué quieres recordar?"></textarea></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="entryDate"></div>
+                <div class="form-buttons"><button class="btn btn-primary" onclick="saveEntry()">Guardar</button><button class="btn btn-secondary" onclick="hideForm()">Cancelar</button></div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<footer>
+    <strong>Manuel Casimiro Carrasco</strong> | <a href="mailto:urukaisk@gmail.com">urukaisk@gmail.com</a> | Reus, Tarragona<br>
+    <a href="https://unique-biscochitos-31bcea.netlify.app/">Portfolio</a> | <a href="https://thriving-otter-cc1e25.netlify.app/">Urukais Klick</a> | <a href="https://github.com/urukaisk-maker">GitHub</a>
+</footer>
+
+<script>
+    // CATEGORÍAS DEL PROYECTO
+    const categorias = [
+        { nombre: 'Historia del Proyecto', icon: '📁' },
+        { nombre: 'Aventuras Retro', icon: '🎮' },
+        { nombre: 'Logros y Trofeos', icon: '🏆' },
+        { nombre: 'Sesiones de Streaming', icon: '📺' },
+        { nombre: 'Mods y Personalización', icon: '🛠️' },
+        { nombre: 'Configuración Técnica', icon: '⚙️' },
+        { nombre: 'Diseño y Branding', icon: '🎨' },
+        { nombre: 'Gameplays y Clips', icon: '📼' },
+        { nombre: 'Colaboraciones y Amigos', icon: '🤝' },
+        { nombre: 'Planes a Futuro', icon: '🚀' }
+    ];
+
+    // CONTENIDO INICIAL (EL TXT QUE ME DISTE)
+    const contenidoInicial = {
+        'Historia del Proyecto': [
+            { titulo: 'Inicio del proyecto', contenido: 'Hoy he comenzado a diseñar el Centro de Mando Gamer El Niño. La idea es tener todo en un solo disco: emuladores, streaming, mods y un diario personal.', fecha: '2026-09-08' },
+            { titulo: 'Primera estructura', contenido: 'He creado las 6 carpetas principales y el dashboard con enlaces a cada sección.', fecha: '2026-09-08' },
+            { titulo: 'Versión 1.0', contenido: 'Primera versión estable del disco con estructura completa.', fecha: '2026-09-08' },
+            { titulo: 'Concepto inicial', contenido: 'El proyecto nace de la idea de tener un centro multimedia portátil con estética cyberpunk.', fecha: '2026-09-08' }
+        ],
+        'Aventuras Retro': [
+            { titulo: 'Shadow of the Colossus', contenido: 'Uno de los juegos más épicos de PS2. Gráficos impresionantes para su época y una historia que emociona.', fecha: '2026-09-08' },
+            { titulo: 'God of War: Chains of Olympus', contenido: 'Aventura trepidante en la PSP. El combate es brutal y la historia muy bien contada.', fecha: '2026-09-08' },
+            { titulo: 'Mario Kart Wii', contenido: 'El clásico de las carreras. Perfecto para jugar en familia.', fecha: '2026-09-08' },
+            { titulo: 'Chrono Trigger', contenido: 'Obra maestra de los RPG. El tiempo como elemento central de la historia.', fecha: '2026-09-08' },
+            { titulo: 'Metal Slug', contenido: 'El shooter arcade por excelencia. Dificultad alta pero muy satisfactorio.', fecha: '2026-09-08' }
+        ],
+        'Logros y Trofeos': [
+            { titulo: 'Primer logro desbloqueado', contenido: 'He conseguido mi primer logro en RetroAchievements. ¡A por más!', fecha: '2026-09-08' },
+            { titulo: 'Récord en Mario Kart', contenido: 'He batido mi récord personal en la pista de Rainbow Road.', fecha: '2026-09-08' },
+            { titulo: 'Desafío completado', contenido: 'He terminado el desafío semanal de la comunidad.', fecha: '2026-09-08' }
+        ],
+        'Sesiones de Streaming': [
+            { titulo: 'Directo de inauguración', contenido: 'Primer directo del canal. Han venido amigos y lo hemos pasado genial.', fecha: '2026-09-08' },
+            { titulo: 'Clip épico', contenido: 'He conseguido un clip increíble en el directo de ayer.', fecha: '2026-09-08' },
+            { titulo: 'Configuración de OBS', contenido: 'He ajustado la tasa de bits y la resolución para mejorar la calidad del directo.', fecha: '2026-09-08' }
+        ],
+        'Mods y Personalización': [
+            { titulo: 'Mod gráfico NVE', contenido: 'He instalado el mod NaturalVision Evolved para GTA V. El juego se ve espectacular.', fecha: '2026-09-08' },
+            { titulo: 'Shaders SEUS', contenido: 'Los shaders SEUS PTGI hacen que Minecraft parezca otro juego.', fecha: '2026-09-08' },
+            { titulo: 'Overlays personalizados', contenido: 'He diseñado overlays con la estética cyberpunk del proyecto.', fecha: '2026-09-08' }
+        ],
+        'Configuración Técnica': [
+            { titulo: 'Drivers actualizados', contenido: 'He actualizado los drivers de NVIDIA para mejorar el rendimiento.', fecha: '2026-09-08' },
+            { titulo: 'MSI Afterburner', contenido: 'He configurado MSI Afterburner para monitorizar temperaturas y FPS.', fecha: '2026-09-08' },
+            { titulo: 'Nuevo SSD', contenido: 'He instalado un SSD NVMe y los tiempos de carga han mejorado muchísimo.', fecha: '2026-09-08' }
+        ],
+        'Diseño y Branding': [
+            { titulo: 'Wallpaper 4K', contenido: 'He descargado un fondo cyberpunk en 4K para el escritorio.', fecha: '2026-09-08' },
+            { titulo: 'Logo de El Niño', contenido: 'He rediseñado el logo del proyecto con estilo neón.', fecha: '2026-09-08' },
+            { titulo: 'Avatar personalizado', contenido: 'He creado un avatar para el canal con temática cyberpunk.', fecha: '2026-09-08' }
+        ],
+        'Gameplays y Clips': [
+            { titulo: 'Mejor jugada', contenido: 'He grabado una jugada increíble en Call of Duty.', fecha: '2026-09-08' },
+            { titulo: 'Montaje de clips', contenido: 'He editado un vídeo con los mejores momentos del mes.', fecha: '2026-09-08' },
+            { titulo: 'Guion para review', contenido: 'He empezado a escribir el guion para la review de un juego retro.', fecha: '2026-09-08' }
+        ],
+        'Colaboraciones y Amigos': [
+            { titulo: 'Bienvenido, Mario', contenido: 'Este diario es para ti, Mario. Espero que disfrutes escribiendo tus aventuras.', fecha: '2026-09-08' },
+            { titulo: 'Colaboración con un amigo', contenido: 'Hemos hecho un directo conjunto y ha sido genial.', fecha: '2026-09-08' },
+            { titulo: 'La comunidad crece', contenido: 'La comunidad del canal está creciendo poco a poco. ¡Gracias!', fecha: '2026-09-08' }
+        ],
+        'Planes a Futuro': [
+            { titulo: 'Próximos lanzamientos', contenido: 'Estoy deseando probar el nuevo juego de Zelda.', fecha: '2026-09-08' },
+            { titulo: 'Ampliar la biblioteca', contenido: 'Quiero añadir más juegos de GameCube al disco.', fecha: '2026-09-08' },
+            { titulo: 'Probar RetroArch', contenido: 'Quiero instalar RetroArch con RetroAchievements.', fecha: '2026-09-08' }
+        ]
+    };
+
+    let currentCat = '';
+    let currentDay = null;
+    let curMonth = new Date().getMonth();
+    let curYear = new Date().getFullYear();
+    let editKey = null;
+    let editIdx = null;
+
+    // FUNCIONES DE ALMACENAMIENTO
+    function getEntries() {
+        const e = localStorage.getItem('diarioMario');
+        return e ? JSON.parse(e) : {};
+    }
+
+    function saveEntries(e) {
+        localStorage.setItem('diarioMario', JSON.stringify(e));
+    }
+
+    // CARGAR CONTENIDO INICIAL SI NO HAY NADA O HAY DATOS CORRUPTOS
+    function initContent() {
+        const datos = getEntries();
+        if (!datos || typeof datos !== 'object' || Array.isArray(datos) || !datos['Historia del Proyecto']) {
+            localStorage.removeItem('diarioMario');
+            saveEntries(contenidoInicial);
+        }
+    }
+
+    // PANTALLA DE BIENVENIDA
+    function entrarAlDiario() {
+        document.getElementById('welcomeScreen').style.display = 'none';
+        document.getElementById('mainScreen').style.display = 'block';
+        initContent();
+        renderCal();
+        renderCats();
+        renderEntries();
+    }
+
+    function volverInicio() {
+        currentCat = '';
+        currentDay = null;
+        document.getElementById('mainScreen').style.display = 'none';
+        document.getElementById('welcomeScreen').style.display = 'flex';
+    }
+
+    // CALENDARIO
+    function renderCal() {
+        const grid = document.getElementById('calGrid');
+        grid.innerHTML = '';
+        const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+        document.getElementById('calTitle').textContent = meses[curMonth] + ' ' + curYear;
+        const dias = ['L','M','X','J','V','S','D'];
+        dias.forEach(d => {
+            const div = document.createElement('div');
+            div.className = 'cal-weekday';
+            div.textContent = d;
+            grid.appendChild(div);
+        });
+        const first = new Date(curYear, curMonth, 1).getDay();
+        const total = new Date(curYear, curMonth + 1, 0).getDate();
+        const hoy = new Date().toISOString().split('T')[0];
+        for (let i = 0; i < first; i++) {
+            const div = document.createElement('div');
+            div.className = 'cal-day';
+            div.textContent = '';
+            grid.appendChild(div);
+        }
+        for (let d = 1; d <= total; d++) {
+            const div = document.createElement('div');
+            div.className = 'cal-day';
+            const fecha = `${curYear}-${String(curMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+            div.textContent = d;
+            if (fecha === hoy) div.classList.add('today');
+            if (fecha === currentDay) div.classList.add('selected');
+            div.onclick = () => { currentDay = fecha; renderCal(); renderCats(); renderEntries(); };
+            grid.appendChild(div);
+        }
+    }
+
+    function prevMonth() {
+        curMonth--;
+        if (curMonth < 0) { curMonth = 11; curYear--; }
+        renderCal();
+    }
+
+    function nextMonth() {
+        curMonth++;
+        if (curMonth > 11) { curMonth = 0; curYear++; }
+        renderCal();
+    }
+
+    // CATEGORÍAS
+    function renderCats() {
+        const list = document.getElementById('catList');
+        list.innerHTML = '';
+        const allLi = document.createElement('li');
+        allLi.className = currentCat === '' ? 'active' : '';
+        allLi.textContent = '📋 Todas';
+        allLi.onclick = () => { currentCat = ''; renderCats(); renderEntries(); };
+        list.appendChild(allLi);
+
+        categorias.forEach(cat => {
+            const li = document.createElement('li');
+            li.className = currentCat === cat.nombre ? 'active' : '';
+            li.innerHTML = `${cat.icon} ${cat.nombre}`;
+            li.onclick = () => { currentCat = cat.nombre; renderCats(); renderEntries(); };
+            list.appendChild(li);
+        });
+    }
+
+    // ENTRADAS
+    function renderEntries() {
+        const container = document.getElementById('entriesContainer');
+        container.innerHTML = '';
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const entries = getEntries();
+        let all = [];
+
+        Object.keys(entries).forEach(key => {
+            if (currentCat && key !== currentCat) return;
+            entries[key].forEach((e, i) => {
+                if (currentDay && e.fecha !== currentDay) return;
+                if (searchTerm && !e.titulo.toLowerCase().includes(searchTerm) && !e.contenido.toLowerCase().includes(searchTerm)) return;
+                all.push({ e, key, i });
+            });
+        });
+
+        all.sort((a, b) => b.e.fecha.localeCompare(a.e.fecha));
+
+        if (all.length === 0) {
+            container.innerHTML = '<div class="empty">📝 No hay entradas. Pulsa "+ Nueva entrada" para escribir.</div>';
+            return;
+        }
+
+        all.forEach(({ e, key, i }) => {
+            const div = document.createElement('div');
+            div.className = 'entry';
+            div.innerHTML = `<h4>${e.titulo}</h4><p>${e.contenido}</p><span class="date">📅 ${e.fecha}</span>`;
+            const actions = document.createElement('div');
+            actions.className = 'actions';
+            const editBtn = document.createElement('button');
+            editBtn.innerHTML = '✏️';
+            editBtn.onclick = () => editEntry(key, i);
+            const delBtn = document.createElement('button');
+            delBtn.innerHTML = '🗑️';
+            delBtn.onclick = () => deleteEntry(key, i);
+            actions.appendChild(editBtn);
+            actions.appendChild(delBtn);
+            div.appendChild(actions);
+            container.appendChild(div);
+        });
+    }
+
+    // FORMULARIO
+    function showForm() {
+        document.getElementById('entryTitle').value = '';
+        document.getElementById('entryContent').value = '';
+        document.getElementById('entryDate').value = currentDay || new Date().toISOString().split('T')[0];
+        document.getElementById('formTitle').textContent = 'Nueva entrada';
+        editKey = null;
+        editIdx = null;
+        document.getElementById('formSection').style.display = 'block';
+    }
+
+    function hideForm() {
+        document.getElementById('formSection').style.display = 'none';
+    }
+
+    function saveEntry() {
+        const titulo = document.getElementById('entryTitle').value.trim();
+        const contenido = document.getElementById('entryContent').value.trim();
+        const fecha = document.getElementById('entryDate').value;
+        if (!titulo || !contenido || !fecha) { alert('Completa todos los campos.'); return; }
+
+        const entries = getEntries();
+        const key = currentCat || 'Historia del Proyecto';
+        if (!entries[key]) entries[key] = [];
+
+        if (editKey && editIdx !== null) {
+            entries[editKey][editIdx] = { titulo, contenido, fecha };
+        } else {
+            entries[key].push({ titulo, contenido, fecha });
+        }
+        saveEntries(entries);
+        hideForm();
+        renderEntries();
+        renderCal();
+    }
+
+    function editEntry(key, idx) {
+        const e = getEntries()[key][idx];
+        document.getElementById('entryTitle').value = e.titulo;
+        document.getElementById('entryContent').value = e.contenido;
+        document.getElementById('entryDate').value = e.fecha;
+        document.getElementById('formTitle').textContent = 'Editar entrada';
+        editKey = key;
+        editIdx = idx;
+        document.getElementById('formSection').style.display = 'block';
+    }
+
+    function deleteEntry(key, idx) {
+        if (!confirm('¿Seguro que quieres borrar esta entrada?')) return;
+        const entries = getEntries();
+        entries[key].splice(idx, 1);
+        if (entries[key].length === 0) delete entries[key];
+        saveEntries(entries);
+        renderEntries();
+        renderCal();
+    }
+
+    // BUSCAR
+    document.getElementById('searchInput').addEventListener('input', renderEntries);
+
+    // EXPORTAR / IMPORTAR
+    function exportData() {
+        const blob = new Blob([JSON.stringify(getEntries(), null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'diario_mario_backup.json';
+        a.click();
+    }
+
+    function importData(input) {
+        const f = input.files[0];
+        if (!f) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            try {
+                const d = JSON.parse(e.target.result);
+                if (typeof d === 'object' && d) {
+                    saveEntries(d);
+                    renderEntries();
+                    renderCal();
+                    alert('Diario importado correctamente.');
+                }
+            } catch (err) { alert('Error al leer el archivo.'); }
+        };
+        reader.readAsText(f);
+    }
+
+    // Al cargar la página, mostramos la bienvenida (no el diario)
+    document.getElementById('welcomeScreen').style.display = 'flex';
+    document.getElementById('mainScreen').style.display = 'none';
+</script>
+</body>
+</html>

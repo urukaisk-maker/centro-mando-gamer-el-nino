@@ -1,11 +1,11 @@
 {
-  "fecha": "2026-09-12 14:53:08",
+  "fecha": "2026-09-12 17:19:53",
   "sistema": "Linux 6.19.6-zen1-1-zen",
   "cpu": {
     "modelo": "Intel(R) Core(TM) i5-6300U CPU @ 2.40GHz",
     "nucleos": 4,
     "hilos": 4,
-    "mhz": 2569.062
+    "mhz": 2699.987
   },
   "ram_gb": 15.4,
   "gpus": [

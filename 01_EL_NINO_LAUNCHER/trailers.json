@@ -4,78 +4,90 @@
       "id": "cavestory",
       "nombre": "Cave Story",
       "icono": "🕳️",
-      "youtube": "https://www.youtube.com/watch?v=eWfVe1rIHsM&list=PLkPOogHoNsPkgwruZ6A6ubyEN0miGcesa&pp=0gcJCf8COCosWNin"
+      "youtube": "https://www.youtube.com/watch?v=S2YdJpy7B0w"
     },
     {
       "id": "freedoom",
       "nombre": "Freedoom",
       "icono": "👹",
-      "youtube": "https://www.youtube.com/watch?v=ZNgSyIt_2a4&pp=ygUIRnJlZWRvb20%3D"
+      "youtube": "https://www.youtube.com/watch?v=Bi7H6XDH0ZM"
     },
     {
       "id": "quake",
       "nombre": "Quake",
       "icono": "🔫",
-      "youtube": ""
+      "youtube": "https://www.youtube.com/watch?v=7TiDvFVo4Tw"
     },
     {
       "id": "openra",
       "nombre": "OpenRA (Red Alert)",
       "icono": "⚔️",
-      "youtube": ""
+      "youtube": "https://www.youtube.com/watch?v=r-k57q3xd88"
     },
     {
       "id": "0ad",
       "nombre": "0 A.D.",
       "icono": "🏛️",
-      "youtube": ""
+      "youtube": "https://www.youtube.com/watch?v=xDB3kfxWSKg"
     },
     {
       "id": "xonotic",
       "nombre": "Xonotic",
       "icono": "🚀",
-      "youtube": ""
+      "youtube": "https://www.youtube.com/watch?v=FcZT9abr6xA"
     },
     {
       "id": "luanti",
       "nombre": "Luanti",
       "icono": "🧱",
-      "youtube": ""
+      "youtube": "https://www.youtube.com/watch?v=g74i2CwuUp4"
     },
     {
       "id": "wesnoth",
       "nombre": "Battle for Wesnoth",
       "icono": "⚔️",
-      "youtube": ""
+      "youtube": "https://www.youtube.com/watch?v=yJQIR1WhFOQ"
     },
     {
       "id": "openttd",
       "nombre": "OpenTTD",
       "icono": "🚂",
-      "youtube": ""
+      "youtube": "https://www.youtube.com/watch?v=mQ1cr3tSGM4"
     },
     {
       "id": "endless-sky",
       "nombre": "Endless Sky",
       "icono": "🚀",
-      "youtube": ""
+      "youtube": "https://www.youtube.com/watch?v=Kxftcy4dhz8"
     },
     {
       "id": "supertux",
       "nombre": "SuperTux",
       "icono": "🐧",
-      "youtube": ""
+      "youtube": "https://www.youtube.com/watch?v=Hjjxr1YyyyI"
     },
     {
       "id": "widelands",
       "nombre": "Widelands",
       "icono": "🏰",
-      "youtube": ""
+      "youtube": "https://www.youtube.com/watch?v=BSiMEktVjjM"
     },
     {
       "id": "shattered",
       "nombre": "Shattered Pixel Dungeon",
       "icono": "⚔️",
+      "youtube": "https://www.youtube.com/watch?v=0sLNBBkcyhY"
+    },
+    {
+      "id": "supertuxkart",
+      "nombre": "SuperTuxKart",
+      "icono": "🏎️",
+      "youtube": ""
+    },
+    {
+      "id": "ddnet",
+      "nombre": "DDNet",
+      "icono": "🎯",
       "youtube": ""
     }
   ],
@@ -84,25 +96,25 @@
       "id": "pcsx2",
       "nombre": "PCSX2 (PS2)",
       "icono": "🎮",
-      "youtube": ""
+      "youtube": "https://www.youtube.com/watch?v=kYGxxT0J9cU"
     },
     {
       "id": "ppsspp",
       "nombre": "PPSSPP (PSP)",
       "icono": "🕹️",
-      "youtube": ""
+      "youtube": "https://www.youtube.com/watch?v=-CrkZV8DXvo"
     },
     {
       "id": "dolphin",
       "nombre": "Dolphin (GC/Wii)",
       "icono": "🐬",
-      "youtube": ""
+      "youtube": "https://www.youtube.com/watch?v=xE_nSZd-Dp0"
     },
     {
       "id": "retroarch",
       "nombre": "RetroArch",
       "icono": "🎯",
-      "youtube": ""
+      "youtube": "https://www.youtube.com/watch?v=E6ClkJIG48Q"
     }
   ]
 }
