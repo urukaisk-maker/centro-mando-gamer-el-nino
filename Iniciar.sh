@@ -11,6 +11,29 @@ echo "========================================"
 echo "  Centro de Mando Gamer - El Nino"
 echo "========================================"
 
+# ==========================================
+# FIX CRITICO: restaurar permisos de ejecucion
+# El disco esta en exFAT, que NO guarda permisos.
+# Cada vez que se conecta, hay que volver a darselos.
+# ==========================================
+echo "Restaurando permisos de ejecucion..."
+
+# Scripts .sh de la raiz
+chmod +x "$DISCO"/*.sh 2>/dev/null
+
+# Scripts de juegos y emuladores
+chmod +x "$DISCO/08_JUEGOS_EXTRA"/*.sh 2>/dev/null
+chmod +x "$DISCO/02_EMULADORES_Y_ROMS/EJECUTABLES_PORTABLES"/*.sh 2>/dev/null
+
+# AppImages
+find "$DISCO" -maxdepth 4 -name "*.AppImage" -exec chmod +x {} \; 2>/dev/null
+
+# Binarios de juegos extra (Xonotic, etc.)
+find "$DISCO/08_JUEGOS_EXTRA" -maxdepth 3 -name "xonotic-linux*" -exec chmod +x {} \; 2>/dev/null
+find "$DISCO/08_JUEGOS_EXTRA" -maxdepth 5 -name "Shattered Pixel Dungeon" -exec chmod +x {} \; 2>/dev/null
+
+echo "Permisos restaurados."
+
 # Verificar que existe el servidor
 if [ ! -f "$DISCO/server.py" ]; then
     echo "ERROR: no encuentro server.py en $DISCO"
