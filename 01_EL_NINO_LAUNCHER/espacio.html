@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Espacio - El Nino</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:2rem 1rem;background-image:radial-gradient(circle at 20% 30%,rgba(0,240,255,0.05),transparent 50%),radial-gradient(circle at 80% 70%,rgba(255,0,255,0.05),transparent 50%);background-attachment:fixed}
+.container{max-width:1200px;margin:0 auto}
+a.volver{color:#ff00ff;text-decoration:none;font-weight:bold;display:inline-block;margin-bottom:1.5rem;font-size:1.05rem}
+a.volver:hover{text-decoration:underline}
+h1{color:#00f0ff;text-align:center;font-size:2.5rem;text-shadow:0 0 20px #00f0ff;margin-bottom:0.5rem}
+.sub{text-align:center;color:#8899aa;margin-bottom:2rem;font-style:italic}
+.aviso{background:rgba(255,136,0,0.1);border:2px solid #ff8800;border-radius:12px;padding:1rem 1.5rem;margin-bottom:2rem;text-align:center;font-weight:bold;color:#ff8800;display:none}
+.aviso.visible{display:block}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.donut-box{background:linear-gradient(145deg,#12121a,#1a1a24);border:2px solid rgba(0,240,255,0.3);border-radius:20px;padding:2rem;text-align:center}
+.donut-wrap{position:relative;width:280px;height:280px;margin:0 auto 1.5rem}
+.donut-wrap svg{transform:rotate(-90deg);width:100%;height:100%}
+.donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.donut-center .pct{font-size:2.5rem;font-weight:900;color:#00f0ff;display:block;line-height:1;text-shadow:0 0 20px rgba(0,240,255,0.6)}
+.donut-center .lbl{font-size:0.75rem;color:#8899aa;text-transform:uppercase;letter-spacing:1px}
+.donut-info{display:flex;justify-content:space-around;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(0,240,255,0.15)}
+.donut-info .stat{text-align:center}
+.donut-info .stat .num{color:#00f0ff;font-size:1.3rem;font-weight:bold;display:block}
+.donut-info .stat .lbl{color:#8899aa;font-size:0.75rem;text-transform:uppercase;letter-spacing:1px}
+.lista-box{background:linear-gradient(145deg,#12121a,#1a1a24);border:2px solid rgba(0,240,255,0.3);border-radius:20px;padding:2rem}
+.lista-box h2{color:#ff00ff;font-size:1.3rem;margin-bottom:1.5rem;text-shadow:0 0 10px rgba(255,0,255,0.4)}
+.cat-item{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;padding:0.7rem 0;border-bottom:1px solid rgba(0,240,255,0.08)}
+.cat-item:last-child{border-bottom:none}
+.cat-color{width:14px;height:14px;border-radius:4px;flex-shrink:0;box-shadow:0 0 10px currentColor}
+.cat-info{flex:1}
+.cat-info .nombre{color:#e0e0e0;font-weight:600;display:block;margin-bottom:0.2rem}
+.cat-info .barra{height:6px;background:#0a0a0f;border-radius:3px;overflow:hidden}
+.cat-info .barra .fill{height:100%;border-radius:3px;transition:width 0.8s ease}
+.cat-size{color:#00f0ff;font-weight:bold;font-size:0.95rem;min-width:80px;text-align:right}
+.acciones{display:flex;gap:1rem;justify-content:center;margin-top:2rem;flex-wrap:wrap}
+.btn{background:linear-gradient(45deg,#00f0ff,#ff00ff);color:#000;border:none;padding:0.9rem 2rem;border-radius:30px;font-weight:bold;font-size:0.95rem;cursor:pointer;transition:all 0.3s;font-family:inherit;letter-spacing:1px}
+.btn:hover{transform:scale(1.05);box-shadow:0 0 25px rgba(255,0,255,0.7)}
+.vacio{text-align:center;padding:3rem;color:#8899aa;font-style:italic}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="volver" href="/01_EL_NINO_LAUNCHER/index.html">← Volver al Dashboard</a>
+<h1>💾 Espacio en disco</h1>
+<p class="sub">Analisis en tiempo real del espacio ocupado</p>
+
+<div class="aviso" id="aviso">
+⚠️ ATENCION: Quedan menos de 20 GB libres. Considera borrar contenido antiguo.
+</div>
+
+<div id="contenido"><div class="vacio">Analizando disco... (puede tardar 20 segundos)</div></div>
+
+<div class="acciones">
+<button class="btn" onclick="cargar()">🔄 Recargar datos</button>
+</div>
+</div>
+
+<script>
+var COLORES = [
+    '#00f0ff', '#ff00ff', '#00ff88', '#ff8800', '#7a00ff',
+    '#ff0044', '#88ff00', '#ffdd00', '#00f5ff'
+];
+
+function formatearMB(mb){
+    if(mb >= 1024) return (mb / 1024).toFixed(2) + ' GB';
+    return mb + ' MB';
+}
+
+function cargar(){
+    var cont = document.getElementById('contenido');
+    cont.innerHTML = '<div class="vacio">Analizando disco... (puede tardar 20 segundos)</div>';
+
+    fetch('/espacio?_=' + Date.now())
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+            renderizar(d);
+        })
+        .catch(function(e){
+            cont.innerHTML = '<div class="vacio">Error cargando datos: ' + e.message + '</div>';
+        });
+}
+
+function renderizar(d){
+    var cont = document.getElementById('contenido');
+
+    // Aviso si queda poco espacio
+    var libreGB = d.libre_mb / 1024;
+    var aviso = document.getElementById('aviso');
+    if(libreGB < 20){
+        aviso.classList.add('visible');
+    } else {
+        aviso.classList.remove('visible');
+    }
+
+    // Calcular porcentaje usado
+    var pctUsado = (d.usado_mb / d.total_mb) * 100;
+
+    // Datos para el donut
+    var cats = d.carpetas;
+    var totalCats = cats.reduce(function(s, c){ return s + c.mb; }, 0);
+    var circunferencia = 2 * Math.PI * 80;  // radio = 80
+
+    // Construir el donut SVG
+    var svg = '<svg viewBox="0 0 200 200">';
+    svg += '<circle cx="100" cy="100" r="80" fill="none" stroke="#0a0a0f" stroke-width="30"/>';
+    var offset = 0;
+    cats.forEach(function(cat, i){
+        if(cat.mb === 0) return;
+        var pct = cat.mb / totalCats;
+        var largo = pct * circunferencia;
+        var color = COLORES[i % COLORES.length];
+        svg += '<circle cx="100" cy="100" r="80" fill="none" stroke="' + color + '" stroke-width="30"';
+        svg += ' stroke-dasharray="' + largo + ' ' + (circunferencia - largo) + '"';
+        svg += ' stroke-dashoffset="' + (-offset) + '"/>';
+        offset += largo;
+    });
+    svg += '</svg>';
+
+    var html = '<div class="grid">';
+
+    // Donut
+    html += '<div class="donut-box">';
+    html += '<div class="donut-wrap">' + svg;
+    html += '<div class="donut-center"><span class="pct">' + pctUsado.toFixed(1) + '%</span><span class="lbl">Usado</span></div>';
+    html += '</div>';
+    html += '<h2 style="color:#00f0ff;font-size:1.1rem;margin-bottom:0.5rem">Disco de 224 GB</h2>';
+    html += '<div class="donut-info">';
+    html += '<div class="stat"><span class="num">' + formatearMB(d.usado_mb) + '</span><span class="lbl">Usado</span></div>';
+    html += '<div class="stat"><span class="num">' + formatearMB(d.libre_mb) + '</span><span class="lbl">Libre</span></div>';
+    html += '<div class="stat"><span class="num">' + formatearMB(d.total_mb) + '</span><span class="lbl">Total</span></div>';
+    html += '</div>';
+    html += '</div>';
+
+    // Lista por categorias
+    var maxMB = Math.max.apply(null, cats.map(function(c){ return c.mb; }));
+    html += '<div class="lista-box">';
+    html += '<h2>📊 Desglose por categoria</h2>';
+    cats.sort(function(a, b){ return b.mb - a.mb; });
+    cats.forEach(function(cat, i){
+        var pct = maxMB > 0 ? (cat.mb / maxMB) * 100 : 0;
+        var color = COLORES[i % COLORES.length];
+        html += '<div class="cat-item">';
+        html += '<span class="cat-color" style="background:' + color + ';color:' + color + '"></span>';
+        html += '<div class="cat-info">';
+        html += '<span class="nombre">' + cat.nombre + '</span>';
+        html += '<div class="barra"><div class="fill" style="width:' + pct + '%;background:' + color + '"></div></div>';
+        html += '</div>';
+        html += '<span class="cat-size">' + formatearMB(cat.mb) + '</span>';
+        html += '</div>';
+    });
+    html += '</div>';
+
+    html += '</div>';
+    cont.innerHTML = html;
+}
+
+cargar();
+</script>
+</body>
+</html>
