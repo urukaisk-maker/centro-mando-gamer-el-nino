@@ -229,6 +229,37 @@ def matar_proceso(nombre):
             return False, str(e)
 
 class Handler(http.server.SimpleHTTPRequestHandler):
+    def lanzar_appimage(self, rom):
+        """Lanza un AppImage (emulador o juego)."""
+        ruta = rom["ruta"]
+        if not os.path.exists(ruta):
+            self.not_found("AppImage no encontrado: " + ruta)
+            return
+        try:
+            os.chmod(ruta, 0o755)
+        except Exception:
+            pass
+        env = os.environ.copy()
+        env.setdefault("DISPLAY", ":0")
+        try:
+            proc = subprocess.Popen(
+                [ruta],
+                cwd=os.path.dirname(ruta),
+                env=env,
+                stdout=open("/tmp/elnino_lanzar.log","ab"),
+                stderr=open("/tmp/elnino_lanzar.log","ab"),
+                start_new_session=True
+            )
+        except Exception as e:
+            self.not_found("Error al lanzar: " + str(e))
+            return
+        with lock:
+            procesos_activos["app_" + rom["nombre"]] = {
+                "pid": proc.pid, "proceso": proc,
+                "hora": time.time(), "tipo": rom.get("tipo", "juego")
+            }
+        self.redirect("app_" + rom["nombre"])
+
     def do_GET(self):
         if self.path.startswith("/launch/"):
             emulador = self.path.split("/launch/")[1].strip("/")
@@ -350,7 +381,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 self.redirect("rom_" + rom["nombre"])
             else:
                 # Para emuladores pesados, sin core especifico (por ahora)
-                self.not_found("Este sistema necesita configuracion manual")
+                self.lanzar_appimage(rom)
 
         elif self.path.startswith("/tecla/"):
             # Enviar una tecla al PC (press + release)

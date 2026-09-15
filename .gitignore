@@ -77,3 +77,6 @@ __pycache__/
 *.pyc
 .vscode/
 .idea/
+*.bak.*
+*.v2
+*.backup
