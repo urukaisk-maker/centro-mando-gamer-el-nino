@@ -80,3 +80,7 @@ __pycache__/
 *.bak.*
 *.v2
 *.backup
+
+# Excepcion: permitir el video demo de la galeria
+!screenshots/*.mp4
+!screenshots/*.gif
