@@ -4,7 +4,7 @@
 **Sistema:** Garuda Linux (shell fish)
 **Disco:** /run/media/urukais/PROYECTOS/
 **Repo:** https://github.com/urukaisk-maker/centro-mando-gamer-el-nino
-**Demo Vercel:** https://centro-mando-gamer-el-nino.vercel.app/
+**Demo Vercel:** https://centro-mando-gamer-el-nino-mmcq.vercel.app/
 **Demo Pages:** https://urukaisk-maker.github.io/centro-mando-gamer-el-nino/
 
 ---

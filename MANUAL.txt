@@ -268,7 +268,7 @@ Anyo:      2026
 
 GitHub:    https://github.com/urukaisk-maker
 Portfolio: https://unique-biscochitos-31bcea.netlify.app/
-Demo:      https://centro-mando-gamer-el-nino.vercel.app/
+Demo:      https://centro-mando-gamer-el-nino-mmcq.vercel.app/
 
 
 ================================================================
