@@ -69,6 +69,15 @@ Doble clic en "Abrir El Nino.desktop" desde la carpeta del disco, o:
 bash Iniciar.sh
 ```
 
+> **Aviso para KDE Plasma + Dolphin:** el doble clic en el archivo `.desktop` desde un disco extraible **no funciona** (bug conocido de Dolphin). Alternativas:
+>
+> - **Opcion 1:** instala Nemo y usalo como gestor: `sudo pacman -S nemo`
+> - **Opcion 2:** abre una terminal en la carpeta del disco y ejecuta `bash Iniciar.sh`
+> - **Opcion 3:** ejecuta `bash instalar_en_linux.sh` una vez y busca "El Nino" en el menu de aplicaciones
+>
+> En GNOME, XFCE, MATE y Cinnamon, el doble clic en el `.desktop` funciona sin problemas.
+
+
 ### En Windows
 
 Doble clic en "ABRIR EL NINO.bat" desde la carpeta del disco.
