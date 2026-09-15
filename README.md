@@ -1,6 +1,6 @@
 # Centro de Mando Gamer - Plataforma "El Nino"
 
-[![Vercel](https://img.shields.io/badge/Vercel-En%20vivo-success?logo=vercel)](https://centro-mando-gamer-el-nino.vercel.app/)
+[![Vercel](https://img.shields.io/badge/Vercel-En%20vivo-success?logo=vercel)](https://centro-mando-gamer-el-nino-mmcq.vercel.app/)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Demo-success?logo=github)](https://urukaisk-maker.github.io/centro-mando-gamer-el-nino/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://www.python.org/)
@@ -27,7 +27,7 @@
 
 </div>
 
-> Demo Vercel: https://centro-mando-gamer-el-nino.vercel.app/
+> Demo Vercel: https://centro-mando-gamer-el-nino-mmcq.vercel.app/
 > Demo Pages: https://urukaisk-maker.github.io/centro-mando-gamer-el-nino/
 
 > Regalo para **Mario** - Disenado por **Manuel Casimiro Carrasco**
