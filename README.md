@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://www.python.org/)
 
-<video src="screenshots/demo-launcher-v2.mp4" controls muted loop width="100%"></video>
+![Demo del launcher](screenshots/demo-launcher-v2.gif)
 
 <sub>Demo del launcher: particulas, glow y modo alerta</sub>
 
