@@ -1,0 +1,84 @@
+==================================================
+EL NIÑO — CÓMO ABRIRLO
+==================================================
+
+WINDOWS:
+Doble clic en "ABRIR EL NIÑO.bat"
+(Si Windows avisa: "Más información" → "Ejecutar de todas formas")
+
+LINUX:
+Opción A - Terminal (funciona SIEMPRE, en cualquier escritorio):
+Abre una terminal en esta carpeta y escribe:
+bash Iniciar.sh
+
+Opción B - Gestor de archivos NEMO:
+Doble clic en "Abrir El Niño.desktop"
+(Solo funciona si tienes Nemo instalado. En Arch/Garuda:
+sudo pacman -S nemo)
+
+Opción C - Instalar en el menú (una sola vez por PC):
+bash instalar_en_linux.sh
+Después busca "El Niño" en tu menú de aplicaciones.
+
+Opción D - Clic derecho en "Iniciar.sh" → "Ejecutar"
+
+==================================================
+AVISO IMPORTANTE PARA KDE / DOLPHIN
+==================================================
+
+Si usas KDE Plasma con Dolphin: el doble clic en
+"Abrir El Niño.desktop" NO funciona. Es un bug conocido
+de Dolphin con archivos .desktop en discos extraíbles.
+
+Soluciones:
+1. Usa Nemo en vez de Dolphin:
+   sudo pacman -S nemo
+   nemo /ruta/al/disco/
+2. O abre una terminal y ejecuta: bash Iniciar.sh
+3. O instala el lanzador con instalar_en_linux.sh
+
+==================================================
+SI ALGO FALLA
+==================================================
+
+1. Comprueba que el disco está montado:
+   ls /mnt/elNiño/  (o donde se monte)
+
+2. Si da "Input/output error":
+   sudo umount /mnt/elNiño
+   sudo fsck.exfat -y /dev/sdXY
+   (cambia sdXY por el disco real, ej: /dev/sda3)
+
+3. Comprueba el log del servidor:
+   cat /tmp/elnino_server_$(id -u).log
+
+4. Comprueba si el puerto 8080 está ocupado:
+   ss -tlnp | grep 8080
+
+5. Instala Python si falta:
+   sudo pacman -S python   (Arch/Garuda)
+   sudo apt install python3   (Debian/Ubuntu)
+
+==================================================
+ACCESO DESDE EL MÓVIL (mando táctil)
+==================================================
+
+1. Conecta el móvil a la misma WiFi que el PC.
+
+2. Averigua la IP del PC:
+   ip -4 addr show | grep inet | grep -v 127.0.0.1
+
+3. En el móvil, abre:
+   http://IP_DEL_PC:8080/01_EL_NINO_LAUNCHER/mobile.html
+
+==================================================
+DOCUMENTACIÓN COMPLETA
+==================================================
+
+- MANUAL.txt           Manual de uso para Mario
+- DOCUMENTO_TECNICO.md Arquitectura del proyecto
+- README.md            Visión general
+- ARCHITECTURE.md      Diagramas y flujos
+
+Y online en GitHub:
+https://github.com/urukaisk-maker/centro-mando-gamer-el-nino
