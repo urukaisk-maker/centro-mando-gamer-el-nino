@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import signal
 import http.server, socketserver, subprocess, os, glob, json, socket, time, threading, urllib.parse
 
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
