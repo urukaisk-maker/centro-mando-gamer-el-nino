@@ -1014,13 +1014,13 @@ nav ul li a:active{transform:scale(0.95)}
         <section id="media" class="seccion">
             <h2>🖼️ Media y Wallpapers</h2>
             <p>Fondos de pantalla, iconos y temas personalizados.</p>
-            <p><a href="/06_MEDIA_Y_WALLPAPERS/index.html">Abrir carpeta de Media</a></p>
+            <p><a href="../06_MEDIA_Y_WALLPAPERS/index.html">Abrir carpeta de Media</a></p>
         </section>
 
         <section id="diario" class="seccion">
             <h2>📓 Diario de Mario</h2>
             <p>Registro de sesiones, logros y aventuras.</p>
-            <p><a href="/07_DIARIO_MARIO/index.html">Abrir Diario</a></p>
+            <p><a href="../07_DIARIO_MARIO/index.html">Abrir Diario</a></p>
         </section>
 
         <!-- ACERCA DE -->
@@ -1650,7 +1650,7 @@ function buscarGlobal(texto){
     if(wpEncontrados.length > 0){
         html += '<div class="resultado-categoria">🖼 Wallpapers</div>';
         wpEncontrados.forEach(function(w){
-            html += '<a class="resultado-item" href="/06_MEDIA_Y_WALLPAPERS/FONDOS_4K_ANIMADOS/' + w.archivo + '" target="_blank"><span class="icono">🖼</span>' + w.nombre + '</a>';
+            html += '<a class="resultado-item" href="../06_MEDIA_Y_WALLPAPERS/FONDOS_4K_ANIMADOS/' + w.archivo + '" target="_blank"><span class="icono">🖼</span>' + w.nombre + '</a>';
         });
     }
 
@@ -1676,7 +1676,7 @@ function buscarGlobal(texto){
 
     // Diario
     html += '<div class="resultado-categoria">📖 Diario</div>';
-    html += '<a class="resultado-item" href="/07_DIARIO_MARIO/index.html?q=' + encodeURIComponent(texto) + '" target="_blank"><span class="icono">🔍</span>Buscar "' + texto + '" en el diario</a>';
+    html += '<a class="resultado-item" href="../07_DIARIO_MARIO/index.html?q=' + encodeURIComponent(texto) + '" target="_blank"><span class="icono">🔍</span>Buscar "' + texto + '" en el diario</a>';
 
     panel.innerHTML = html;
     panel.classList.add('visible');
