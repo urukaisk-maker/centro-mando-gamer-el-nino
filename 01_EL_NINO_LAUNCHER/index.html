@@ -2969,7 +2969,7 @@ function extraerIdYoutube(url){
 }
 
 function cargarTrailers(){
-    fetch('/01_EL_NINO_LAUNCHER/trailers.json?_=' + Date.now())
+    fetch('trailers.json?_=' + Date.now())
     .then(function(r){ return r.json(); })
     .then(function(datos){
         var todos = [].concat(datos.juegos || [], datos.emuladores || []);
