@@ -2280,7 +2280,7 @@ async function instalarMandos(){
 // ===== CARGAR ROMS DINAMICAS =====
 async function cargarRoms(){
     try {
-        var r = await fetch('/01_EL_NINO_LAUNCHER/juegos.json?_=' + Date.now());
+        var r = await fetch('juegos.json?_=' + Date.now());
         var data = await r.json();
         var seccion = document.getElementById('seccion-roms');
         var grid = document.getElementById('rom-grid');
