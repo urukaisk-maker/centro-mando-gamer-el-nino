@@ -63,12 +63,16 @@ Diagrama detallado en ARCHITECTURE.md.
 
 ### En Linux
 
-Doble clic en "Abrir El Nino.desktop" desde la carpeta del disco, o:
+Instala el lanzador una sola vez y usalo desde el menu de aplicaciones (recomendado):
 
-```bash
-bash Iniciar.sh
-```
+    bash instalar_en_linux.sh
 
+Luego busca "El Nino" en tu menu de aplicaciones y anclalo al panel.
+
+Alternativas:
+
+- **Terminal:** abre una terminal en la carpeta del disco y ejecuta `bash Iniciar.sh`
+- **Nemo:** doble clic en `Abrir El Nino.desktop` (solo con Nemo, no con Dolphin)
 > **Aviso para KDE Plasma + Dolphin:** el doble clic en el archivo `.desktop` desde un disco extraible **no funciona** (bug conocido de Dolphin). Alternativas:
 >
 > - **Opcion 1:** instala Nemo y usalo como gestor: `sudo pacman -S nemo`
